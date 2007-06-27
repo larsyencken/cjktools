@@ -1,0 +1,17 @@
+syntax: glob
+*.orig
+*.rej
+*~
+*.o
+*.so
+*.os
+*.pyo
+*.pyc
+*.log
+.sconf_temp/*
+.sconsign.dblite
+www/localSettings.py
+cache/*
+tmp/*
+log/*
+*.swp
