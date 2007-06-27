@@ -7,7 +7,7 @@
 #
 #----------------------------------------------------------------------------#
 
-u""" 
+""" 
 This module provides an interface to the consonant/vowel structure of the
 Japanese hiragana and katakana syllabaries.
 """

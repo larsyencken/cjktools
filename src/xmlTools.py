@@ -7,9 +7,9 @@
 #
 #----------------------------------------------------------------------------#
 
-""" This is the package file for the tools.xml package. It's designed to
-    be imported as a module itself, rather than directly accessing the
-    submodules.
+"""
+Some XML helper methods, and an interface for accessing a large XML document
+in parts, without loading it all into memory at once.
 """
 
 #----------------------------------------------------------------------------#
@@ -26,15 +26,16 @@ from xml.xpath import Evaluate
 #----------------------------------------------------------------------------#
 
 def EvaluateLeaf(expr, node, typecast=None, maybeEmpty=False):
-    """ Get the text for the unique result of this expression. If more than
-        one value results, an exception is thrown. Essentially
+    """
+    Get the text for the unique result of this expression. If more than
+    one value results, an exception is thrown. Essentially
 
-        @param expr: The xpath expression to execute.
-        @param node: The node to execute the expression over.
-        @param typecast: An optional function to apply to values before
-            returning them.
-        @param maybeEmpty: If True, will return None instead of raising an
-            exception if no value is found.
+    @param expr: The xpath expression to execute.
+    @param node: The node to execute the expression over.
+    @param typecast: An optional function to apply to values before
+        returning them.
+    @param maybeEmpty: If True, will return None instead of raising an
+        exception if no value is found.
     """
     childNodes = Evaluate(expr, node)
 
@@ -54,7 +55,9 @@ def EvaluateLeaf(expr, node, typecast=None, maybeEmpty=False):
 #----------------------------------------------------------------------------#
 
 def EvaluateLeaves(expr, node, typecast=None):
-    """ Get the data from the results of the expression, where the number of
+    """
+    Get the data from the results of the expression, returned as a tuple of
+    all matches.
     """
     nodes = Evaluate(expr, node)
 
@@ -72,10 +75,11 @@ IndexType = enum.Enum('attribute', 'element')
 #----------------------------------------------------------------------------#
 
 class IndexedDocument(object):
-    """ A document with an inverted index stored in memory, permitting rapid
-        access to elements of the XML document as required. Uses regular
-        expressions rather than XML libraries on the initial parse, making it
-        considerably faster and less resource intensive.
+    """
+    A document with an inverted index stored in memory, permitting rapid
+    access to elements of the XML document as required. Uses regular
+    expressions rather than XML libraries on the initial parse, making it
+    considerably faster and less resource intensive.
     """
 
     #------------------------------------------------------------------------#
@@ -83,20 +87,21 @@ class IndexedDocument(object):
     #------------------------------------------------------------------------#
 
     def __init__(self, filename, baseTag, keyPath):
-        """ Constructor. Takes the given document, and reads in the index for
-            that document. If no index exists, then one is created. The
-            tagSpec gives the path that should be indexed.
-            
-            For example, a tagSpec of 'kanji.midashi' indicates that <kanji>
-            entries should be indexed, using the contents of the <midashi>
-            sub-element as a key.  A tagSpec of 'strokegr:element' indicates
-            that <strokegr> entries should be indexed via their element
-            attribute.
+        """
+        Constructor. Takes the given document, and reads in the index for
+        that document. If no index exists, then one is created. The
+        tagSpec gives the path that should be indexed.
+        
+        For example, a tagSpec of 'kanji.midashi' indicates that <kanji>
+        entries should be indexed, using the contents of the <midashi>
+        sub-element as a key.  A tagSpec of 'strokegr:element' indicates
+        that <strokegr> entries should be indexed via their element
+        attribute.
 
-            @param filename: The document to access via index.
-            @param baseTag: The elements to index.
-            @param keyPath: The path from within a base tag to use for an
-                indexing key.
+        @param filename: The document to access via index.
+        @param baseTag: The elements to index.
+        @param keyPath: The path from within a base tag to use for an
+            indexing key.
         """
         self._fileStream = common.sopen(filename, encoding=None)
         self._baseTag = baseTag
@@ -117,18 +122,20 @@ class IndexedDocument(object):
     #------------------------------------------------------------------------#
 
     def keys(self):
-        """ Returns a list of indexed keys.
+        """
+        Returns a list of indexed keys.
 
-            @param return: All available keys.
+        @return: All available keys.
         """
         return self._index.keys()
 
     #------------------------------------------------------------------------#
 
     def itervalues(self, unlink=True):
-        """ Iterates over the XML values in this document. Note that each node
-            is automatically unlinked before the next is made available,
-            unless the unlink flag is made False.
+        """
+        Iterates over the XML values in this document. Note that each node
+        is automatically unlinked before the next is made available,
+        unless the unlink flag is made False.
         """
         for key in self.keys():
             value = self[key]
@@ -141,12 +148,13 @@ class IndexedDocument(object):
     #------------------------------------------------------------------------#
 
     def __getitem__(self, key):
-        """ Returns an xml document node for the given key. Note that the node
-            should be unlinked after use, by calling its node.unlink() method,
-            so that it can be garbage collected accurately.
+        """
+        Returns an xml document node for the given key. Note that the node
+        should be unlinked after use, by calling its node.unlink() method,
+        so that it can be garbage collected accurately.
 
-            @param key: The key to look-up.
-            @param return: An xml document node for the entry that was found.
+        @param key: The key to look-up.
+        @return: An xml document node for the entry that was found.
         """
         startRange, endRange = self._index[key]
         self._fileStream.seek(startRange)
@@ -157,7 +165,8 @@ class IndexedDocument(object):
     #------------------------------------------------------------------------#
 
     def __len__(self):
-        """ Return the number of entries indexed.
+        """
+        Return the number of entries indexed.
         """
         return len(self._index)
 
@@ -166,11 +175,12 @@ class IndexedDocument(object):
     #------------------------------------------------------------------------#
 
     def _generateIndex(self, filename):
-        """ Generates a new index file, using the tagPath and indexType to
-            determine what should be indexed and what key should be used.
+        """
+        Generates a new index file, using the tagPath and indexType to
+        determine what should be indexed and what key should be used.
 
-            @param filename: The file to index.
-            @return: A dictionary mapping key to xml snippet.
+        @param filename: The file to index.
+        @return: A dictionary mapping key to xml snippet.
         """
         index = {}
 
@@ -199,12 +209,13 @@ class IndexedDocument(object):
     #------------------------------------------------------------------------#
 
     def _determineTagPath(self, tagSpec):
-        """ Determine the tag path and type of spec from the tag spec given.
-            Return both as a tuple.
+        """
+        Determine the tag path and type of spec from the tag spec given.
+        Return both as a tuple.
 
-            @param tagSpec: The index tag specification.  
-            @return: (tagPath, indexType) where the tagPath is a flat list of
-                element tags, optionally with an attribute name at the end.
+        @param tagSpec: The index tag specification.  
+        @return: (tagPath, indexType) where the tagPath is a flat list of
+            element tags, optionally with an attribute name at the end.
         """
         tagPath = tagSpec.split('.')
         if ':' in tagPath[-1]:
@@ -222,7 +233,8 @@ class IndexedDocument(object):
 #----------------------------------------------------------------------------#
 
 def _nodeValue(node, typecast=None):
-    """ Fetch the actual value of this node, which must be a leaf node.
+    """
+    Fetch the actual value of this node, which must be a leaf node.
     """
     text = []
     for child in node.childNodes:
@@ -239,4 +251,3 @@ def _nodeValue(node, typecast=None):
     return result
 
 #----------------------------------------------------------------------------#
-

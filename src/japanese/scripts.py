@@ -7,7 +7,7 @@
 #
 #----------------------------------------------------------------------------#
 
-u"""
+"""
 This module is responsible for Japanese script/encoding specific methods,
 especially determining the script type of an entry. It is thus the only
 module which requires a utf8 encoding for the additional Japanese characters.
@@ -37,13 +37,13 @@ _interKanaDistance = 96
 #----------------------------------------------------------------------------#
 
 class ScriptMapping:
-    u"""
+    """
     A mapping function between two scripts. We assume that the given scripts
     are different versions of the same characters, and further that they are
     aligned at the start and end points stored.
     """
     def __init__(self, fromScript, toScript):
-        u"""
+        """
         Constructor, initializes script conversion.
         
         @param fromScript: The script to convert from.
@@ -59,7 +59,7 @@ class ScriptMapping:
         return
 
     def __call__(self, jString):
-        u"""
+        """
         Converts any matching characters in the given string between scripts.
         Any characters which don't match the input script are passed through
         unchanged.
@@ -87,7 +87,7 @@ _mappedChars = {
 _toAscii = ScriptMapping(Script.FullAscii, Script.Ascii)
 
 def normalizeAscii(jString):
-    u"""
+    """
     Normalize a double-width ascii string, converting all characters to
     their single-width counterparts.
 
@@ -104,7 +104,9 @@ def normalizeAscii(jString):
 #----------------------------------------------------------------------------#
 
 def getScript(script):
-    u"""Returns a string containing all charcters in the given script."""
+    """
+    Returns a string containing all charcters in the given script.
+    """
 
     scriptStarts, scriptEnds = _knownBands[script]
 
@@ -117,8 +119,14 @@ def getScript(script):
 #----------------------------------------------------------------------------#
 
 def compareKana(jStringA, jStringB):
-    u"""
+    """
     Compares two kana strings in a script-independent manner.
+
+        >>> ru_h = unicode('る', 'utf8')
+        >>> ka_h = unicode('か', 'utf8')
+        >>> ka_k = unicode('カ', 'utf8')
+        >>> compareKana(ru_h, ka_k) == cmp(ru_h, ka_h)
+        True
 
     @type jStringA: unicode
     @type jStringB: unicode
@@ -128,10 +136,16 @@ def compareKana(jStringA, jStringB):
 #----------------------------------------------------------------------------#
 
 def containsScript(script, jString):
-    u"""
+    """
     Returns True if the given script is within the string, False
     otherwise.
     
+        >>> woof = u'woof'
+        >>> containsScript(Script.Ascii, woof)
+        True
+        >>> containsScript(Script.Kanji, woof)
+        False
+
     @param script: The script to search for.
     @type script: Script
     @param jString: The string to search within.
@@ -142,9 +156,21 @@ def containsScript(script, jString):
 #----------------------------------------------------------------------------#
 
 def scriptType(char):
-    u"""
+    """
     Determine the type of script contained in the given character. Script
     types are expressed using the Script enum.
+
+        >>> woof = u'woof'
+        >>> scriptTypes(woof)
+        set([Ascii])
+
+        >>> beijing = unicode('北京', 'utf8')
+        >>> scriptTypes(beijing)
+        set([Kanji])
+
+        >>> ru = unicode('る', 'utf8')
+        >>> scriptTypes(ru)
+        set([Hiragana])
 
     @param char: The character to examine.
     @type char: unicode
@@ -162,9 +188,13 @@ def scriptType(char):
 #----------------------------------------------------------------------------#
 
 def scriptBoundaries(jString):
-    u"""
+    """
     Determines where the script boundaries are in the given string.
         
+        >>> taberu = unicode('食べる', 'utf8')
+        >>> scriptBoundaries(taberu) == (taberu[0], taberu[1:])
+        True
+
     @param jString: The string of Japanese to segment.
     @type jString: string
     @return: A tuple of script-contiguous blocks
@@ -190,16 +220,33 @@ def scriptBoundaries(jString):
 #----------------------------------------------------------------------------#
 
 def scriptTypes(jString):
-    u"""
-    Returns a set of the script types in the given string.
     """
-    assert type(jString) == unicode
+    Returns a set of the script types in the given string.
+
+        >>> woof = u'woof'
+        >>> scriptTypes(woof)
+        set([Ascii])
+
+        >>> beijing = unicode('北京', 'utf8')
+        >>> scriptTypes(beijing)
+        set([Kanji])
+
+        >>> taberu = unicode('食べる', 'utf8')
+        >>> scriptTypes(taberu)
+        set([Hiragana, Kanji])
+    """
     return set(map(scriptType, jString))
 
 #----------------------------------------------------------------------------#
 
 def uniqueKanji(jString):
-    u"""Returns the set of all unique kanji found in the given string."""
+    """
+    Returns the set of all unique kanji found in the given string.
+
+        >>> taberu = unicode('食べる', 'utf8')
+        >>> uniqueKanji(taberu) == set([taberu[0]])
+        True
+    """
     kanjiSet = set(jString)
     for char in list(kanjiSet):
         if scriptType(char) != Script.Kanji:
@@ -208,4 +255,3 @@ def uniqueKanji(jString):
     return kanjiSet
 
 #----------------------------------------------------------------------------#
-

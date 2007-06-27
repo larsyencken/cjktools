@@ -51,7 +51,7 @@ def invertMapping(dictionary):
 #----------------------------------------------------------------------------#
 
 def isInjective(dictionary):
-    u"""
+    """
     Returns True if the mapping is one-to-one, False otherwise.
 
     Mapping keys are naturally unique, so this method just verifies that the
@@ -104,7 +104,7 @@ def mapDict(method, dictionary, inPlace=False):
 def multiDict(inputPairs):
     """
     Similar to casting pairs to a dictionary, except that repeated pairs
-    are allowed. To show the difference::
+    are allowed. To show the difference:
     
         >>> dict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': 3, 'b': 2}
@@ -145,7 +145,7 @@ def procmap(procedure, itemList):
 #----------------------------------------------------------------------------#
 
 def mergeDicts(*args):
-    u"""
+    """
     Merges a number of dictionaries together into one. Assumes the dictionary
     maps to a set of hashable items. The result for each key is the union of
     all the values in the provided dictionaries.
@@ -188,7 +188,7 @@ def partialMap(method, objectSeq):
 #----------------------------------------------------------------------------#
 
 def filteredMap(method, objectList):
-    u"""
+    """
     Performs a map then a filter on the object list. The final filter strips
     out objects which evaluate to False.
     """

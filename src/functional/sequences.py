@@ -90,7 +90,7 @@ def iflatten(objectSeq):
 def unzip(pairList):
     """
     The reverse of the zip() method. Given a sequence of tuples of the
-    same size, extracts two or more lists. For example::
+    same size, extracts two or more lists.
 
         >>> unzip([(1,2), (3,4), (5,6)])
         ([1, 3, 5], [2, 4, 6])
@@ -115,7 +115,7 @@ def unzip(pairList):
 def thread(inputList, tupleSize=2):
     """
     Turns a list of items into a list of tuples by simply placing
-    sequential items into tuples::
+    sequential items into tuples:
 
         >>> thread([1, 2, 3, 4, 5])
         [(1, 2), (3, 4)]
@@ -128,7 +128,7 @@ def thread(inputList, tupleSize=2):
 #----------------------------------------------------------------------------#
 
 def ithread(inputSeq, tupleSize=2):
-    u"""
+    """
     Identical to thread() but returns an interator over pairs.
 
         >>> list(ithread([1, 2, 3, 4, 5]))
@@ -153,8 +153,8 @@ def ithread(inputSeq, tupleSize=2):
 #----------------------------------------------------------------------------#
 
 def iunthread(inputTuples):
-    u"""
-    Turns a list of tuples into a flat list::
+    """
+    Turns a list of tuples into a flat list:
 
         >>> list(iunthread([(1, 2), (3, 4)]))
         [1, 2, 3, 4]
@@ -173,7 +173,7 @@ def iunthread(inputTuples):
 
 def unthread(inputTuples):
     """
-    Turns a list of tuples into a flat list::
+    Turns a list of tuples into a flat list:
 
         >>> unthread([(1, 2), (3, 4)])
         [1, 2, 3, 4]
@@ -188,7 +188,11 @@ def unthread(inputTuples):
 
 def repeat(n, item):
     """
-    Creates an iterator which provides n references to item.
+    Creates an iterator which provides n references to item. Note that they
+    are references, not copies.
+
+        >>> list(repeat(10, 1)) == [1]*10
+        True
 
     @param n: The number of copies to yield in total.
     @type n: int
@@ -202,7 +206,7 @@ def repeat(n, item):
 #----------------------------------------------------------------------------#
 
 def repeateIndef(item):
-    u"""Returns an iterator which repeats the item indefinitely."""
+    """Returns an iterator which repeats the item indefinitely."""
     while 1:
         yield item
 
@@ -214,64 +218,43 @@ def succession(itemList):
     """
     Returns an iterator which builds up the item list point by point.
         
-    For example::
-
-        > succession([1,2,3])
-        [[1], [1,2], [1,2,3]]
+        >>> list(succession([1, 2, 3]))
+        [[1], [1, 2], [1, 2, 3]]
     """
-    for i in xrange(1, len(itemList)):
-        yield itemlist[:i]
+    for i in xrange(1, len(itemList)+1):
+        yield itemList[:i]
     
     return
 
 #----------------------------------------------------------------------------#
 
-def iwindow(itemList, windowSize=2):
+def iwindow(itemList, windowSize=2, preBlanks=False):
     """
     Returns a sliding window iterator over the given list.
 
-    For example::
-
-        > window([1,2,3,4,5])
-        [(1,2), (2,3), (3,4), (4,5)]
-
-        > window([1,2,3,4,5], 3)
-        [(1,2,3), (2,3,4), (3,4,5)]
+        >>> window([1, 2, 3, 4, 5])
+        [(1, 2), (2, 3), (3, 4), (4, 5)]
+        >>> window([1, 2, 3, 4], 3)
+        [(1, 2, 3), (2, 3, 4)]
+        >>> window([1, 2, 3, 4], 3, preBlanks=True)
+        [(None, None, 1), (None, 1, 2), (1, 2, 3), (2, 3, 4)]
 
     @param itemList: The list to iterate over.
     @param windowSize: The number of elements in each window frame.
     """
+    if preBlanks:
+        if windowSize < 2:
+            raise ValueError, "Need a window size >= 2 to use pre-blanks"
+        itemList = [None]*(windowSize-1) + itemList
+
     for endWindow in range(windowSize, len(itemList)+1):
         yield tuple(itemList[endWindow-windowSize:endWindow])
 
     return 
 
-def window(itemList, windowSize=2):
-    u"""Identical to iwindow(), but returns a list."""
-    return list(iwindow(itemList, windowSize))
-
-#----------------------------------------------------------------------------#
-
-def windowWithPreBlanks(itemList, windowSize=2):
-    """
-    Returns a sliding window iterator over the given list, but with blanks
-    at the beginning and end.
-
-    For example::
-
-        > window([1,2,3,4,5])
-        [(None, 1), (1,2), (2,3), (3,4), (4,5)]
-
-    @param itemList: The list to iterate over.
-    @param windowSize: The number of elements in each window frame.
-    """
-    if windowSize <= 1:
-        raise Exception, "Need a windowSize >= 2"
-
-    # Pad the list with blanks.
-    realList = (windowSize-1)*[None] + list(itemList)
-
-    return window(realList, windowSize)
+def window(itemList, windowSize=2, preBlanks=False):
+    """Identical to iwindow(), but returns a list."""
+    return list(iwindow(itemList, windowSize, preBlanks))
 
 #----------------------------------------------------------------------------#
 
@@ -294,11 +277,10 @@ def groupByLambda(func, items):
 def multiDict(inputPairs):
     """
     Similar to casting pairs to a dictionary, except that repeated pairs
-    are allowed. To show the difference::
+    are allowed.
     
         >>> dict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': 3, 'b': 2}
-
         >>> multiDict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': [1, 3], 'b': [2]}
 
@@ -331,50 +313,6 @@ def procmap(procedure, itemList):
         method(item)
     
     return
-
-#----------------------------------------------------------------------------#
-
-def addFunc(a, b):
-    """The result of a+b."""
-    return a + b
-
-#----------------------------------------------------------------------------#
-
-def timesFunc(a, b):
-    """The result of a*b."""
-    return a * b;
-
-#----------------------------------------------------------------------------#
-
-def orFunc(a, b):
-    """The boolean result of a OR b."""
-    return a or b
-
-#----------------------------------------------------------------------------#
-
-def andFunc(a, b):
-    """The boolean result of a AND b."""
-    return a and b
-
-#----------------------------------------------------------------------------#
-
-def allTrue(boolList):
-    u"""Returns True if every object in the list evaluates to True."""
-    for item in boolList:
-        if not item:
-            return False
-    else:
-        return True
-
-#----------------------------------------------------------------------------#
-
-def someTrue(boolList):
-    u"""Returns True if at least one item in the list evaluates to True."""
-    for item in boolList:
-        if item:
-            return True
-    else:
-        return False
 
 #----------------------------------------------------------------------------#
 
@@ -425,7 +363,7 @@ def limitRecursion(function, limit):
 #----------------------------------------------------------------------------#
 
 def separate(method, seq):
-    u"""
+    """
     Uses the given method to separate the sequence into two lists, one for
     which method(item) returns True for every item, the other for which
     method(item) return False.
@@ -450,7 +388,7 @@ def separate(method, seq):
 #----------------------------------------------------------------------------#
 
 def separateByClass(method, seq):
-    u"""
+    """
     Distributes a sequence into a dictionary of classes, using the given
     method's return value as the class label. This is a generalization of 
     the separate() method.

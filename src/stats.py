@@ -7,7 +7,7 @@
 #
 #----------------------------------------------------------------------------#
 
-u"""
+"""
 This module is responsible for any general combinatoric methods, in
 particular determining possible combinations of input.
 """

@@ -20,7 +20,7 @@ from itertools import izip, chain
 
 def addFunc(a, b):
     """
-    Returns a + b::
+    Returns a + b.
 
         >>> addFunc(1, 3.0)
         4.0
@@ -31,7 +31,7 @@ def addFunc(a, b):
 
 def timesFunc(a, b):
     """
-    Returns a * b::
+    Returns a * b.
 
         >>> timesFunc(2, -10.0)
         -20.0
@@ -42,11 +42,10 @@ def timesFunc(a, b):
 
 def orFunc(a, b):
     """
-    Returns the boolean result of a OR b::
+    Returns the boolean result of a OR b.
 
         >>> orFunc([], u'dog')
         u'dog'
-
         >>> orFunc(False, False)
         False
     """
@@ -60,10 +59,8 @@ def andFunc(a, b):
 
         >>> andFunc(1, 100)
         100
-
         >>> andFunc(bool(1), bool(100))
         True
-
         >>> andFunc(False, True)
         False
     """
@@ -72,12 +69,11 @@ def andFunc(a, b):
 #----------------------------------------------------------------------------#
 
 def allTrue(boolList):
-    u"""
+    """
     Returns True if every object in the list evaluates to True.
 
         >>> allTrue([True, True, True])
         True
-
         >>> allTrue([True, False, True])
         False
     """
@@ -90,12 +86,11 @@ def allTrue(boolList):
 #----------------------------------------------------------------------------#
 
 def someTrue(boolList):
-    u"""
+    """
     Returns True if at least one item in the list evaluates to True.
 
         >>> someTrue([True, False])
         True
-        
         >>> someTrue([False, False])
         False
     """
