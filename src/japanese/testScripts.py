@@ -76,34 +76,6 @@ class ScriptsTestCase(unittest.TestCase):
         assert scripts.compareKana(u'あAア亜', u'アあ亜A') != 0
         return
 
-    def testCanonicalForm(self):
-        """ Tests correct detection of candidate canonical forms. 
-        """
-        # Tests that only the first character is considered, and that unvoiced
-        # segments are ok.
-        self.assertEqual(
-                set(scripts.canonicalForms((u'たべ', u'ほう', u'だい'))),
-                set([(u'たべ', u'ほう', u'だい'), (u'たべ', u'ほう', u'たい')])
-            )
-
-        # Tests that the first segment is ignored, and that ひ voicings
-        # are ok.
-        self.assertEqual(
-                set(scripts.canonicalForms((u'ぼり', u'ぽり'))),
-                set([(u'ぼり', u'ほり'), (u'ぼり', u'ぽり')])
-            )
-        return
-
-        self.assertEqual(
-                set(canonicalForms((u'せっ', u'かつ'))),
-                set([
-                        (u'せっ', u'かつ'),
-                        (u'せり', u'かつ'),
-                        (u'せち', u'かつ'),
-                        (u'せい', u'かつ'),
-                    ])
-            )
-
     def testNormalizeAscii(self):
         """ Tests that ascii characters are normalized correctly.
         """

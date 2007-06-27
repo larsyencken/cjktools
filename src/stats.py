@@ -144,7 +144,9 @@ def combinations(combinationList):
 #----------------------------------------------------------------------------#
 
 def uniqueTuples(inputList, n=2):
-    """Similar to combinations, but selects from the same list."""
+    """
+    Similar to combinations, but selects from the same list.
+    """
     def filterFn(x):
         for i in xrange(n-1):
             if x[i] >= x[i+1]:
@@ -157,7 +159,9 @@ def uniqueTuples(inputList, n=2):
 #----------------------------------------------------------------------------#
 
 def iuniqueTuples(inputList, n=2):
-    """An iterator version of uniqueTuples."""
+    """
+    An iterator version of uniqueTuples.
+    """
     def filterFn(x):
         for i in xrange(n-1):
             if x[i] >= x[i+1]:
@@ -170,7 +174,9 @@ def iuniqueTuples(inputList, n=2):
 #----------------------------------------------------------------------------#
 
 def icombinations(combinationLists):
-    """As for combinations(), but returns an iterator."""
+    """
+    As for combinations(), but returns an iterator.
+    """
     combinationLists = map(list, combinationLists)
     lengths = map(len, combinationLists)
     combined = zip(combinationLists, lengths)
@@ -195,42 +201,22 @@ def combinationSeqs(combinationList):
         >>> combinationSeqs([ [(1, 2), (3, 4)], [('dog',), ('cat',)] ])
         [(1, 2, 'dog'), (3, 4, 'dog'), (1, 2, 'cat'), (3, 4, 'cat')]
     """
-    combinationList = combinationList[:]
-    combinationList.reverse()
-
-    combos = combinationList.pop()
-
-    while combinationList:
-        nextLevelCombos = []
-        for itemToAdd in combinationList.pop():
-            # add this item to the end of every existing combo 
-            for existingCombo in combos:
-                nextLevelCombos.append(existingCombo + itemToAdd)
-
-        combos = nextLevelCombos
-
-    return combos
+    return list(icombinationSeqs(combinationList))
 
 #----------------------------------------------------------------------------#
 
 def icombinationSeqs(combinationLists):
-    """As for combinations(), but returns an iterator."""
-    combinationLists = map(list, combinationLists)
-    lengths = map(len, combinationLists)
-    combined = zip(combinationLists, lengths)
-    nCombs = sum(lengths)
+    """
+    As for combinations(), but returns an iterator.
 
-    firstList, firstListLen = combined.pop(0)
-
-    for i in xrange(nCombs):
-        i, offset = divmod(i, firstListLen)
-        itemStart = firstList[offset]
-
-        for itemList, listLength in combined:
-            i, offset = divmod(i, listLength)
-            item += itemList[offset]
-        yield item
-
+        >>> list(icombinationSeqs([ [(1, 2), (3, 4)], [('dog',), ('cat',)] ]))
+        [(1, 2, 'dog'), (3, 4, 'dog'), (1, 2, 'cat'), (3, 4, 'cat')]
+    """
+    for seqCombs in icombinations(combinationLists):
+        result = []
+        for seq in seqCombs:
+            result.extend(seq)
+        yield tuple(result)
     return
 
 #----------------------------------------------------------------------------#
@@ -267,7 +253,14 @@ def segmentCombinations(gString):
 #----------------------------------------------------------------------------#
 
 def isegmentCombinations(gString):
-    """As for segmentCombinations(), but returns an iterator."""
+    """
+    As for segmentCombinations(), but returns an iterator.
+
+        >>> list(sorted(isegmentCombinations('ab')))
+        [('a', 'b'), ('ab',)]
+
+    Note that the order may be different.
+    """
     if not gString:
         return
 
@@ -293,18 +286,26 @@ def kappa(responsesA, responsesB, potentialResponses=None):
     Assuming matched list of response values for each rater, determine
     their kappa value using Cohen's method.
     """
+    from nltk_lite.probability import FreqDist
+
     if not responsesA or not responsesB:
         raise InsufficientData, "Need at least one response to calculate kappa"
+
+    if len(responsesA) != len(responsesB):
+        raise ValueError, "Response vectors are different lengths"
     
-    # firstly determine rater biases
+    # Build rater bias distributions.
     biasA = FreqDist()
-    biasA.countSeq(responsesA)
+    for sample in responsesA:
+        biasA.inc(sample)
 
     biasB = FreqDist()
-    biasB.countSeq(responsesB)
+    for sample in responsesB:
+        biasB.inc(sample)
 
     if potentialResponses is None:
-        potentialResponses = set( biasA.keys() ).union(set( biasB.keys() ))
+        # Detect the sample range.
+        potentialResponses = set(biasA.samples()).union(biasB.samples())
     
     # calculate pAgreement: the actual frequency of agreement
     nAgreements = 0
@@ -324,7 +325,7 @@ def kappa(responsesA, responsesB, potentialResponses=None):
     # calculate pExpected: the agreement expected by chance
     pExpected = 0.0
     for response in potentialResponses:
-        pExpected += biasA.probability(response) * biasB.probability(response)
+        pExpected += biasA.freq(response) * biasB.freq(response)
     
     assert 0 <= pExpected <= 1, \
         "P(Expected) should be bewteeen 0 and 1, not %.2f" % pExpected
@@ -340,6 +341,9 @@ def frange(start, end=None, inc=None):
     """
     A range function, that does accept float increments...
     http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/66472
+
+        >>> frange(1.0, 3.0, 0.5)
+        [1.0, 1.5, 2.0, 2.5]
     """ 
 
     if end == None:
@@ -366,6 +370,11 @@ def inclusionCombinations(sequence):
     """
     Returns a list of all combinations of inclusion/exclusion of the
     elements of the given sequence.
+
+        >>> inclusionCombinations([])
+        [[]]
+        >>> inclusionCombinations([1, 2])
+        [[], [1], [2], [1, 2]]
     """
     currentCombs = [[]]
     for element in sequence:
@@ -383,6 +392,9 @@ def mean(values):
     u"""
     Returns the mean of a sequence of values. If the sequence is empty, raises
     an InsufficientData error.
+
+        >>> mean([1, 2, 3])
+        2.0
     """
     valuesIter = iter(values)
     n = 1
@@ -431,7 +443,9 @@ def stddev(values):
 #----------------------------------------------------------------------------#
 
 def basicStats(values):
-    u"""Returns the mean and standard deviation of the sample as a tuple."""
+    u"""
+    Returns the mean and standard deviation of the sample as a tuple.
+    """
     valuesIter = iter(values)
     try:
         value = valuesIter.next()
