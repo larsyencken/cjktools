@@ -9,6 +9,7 @@ syntax: glob
 *.pyc
 *.log
 build/*
+html/*
 .sconf_temp/*
 .sconsign.dblite
 www/localSettings.py
