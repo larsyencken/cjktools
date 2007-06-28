@@ -25,6 +25,6 @@ setup(
         name='jptools',
         version='%s:%s' % (jptoolsVersion, hgVersion),
         package_dir={'jptools': 'src'},
-        packages=['jptools', 'jptools.functional', 'jptools.japanese'],
+        packages=['jptools'],
         scripts=['src/dyntest.py']
     )
