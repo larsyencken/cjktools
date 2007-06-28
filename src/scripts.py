@@ -15,7 +15,7 @@ module which requires a utf8 encoding for the additional Japanese characters.
 
 #----------------------------------------------------------------------------#
 
-from .. import enum
+import enum
 
 #----------------------------------------------------------------------------#
 # CONSTANTS

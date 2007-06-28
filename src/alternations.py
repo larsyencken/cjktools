@@ -15,8 +15,8 @@ recovering from them.
 #----------------------------------------------------------------------------#
 
 import kanaTable
-from ..functional import maps
-from ..stats import combinations
+import maps
+import stats
 
 #----------------------------------------------------------------------------#
 
@@ -47,7 +47,7 @@ def canonicalForms(kanaSegments):
 
         candidateSets.append(variants)
 
-    return combinations(candidateSets)
+    return stats.combinations(candidateSets)
 
 #----------------------------------------------------------------------------#
 
@@ -82,7 +82,7 @@ def surfaceForms(readingSegments):
             map(rendakuVariants, readingSegments[1:])
         )
 
-    return combinations(candidateSets)
+    return stats.combinations(candidateSets)
 
 #----------------------------------------------------------------------------#
 

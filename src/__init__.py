@@ -15,16 +15,19 @@
 #----------------------------------------------------------------------------#
 
 __all__ = [
+    'alternations',
     'common',
     'decorators',
     'enum',
     'exceptions',
-    'functional',
-    'japanese',
+    'kanaTable',
+    'maps',
     'niceThread',
     'pathlib',
     'progressBar',
     'relation',
+    'scripts',
+    'sequences',
     'shellColor',
     'shell',
     'smartCache',

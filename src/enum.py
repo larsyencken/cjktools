@@ -7,8 +7,9 @@
 #
 #----------------------------------------------------------------------------#
 
-""" C style enums, with nice error checking such as only allowing comparisons
-    between elements of the same enum class.
+"""
+C style enums, with nice error checking such as only allowing comparisons
+between elements of the same enum class.
 """
 
 #----------------------------------------------------------------------------#
@@ -68,4 +69,3 @@ class EnumValue:
         return str(self._name)
 
 #----------------------------------------------------------------------------#
-
