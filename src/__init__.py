@@ -22,8 +22,6 @@ __all__ = [
     'exceptions',
     'kanaTable',
     'maps',
-    'niceThread',
-    'pathlib',
     'progressBar',
     'relation',
     'scripts',
