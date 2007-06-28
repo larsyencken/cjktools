@@ -31,7 +31,7 @@ class InsufficientData(Exception):
 #----------------------------------------------------------------------------#
 
 def binsByData(data, n):
-    u"""
+    """
     Puts the data into n sorted bins. Where n does not divide the length
     of the data directly, distributes the remainder as evenly as possible.
     Returns an iterator over the bins.
@@ -389,7 +389,7 @@ def inclusionCombinations(sequence):
 #----------------------------------------------------------------------------#
 
 def mean(values):
-    u"""
+    """
     Returns the mean of a sequence of values. If the sequence is empty, raises
     an InsufficientData error.
 
@@ -414,7 +414,7 @@ def mean(values):
 #----------------------------------------------------------------------------#
 
 def stddev(values):
-    u"""
+    """
     Returns the standard deviation of a sequence of values. If less than three
     values are provided, raises an InsufficientData error.
     """
@@ -443,7 +443,7 @@ def stddev(values):
 #----------------------------------------------------------------------------#
 
 def basicStats(values):
-    u"""
+    """
     Returns the mean and standard deviation of the sample as a tuple.
     """
     valuesIter = iter(values)

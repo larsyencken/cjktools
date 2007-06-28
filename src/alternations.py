@@ -21,7 +21,7 @@ import stats
 #----------------------------------------------------------------------------#
 
 def canonicalForms(kanaSegments):
-    u"""
+    """
     When given a sequence of segments, determine all possible canonical
     forms for the sequence. We define the canonical form to be the
     underlying form, before sequential voicing and sound euphony are
@@ -52,7 +52,7 @@ def canonicalForms(kanaSegments):
 #----------------------------------------------------------------------------#
 
 def canonicalSegmentForms(segment, leftContext=True, rightContext=True):
-    u"""
+    """
     When given a single segment, determine all possible canonical forms
     for that segment, assuming that both sequential voicing and
     sound euphony were possible (i.e. that the segment had both left
@@ -71,7 +71,7 @@ def canonicalSegmentForms(segment, leftContext=True, rightContext=True):
 #----------------------------------------------------------------------------#
 
 def surfaceForms(readingSegments):
-    u"""
+    """
     The counterpart of canonicalForms(). Takes a correct reading, and
     determines how it could be erroneously modified into various surface
     forms.
@@ -87,7 +87,7 @@ def surfaceForms(readingSegments):
 #----------------------------------------------------------------------------#
 
 def rendakuVariants(kanaSegment):
-    u"""
+    """
     Determine the possible variants of a single kana segment.
     """
     variants = set([kanaSegment])
@@ -98,7 +98,7 @@ def rendakuVariants(kanaSegment):
 #----------------------------------------------------------------------------#
 
 def onbinVariants(kanaSegment):
-    u"""
+    """
     Determine the sound euphony variants of a kana segment.
     """
     variants = set([kanaSegment])
@@ -110,7 +110,7 @@ def onbinVariants(kanaSegment):
 #----------------------------------------------------------------------------#
 
 def _createVoicingMap():
-    u"""
+    """
     Constructs map from kana to their voiced alternatives.
     """
     table = kanaTable.KanaTable.getCached().getTable()
@@ -137,7 +137,7 @@ fromVoiced = dict((k, v[0]) for (k, v) in fromVoiced.iteritems())
 #----------------------------------------------------------------------------#
 
 def insertDuplicateKanji(kanjiString):
-    u"""
+    """
     Inserts full kanji for characters where a shorthand is used.
     """
     loc = kanjiString.find(u'々')
@@ -151,7 +151,7 @@ def insertDuplicateKanji(kanjiString):
 #----------------------------------------------------------------------------#
 
 def isVoiced(char):
-    u"""
+    """
     Returns True if the character is a kana character which is voiced.
     """
     char = toHiragana(char)
@@ -166,7 +166,7 @@ def isVoiced(char):
 #----------------------------------------------------------------------------#
 
 def expandLongVowels(kanaString):
-    u"""
+    """
     Expands whatever long vowels are possible to expand.
     """
     notFound = -1

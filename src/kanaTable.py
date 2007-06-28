@@ -26,7 +26,7 @@ nKana = u'ん'
 #----------------------------------------------------------------------------#
 
 class KanaTable(object):
-    u"""
+    """
     An interface to the regular structure of the hiragana syllabary.
 
         >>> t = KanaTable()
@@ -39,7 +39,7 @@ class KanaTable(object):
     #------------------------------------------------------------------------#
 
     def __init__(self):
-        u"""
+        """
         Constructor. Initializes internal dictionaries to make later lookup
         faster. 
         """
@@ -75,7 +75,7 @@ class KanaTable(object):
     #------------------------------------------------------------------------#
 
     def getCoords(self, kana):
-        u"""
+        """
         Returns the pair (consonant line, vowel line) for the given kana
         character.
         """
@@ -87,26 +87,26 @@ class KanaTable(object):
     #------------------------------------------------------------------------#
 
     def toVowelLine(self, kana):
-        u"""Returns the vowel line of the given kana."""
+        """Returns the vowel line of the given kana."""
         return self._toVowelLine[kana]
 
     #------------------------------------------------------------------------#
 
     def toConsonantLine(self, kana):
-        u"""Returns the consonant line of the given kana."""
+        """Returns the consonant line of the given kana."""
         return self._toConsonantLine[kana]
 
     #------------------------------------------------------------------------#
 
     def getTable(self):
-        u"""Return the kana table itself."""
+        """Return the kana table itself."""
         return copy.deepcopy(self._table)
 
     #------------------------------------------------------------------------#
 
     @classmethod
     def getCached(cls):
-        u"""Fetch a memory-cached copy of this class."""
+        """Fetch a memory-cached copy of this class."""
         if not hasattr(cls, u'_cached'):
             cls._cached = KanaTable()
 

@@ -8,7 +8,7 @@
 #
 #----------------------------------------------------------------------------#
 
-u"""
+"""
 A module with dynamic testing abilities. Is able to automatically generate
 a suite of unit tests based on the current folder and subdirectories.
 """
@@ -23,7 +23,7 @@ import unittest
 #----------------------------------------------------------------------------#
 
 def dynamicSuite(rootDirectory, excludes=[]):
-    u"""
+    """
     Generates a dynamic test suite out of the given directory.
     """
     # Change to the original directory.
