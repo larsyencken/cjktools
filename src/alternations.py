@@ -15,6 +15,7 @@ recovering from them.
 #----------------------------------------------------------------------------#
 
 import kanaTable
+import scripts
 import maps
 import stats
 
@@ -118,7 +119,7 @@ def _createVoicingMap():
     doubleVoicedLine = table[u'は']
 
     voicingMap = {}
-    for kana in getScript(Script.Hiragana):
+    for kana in scripts.getScript(scripts.Script.Hiragana):
         ordKana = ord(kana)
 
         if kana in voicedLine:
@@ -139,6 +140,11 @@ fromVoiced = dict((k, v[0]) for (k, v) in fromVoiced.iteritems())
 def insertDuplicateKanji(kanjiString):
     """
     Inserts full kanji for characters where a shorthand is used.
+
+        >>> k = insertDuplicateKanji(unicode('私々', 'utf8'))
+        >>> expected = unicode('私私', 'utf8')
+        >>> k == expected
+        True
     """
     loc = kanjiString.find(u'々')
     while loc > 0:
@@ -153,11 +159,18 @@ def insertDuplicateKanji(kanjiString):
 def isVoiced(char):
     """
     Returns True if the character is a kana character which is voiced.
-    """
-    char = toHiragana(char)
 
-    line = kanaLine.get(char)
-    if not line:
+        >>> isVoiced(unicode('だ', 'utf8'))
+        True
+        >>> isVoiced(unicode('た', 'utf8'))
+        False
+    """
+    table = kanaTable.KanaTable.getCached()
+    char = scripts.toHiragana(char)
+
+    try:
+        line = table.toConsonantLine(char)
+    except KeyError:
         # Not a kana character.
         return False
 
@@ -168,17 +181,23 @@ def isVoiced(char):
 def expandLongVowels(kanaString):
     """
     Expands whatever long vowels are possible to expand.
+
+        >>> a = expandLongVowels(unicode('すー', 'utf8'))
+        >>> b = unicode('すう', 'utf8')
+        >>> a == b
+        True
     """
     notFound = -1
-    kanaString = toHiragana(kanaString)
+    kanaString = scripts.toHiragana(kanaString)
+    table = kanaTable.KanaTable.getCached()
 
     i = kanaString.find(u'ー', 1)
     while i != notFound:
         previousChar = kanaString[i-1]
-        previousScript = scriptType(previousChar)
-        if previousScript == Script.Hiragana:
+        previousScript = scripts.scriptType(previousChar)
+        if previousScript == scripts.Script.Hiragana:
             # Ok, we can correct this one.
-            vowel = vowelLine(previousChar)
+            vowel = table.toVowelLine(previousChar)
             kanaString = kanaString[:i] + vowel + kanaString[i+1:]
 
         i = kanaString.find(u'ー', i+1)
