@@ -330,38 +330,6 @@ def tailEnumerate(sequence):
 
 #----------------------------------------------------------------------------#
 
-class RecursionError(Exception):
-    """An exception to be thrown when a recursion depth limit is exceeded."""
-    pass
-
-_recursionCounter = {}
-def limitRecursion(function, limit):
-    """Create a depth-limited version of the function."""
-    global _recursionCounter
-
-    def wrapper(*args, **kwargs):
-        currentVal = _recursionCounter.setdefault(function, 0)
-        print 'Currentval', currentVal + 1
-        if currentVal + 1 > limit:
-            raise RecursionError, "Recursion exceeded depth limit."
-        _recursionCounter[function] = currentVal + 1
-
-        try:
-            value = apply(function, args, kwargs)
-        except:
-            _recursionCounter[function] -= 1
-            raise
-
-        _recursionCounter[function] -= 1
-
-        return value
-
-    wrapper.__doc__ = function.__doc__
-
-    return wrapper
-
-#----------------------------------------------------------------------------#
-
 def separate(method, seq):
     """
     Uses the given method to separate the sequence into two lists, one for
