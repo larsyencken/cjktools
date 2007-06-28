@@ -30,8 +30,7 @@ class KanaTable(object):
     An interface to the regular structure of the hiragana syllabary.
 
         >>> t = KanaTable()
-        >>> k = t.toVowelLine(u'す')
-        >>> k == u'う'
+        >>> t.toVowelLine(unicode('す', 'utf8')) == unicode('う', 'utf8')
         True
     """
     #------------------------------------------------------------------------#
