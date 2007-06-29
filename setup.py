@@ -15,15 +15,17 @@ Package setup file for the jptools package.
 
 from distutils.core import setup
 import os
+import re
 
 #----------------------------------------------------------------------------#
 
 jptoolsVersion = u'0.8a'
-hgVersion = os.popen(u'hg id').read().replace(u' ', u'_')
+hgVersion = os.popen(u'hg parents').readlines()[0].rstrip()
+hgVersion = re.sub(r'^changeset:\s*(\d+):[^\s]+$', r'\1', hgVersion)
 
 setup(
         name='jptools',
-        version='%s:%s' % (jptoolsVersion, hgVersion),
+        version='%s.%s' % (jptoolsVersion, hgVersion),
         package_dir={'jptools': 'src'},
         packages=['jptools'],
         scripts=['src/dyntest.py']
