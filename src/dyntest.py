@@ -140,7 +140,8 @@ runs all tests within them."""
 #----------------------------------------------------------------------------#
 
 def main(argv):
-    """ The main method for this module.
+    """
+    The main method for this module.
     """
     parser = _createOptionParser()
     (options, args) = parser.parse_args(argv)

@@ -23,7 +23,8 @@ def suite():
 #----------------------------------------------------------------------------#
 
 class KanaTableTestCase(unittest.TestCase):
-    """ This class tests the Kana class. 
+    """
+    This class tests the Kana class. 
     """
     def setUp(self):
         self.table = kanaTable.KanaTable.getCached()
@@ -31,7 +32,8 @@ class KanaTableTestCase(unittest.TestCase):
         pass
 
     def testVowelLine(self):
-        """ Tests correct vowel line detection.
+        """
+        Tests correct vowel line detection.
         """
         self.assertEqual(self.table.toVowelLine(u'ご'), u'お')
         self.assertEqual(self.table.toVowelLine(u'も'), u'お')

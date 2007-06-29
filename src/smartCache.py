@@ -7,7 +7,8 @@
 #
 #----------------------------------------------------------------------------#
 
-""" This module implements a smart caching function, with dependencies.
+"""
+This module implements a smart caching function, with dependencies.
 """
 
 #----------------------------------------------------------------------------#
@@ -23,13 +24,14 @@ import progressBar
 #----------------------------------------------------------------------------#
 
 def diskProxyDirect(method, cacheFile, dependencies=[]):
-    """ Creates a proxy for an expensive method which is cached in a single 
-        file.
+    """
+    Creates a proxy for an expensive method which is cached in a single 
+    file.
 
-        @param method: The method whose return values to cache.
-        @param cacheFile: Where to cache the return values.
-        @param dependencies: Any files which are dependencies for the cache.
-        @return: A callable object that looks just like method.
+    @param method: The method whose return values to cache.
+    @param cacheFile: Where to cache the return values.
+    @param dependencies: Any files which are dependencies for the cache.
+    @return: A callable object that looks just like method.
     """
     def proxyMethod(*args, **params):
         cachedVal = tryCache(cacheFile, args, params, dependencies)
@@ -56,20 +58,22 @@ def diskProxyDirect(method, cacheFile, dependencies=[]):
 #----------------------------------------------------------------------------#
 
 def diskProxy(cacheFile, dependencies):
-    """ Decorator version of diskProxyDirect().
+    """
+    Decorator version of diskProxyDirect().
     """
     return lambda method: diskProxyDirect(method, cacheFile, dependencies)
 
 #----------------------------------------------------------------------------#
 
 def memoryProxy(method):
-    """ Creates an in-memory proxy for the given method. This method is
-        suitable for use wrapping expensive methods with small return values.
+    """
+    Creates an in-memory proxy for the given method. This method is
+    suitable for use wrapping expensive methods with small return values.
 
-        This proxy will demonstrate unbounded growth if you keep using the
-        method on new input. The references kept here prevent the results and
-        arguments from being garbage-collected. If that's not what you want,
-        consider the weakref.proxy() method in the standard python library.
+    This proxy will demonstrate unbounded growth if you keep using the
+    method on new input. The references kept here prevent the results and
+    arguments from being garbage-collected. If that's not what you want,
+    consider the weakref.proxy() method in the standard python library.
     """
     methodDict = {}
 
@@ -91,14 +95,15 @@ def memoryProxy(method):
 #----------------------------------------------------------------------------#
 
 def tryCache(filename, methodArgs=[], methodParams={}, dependencies=[]):
-    """ Determines whether the cached object is still fresh (if one exists),
-        and if so returns that object. Otherwise returns None.
-        
-        @param filename: The filename to look for a cached entry in.
-        @param methodArgs: The arguments passed to the method we're trying to
-            cache.
-        @param methodParams: As for methodArgs, but dictionary arguments. 
-        @return: None or a stored value
+    """
+    Determines whether the cached object is still fresh (if one exists),
+    and if so returns that object. Otherwise returns None.
+    
+    @param filename: The filename to look for a cached entry in.
+    @param methodArgs: The arguments passed to the method we're trying to
+        cache.
+    @param methodParams: As for methodArgs, but dictionary arguments. 
+    @return: None or a stored value
     """
     if needsUpdate(filename, dependencies):
         return None
@@ -125,14 +130,15 @@ def tryCache(filename, methodArgs=[], methodParams={}, dependencies=[]):
 #----------------------------------------------------------------------------#
 
 def storeCacheObject(obj, filename, methodArgs=[], methodParams={}):
-    """ Creates a smart cache object in the file.
-        
-        @param obj: The object to cache.
-        @param filename: The location of the cache file.
-        @param methodArgs: Any arguments which were passed to the cached
-            method.
-        @param methodParams: Any keyword parameters passed to the cached
-            method. 
+    """
+    Creates a smart cache object in the file.
+    
+    @param obj: The object to cache.
+    @param filename: The location of the cache file.
+    @param methodArgs: Any arguments which were passed to the cached
+        method.
+    @param methodParams: Any keyword parameters passed to the cached
+        method. 
     """
     oStream = common.sopen(filename, 'w', encoding=None)
     pickle.dump(methodArgs, oStream, pickle.HIGHEST_PROTOCOL)
@@ -145,10 +151,11 @@ def storeCacheObject(obj, filename, methodArgs=[], methodParams={}):
 #----------------------------------------------------------------------------#
 
 def needsUpdate(target, dependencies):
-    """ Determine if the target is older than any of its dependencies.
+    """
+    Determine if the target is older than any of its dependencies.
 
-        @param target: A filename for the target.
-        @param dependencies: A sequence of dependency filenames.
+    @param target: A filename for the target.
+    @param dependencies: A sequence of dependency filenames.
     """
     if not path.exists(target):
         return True
@@ -176,8 +183,9 @@ def needsUpdate(target, dependencies):
 #----------------------------------------------------------------------------#
 
 def _getModuleDependencies(module):
-    """ Determines the file dependencies of a module. Adds one level of module
-        includes.
+    """
+    Determines the file dependencies of a module. Adds one level of module
+    includes.
     """
     dependencySet = set()
     dependencySet.add(module.__file__)

@@ -23,14 +23,16 @@ def suite():
 #----------------------------------------------------------------------------#
 
 class RelationTestCase(unittest.TestCase):
-    """ This class tests the Relation class. 
+    """
+    This class tests the Relation class. 
     """
     def setUp(self):
         self.baseSequence = [(1, 'a'), (2, 'b'), (2, 'c'), (3, 'b')]
         pass
 
     def testBasicOps(self):
-        """ Tests some basic construction and operations.
+        """
+        Tests some basic construction and operations.
         """
         reln = Relation().fromSequence(self.baseSequence)
         for pair in self.baseSequence:

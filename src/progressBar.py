@@ -6,8 +6,9 @@
 #
 #----------------------------------------------------------------------------#
 
-""" A simple console progress bar, with support for *nice* features like
-    one-call wrapping around iterators.
+"""
+A simple console progress bar, with support for *nice* features like
+one-call wrapping around iterators.
 """
 
 #----------------------------------------------------------------------------#
@@ -23,7 +24,8 @@ import common
 _currentBar = None
 
 def withProgress(iterator, modValue=1, size=None):
-    """ A wrapper for a sized iterator which adds a progress bar.
+    """
+    A wrapper for a sized iterator which adds a progress bar.
     """
     global _currentBar
 
@@ -59,10 +61,12 @@ def tick():
 #----------------------------------------------------------------------------#
 
 class ProgressBar:
-    """ A progress bar which gets printed to stdout.
+    """
+    A progress bar which gets printed to stdout.
     """
     def __init__(self, stringSize=20):
-        """ Creates a new instance, setting the size as needed.
+        """
+        Creates a new instance, setting the size as needed.
         """
         self._stringSize = stringSize
         self._count = 0
@@ -77,7 +81,8 @@ class ProgressBar:
         return
 
     def reset(self):
-        """ Resets the progress bar to initial conditions.
+        """
+        Resets the progress bar to initial conditions.
         """
         self._count = 0
         self._totalCount = None
@@ -88,11 +93,12 @@ class ProgressBar:
         return
     
     def start(self, totalCount):
-        """ Starts the progress bar. This will be the first output from the
-            bar. At this stage it needs the total count so that it can
-            calculate percentages.
+        """
+        Starts the progress bar. This will be the first output from the
+        bar. At this stage it needs the total count so that it can
+        calculate percentages.
 
-            @param totalCount: The count which represents 'finished'.
+        @param totalCount: The count which represents 'finished'.
         """
         assert self._count == 0, "Progress bar already started, call reset()"
         assert totalCount > 0, "Progress bar needs a non-zero total count"
@@ -108,11 +114,12 @@ class ProgressBar:
         return
 
     def update(self, count):
-        """ Updates the progress bar with the current count. This is useful
-            to call even if the count has not increased, since it provides
-            visual feedback to the user that the process is active.
+        """
+        Updates the progress bar with the current count. This is useful
+        to call even if the count has not increased, since it provides
+        visual feedback to the user that the process is active.
 
-            @param count: The current count
+        @param count: The current count
         """
         count = int(count)
         self._count = count
@@ -139,13 +146,15 @@ class ProgressBar:
         return
 
     def tick(self):
-        """ Perform a quick update.
+        """
+        Perform a quick update.
         """
         self.update(self._count)
         return
 
     def fractional(self, fraction):
-        """ Set a fractional percentage completion, e.g. 0.3333 -> 33%.
+        """
+        Set a fractional percentage completion, e.g. 0.3333 -> 33%.
         """
         assert fraction >= 0 and fraction <= 1
         self.update(int(fraction * self._totalCount))
@@ -153,7 +162,8 @@ class ProgressBar:
         return
     
     def finish(self):
-        """ Fixes to 100% complete, and writes the time taken.
+        """
+        Fixes to 100% complete, and writes the time taken.
         """
         assert self._totalCount > 0, "Progress bar wasn't initialised"
         self.update(self._totalCount)
@@ -179,7 +189,8 @@ class ProgressBar:
 #----------------------------------------------------------------------------#
 
 def linesWithProgress(filename, encoding='utf8', modValue=None):
-    """ A progress bar over the lines in an uncompressed file.
+    """
+    A progress bar over the lines in an uncompressed file.
     """
     # We can't provide progress in these cases.
     if filename.endswith('.gz') or filename.endswith('.bz2'):

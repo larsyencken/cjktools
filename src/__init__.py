@@ -7,9 +7,10 @@
 #
 #----------------------------------------------------------------------------#
 
-""" This package contains various tools for Japanese NLP tasks, although most
-    are applicable to any python project. See documentation of each module for
-    details.
+"""
+This package contains various tools for Japanese NLP tasks, although most
+are applicable to any python project. See documentation of each module for
+details.
 """
 
 #----------------------------------------------------------------------------#

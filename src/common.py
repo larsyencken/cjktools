@@ -7,7 +7,8 @@
 #
 #----------------------------------------------------------------------------#
 
-""" High-frequency, common tools. 
+"""
+High-frequency, common tools. 
 """
 
 #----------------------------------------------------------------------------#
@@ -18,8 +19,9 @@ import bz2, gzip
 #----------------------------------------------------------------------------#
 
 def filterComments(fileStream):
-    """ Filter a filestream, removing comment lines marked with an initial
-        hash.
+    """
+    Filter a filestream, removing comment lines marked with an initial
+    hash.
     """
     for line in fileStream:
         if line.startswith('#'):
@@ -32,10 +34,11 @@ def filterComments(fileStream):
 #----------------------------------------------------------------------------#
 
 def smartLineIter(filenames, encoding='utf8'):
-    """ Returns an interator over the lines in the given files.
+    """
+    Returns an interator over the lines in the given files.
 
-        @param filenames: A sequence of files whose lines to iterate over.
-        @param encoding: The encoding to use [utf8]
+    @param filenames: A sequence of files whose lines to iterate over.
+    @param encoding: The encoding to use [utf8]
     """
     for filename in filenames:
         iStream = sopen(filename, 'r', encoding)
@@ -48,14 +51,15 @@ def smartLineIter(filenames, encoding='utf8'):
 #----------------------------------------------------------------------------#
 
 def sopen(filename, mode='rb', encoding='utf8'):
-    """ Transparently uses compression on the given file based on file
-        extension.
+    """
+    Transparently uses compression on the given file based on file
+    extension.
 
-        @param filename: The filename to use for the file handle.
-        @param mode: The mode to open the file in, e.g. 'r' for read, 'w' for
-            write, 'a' for append.
-        @param encoding: The encoding to use. Can be set to None to avoid
-            using unicode at all.
+    @param filename: The filename to use for the file handle.
+    @param mode: The mode to open the file in, e.g. 'r' for read, 'w' for
+        write, 'a' for append.
+    @param encoding: The encoding to use. Can be set to None to avoid
+        using unicode at all.
     """
     readMode = 'r' in mode
     if readMode and 'w' in mode:

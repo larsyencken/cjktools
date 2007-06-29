@@ -7,7 +7,8 @@
 #
 #----------------------------------------------------------------------------#
 
-""" Methods for working with the shell.
+"""
+Methods for working with the shell.
 """
 
 #----------------------------------------------------------------------------#
@@ -18,7 +19,8 @@ import os
 #----------------------------------------------------------------------------#
 
 def setScreenTitle(title):
-    """ Sets the title of a screen window using the given escape sequence.
+    """
+    Sets the title of a screen window using the given escape sequence.
     """
     if os.environ['TERM'] == 'screen':
         sys.stdout.write('k%s\\' % title)

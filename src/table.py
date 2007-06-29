@@ -43,10 +43,11 @@ def parseLines(fileStream, separator=' ', n=None):
 #----------------------------------------------------------------------------#
 
 def intListPack(intList):
-    """ Packs a list of integers into a csv string.
+    """
+    Packs a list of integers into a csv string.
 
-            >>> intListPack([1, 2, 3, 7])
-            '1-3,7'
+        >>> intListPack([1, 2, 3, 7])
+        '1-3,7'
     """
     if intList == []:
         # handle an empty list on packing and unpacking
@@ -374,14 +375,16 @@ class CsvBlock:
     #------------------------------------------------------------------------#
 
     def height(self):
-        """ Determines the number of rows in the block.
+        """
+        Determines the number of rows in the block.
         """
         return len(self._rowLabels)
     
     #------------------------------------------------------------------------#
 
     def rows(self):
-        """ Returns the rows for this block.
+        """
+        Returns the rows for this block.
         """
         return self._rows
 

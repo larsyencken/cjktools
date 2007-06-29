@@ -37,14 +37,16 @@ class BasicStatsTest(unittest.TestCase):
         return
 
     def testMean(self):
-        """ Check that mean works as expected.
+        """
+        Check that mean works as expected.
         """
         self.assertAlmostEqual(mean(self.dataA), self.meanA, 5)
         self.assertAlmostEqual(mean(self.dataB), self.meanB, 5)
         return
 
     def testBinsByData(self):
-        """ Tests splitting data into bins.
+        """
+        Tests splitting data into bins.
         """
         data = [3,2,5,1,7,3,0]
 
@@ -59,7 +61,8 @@ class BasicStatsTest(unittest.TestCase):
         return
 
     def testBinsByRange(self):
-        """ Tests splitting data into bins.
+        """
+        Tests splitting data into bins.
         """
         data = [3,2,5,1,9,3,0]
 
@@ -74,7 +77,8 @@ class BasicStatsTest(unittest.TestCase):
         return
 
     def testBinsByInc(self):
-        """ Tests splitting data into bins.
+        """
+        Tests splitting data into bins.
         """
         data = [3,2,5,1,8,3,0]
 
@@ -99,7 +103,8 @@ class BasicStatsTest(unittest.TestCase):
         return
 
     def testBadStddev(self):
-        """ Check stddev on a list of length 0.
+        """
+        Check stddev on a list of length 0.
         """
         try:
             stddev([])
@@ -111,14 +116,16 @@ class BasicStatsTest(unittest.TestCase):
         return
 
     def testStddev(self):
-        """ Check that stddev works as expected.
+        """
+        Check that stddev works as expected.
         """
         self.assertAlmostEqual(stddev(self.dataA), self.stddevA, 5)
         self.assertAlmostEqual(stddev(self.dataB), self.stddevB, 5)
         return
 
     def testOnTuples(self):
-        """ Checks that methods also work on tuples.
+        """
+        Checks that methods also work on tuples.
         """
         self.assertAlmostEqual(mean(tuple(self.dataA)), self.meanA, 5)
         self.assertAlmostEqual(mean(tuple(self.dataB)), self.meanB, 5)
@@ -127,7 +134,8 @@ class BasicStatsTest(unittest.TestCase):
         return
 
     def testBasicStats(self):
-        """ Test that the basic stats method works.
+        """
+        Test that the basic stats method works.
         """
         meanA, stddevA = basicStats(self.dataA)
         self.assertAlmostEqual(meanA, mean(self.dataA))
@@ -156,14 +164,16 @@ class KappaTest(unittest.TestCase):
         self.dataB = [2, 3, 4, 5]
 
     def testHighKappa(self):
-        """ Tests a high kappa value
+        """
+        Tests a high kappa value
         """
         kappaVal = kappa(self.dataA, self.dataA)
         self.assertAlmostEqual(kappaVal, 1.0)
         return
     
     def testNoAgreement(self):
-        """ Tests the no agreement case.
+        """
+        Tests the no agreement case.
         """
         kappaVal = kappa(self.dataA, self.dataB)
         self.assertAlmostEqual(kappaVal, -0.23076923076923078)

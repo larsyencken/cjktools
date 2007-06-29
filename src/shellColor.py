@@ -76,7 +76,8 @@ def changeColor(color):
 #----------------------------------------------------------------------------#
 
 def realLen(strObj):
-    """ Determine the real length of a string object.
+    """
+    Determine the real length of a string object.
     """
     finalLen = 0
     startIndex = 0
@@ -96,7 +97,8 @@ def realLen(strObj):
 #----------------------------------------------------------------------------#
 
 def resetColor():
-    """ Return the string to print to reset the color to the default.
+    """
+    Return the string to print to reset the color to the default.
     """
     global _enableColor
 

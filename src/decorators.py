@@ -7,13 +7,15 @@
 #
 #----------------------------------------------------------------------------#
 
-""" A series of useful Python decorators.
+"""
+A series of useful Python decorators.
 """
 
 #----------------------------------------------------------------------------#
 
 def simpleDecorator(decorator):
-    """ Turns simple functions into well behaved decorators.
+    """
+    Turns simple functions into well behaved decorators.
     """
     def new_decorator(f):
         g = decorator(f)
@@ -30,7 +32,8 @@ def simpleDecorator(decorator):
 #----------------------------------------------------------------------------#
 
 class memoized(object): 
-    """ A decorator which caches the functions values in a dictionary. 
+    """
+    A decorator which caches the functions values in a dictionary. 
     """
     def __init__(self, func):
         self.func = func

@@ -25,7 +25,8 @@ def suite():
 
 class MapTestCases(unittest.TestCase):
     def testChainDicts(self):
-        """ Tests chaining together dictionaries.
+        """
+        Tests chaining together dictionaries.
         """
         dataA = {1: 'a', 2: 'b', 3: 'c'}
         dataB = {'a': 1.5, 'b': 3.5, 'c': 1.5}
@@ -38,7 +39,8 @@ class MapTestCases(unittest.TestCase):
         return
 
     def testInvertDict(self):
-        """ Tests inverting a dictionary.
+        """
+        Tests inverting a dictionary.
         """
         data = {1: [1,2,3], 2: [1,3]}
         newDict = maps.invertMapping(data)
@@ -51,7 +53,8 @@ class MapTestCases(unittest.TestCase):
         return
 
     def testMapDict(self):
-        """ Tests map as applied to dictionaries.
+        """
+        Tests map as applied to dictionaries.
         """
         data = {'a': 1, 'b': 2, 'c': 3}
         method = lambda x: x*x
@@ -64,7 +67,8 @@ class MapTestCases(unittest.TestCase):
         return
 
     def testMergeDicts(self):
-        """ Tests merging multiple dictionaries.
+        """
+        Tests merging multiple dictionaries.
         """
         dictA = {
                     1: set('cat'),
@@ -89,7 +93,8 @@ class MapTestCases(unittest.TestCase):
 
 class PartialMapTestCase(unittest.TestCase):
     def testToNone(self):
-        """ Everything maps to None
+        """
+        Everything maps to None
         """
         def toNone(a): return None
 
@@ -102,7 +107,8 @@ class PartialMapTestCase(unittest.TestCase):
         return
     
     def testAllOk(self):
-        """ Everthing maps to a true value
+        """
+        Everthing maps to a true value
         """
         def id(a): return a
 
@@ -116,7 +122,8 @@ class PartialMapTestCase(unittest.TestCase):
         return
 
     def testPartial(self):
-        """ Realistic case, part goes either way
+        """
+        Realistic case, part goes either way
         """
         def killEven(x):
             if x % 2 == 0:
@@ -136,7 +143,8 @@ class PartialMapTestCase(unittest.TestCase):
 
 class MultiDictTestCase(unittest.TestCase):
     def testMultiDict(self):
-        """ A simple maps.multiDict test case.
+        """
+        A simple maps.multiDict test case.
         """
         inputPairs = [('a', 2), ('b', 3), ('a', 4)]
         self.assertEqual(maps.multiDict(inputPairs), {'a': [2,4], 'b': [3]})

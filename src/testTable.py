@@ -24,7 +24,8 @@ def suite():
 #----------------------------------------------------------------------------#
 
 class IntListPackingTestCase(unittest.TestCase):
-    """ This class tests the intListPack() and intListUnpack() methods.
+    """
+    This class tests the intListPack() and intListUnpack() methods.
     """
     def setUp(self):
         self.dataA = [1, 2, 3, 5, 6, 7, 9]
@@ -32,7 +33,8 @@ class IntListPackingTestCase(unittest.TestCase):
         return
 
     def testEmptyList(self):
-        """ Test packing and unpacking an empty list.
+        """
+        Test packing and unpacking an empty list.
         """
         self.assertEqual(intListPack([]), '')
         self.assertEqual(intListUnpack(''), [])
@@ -46,7 +48,8 @@ class IntListPackingTestCase(unittest.TestCase):
         return
     
     def testPackAndUnpack(self):
-        """ Test a generic pack and unpack.
+        """
+        Test a generic pack and unpack.
         """
         packedData = intListPack(self.dataA)
         self.assertEqual(packedData, self.dataA_packed)
@@ -56,7 +59,8 @@ class IntListPackingTestCase(unittest.TestCase):
 #----------------------------------------------------------------------------#
 
 class TableTestCase(unittest.TestCase):
-    """ This class tests the Table class. 
+    """
+    This class tests the Table class. 
     """
     def setUp(self):
         self.rowLabels = ['a', 'b', 'c']
@@ -155,7 +159,8 @@ class TableAndFieldTest(unittest.TestCase):
         return
 
     def testTableToFields(self):
-        """ The tableToFields() and fieldsToTable() methods
+        """
+        The tableToFields() and fieldsToTable() methods
         """
         fields = tableToFields(self.tableAHeader, self.tableAData)
         self.assertEqual(fields, [

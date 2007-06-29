@@ -7,7 +7,8 @@
 #
 #----------------------------------------------------------------------------#
 
-""" Tests for the smartCache module.
+"""
+Tests for the smartCache module.
 """
 
 #----------------------------------------------------------------------------#
@@ -41,13 +42,15 @@ class CacheTestCase(unittest.TestCase):
         return
 
     def factoryMethod1(self, x):
-        """ A simple factory method for testing.
+        """
+        A simple factory method for testing.
         """
         self.numCalls += 1
         return x*3
 
     def testPairedCache(self):
-        """ Tests the combination of using tryCache() and storeCacheObject().
+        """
+        Tests the combination of using tryCache() and storeCacheObject().
         """
         # we shouldn't be returning an object when none have been cached
         obj = smartCache.tryCache(self.cacheFile, dependencies=[self.depFile])
@@ -75,7 +78,8 @@ class CacheTestCase(unittest.TestCase):
         return
 
     def testProxyMethod(self):
-        """ Simple tests for the proxy() method.
+        """
+        Simple tests for the proxy() method.
         """
         self.assertEqual(self.numCalls, 0)
 
@@ -104,7 +108,8 @@ class CacheTestCase(unittest.TestCase):
         return
 
     def tearDown(self):
-        """ Delete the files used if they are still around.
+        """
+        Delete the files used if they are still around.
         """
         if os.path.exists(self.cacheFile):
             os.remove(self.cacheFile)

@@ -56,7 +56,8 @@ class ScriptsTestCase(unittest.TestCase):
         return
 
     def testContainsScript(self):
-        """ Tests the containsScript() method.
+        """
+        Tests the containsScript() method.
         """
         containsScript = scripts.containsScript
         assert containsScript(Script.Hiragana, self.testScript)
@@ -70,14 +71,16 @@ class ScriptsTestCase(unittest.TestCase):
         return
 
     def testCompareKana(self):
-        """ Tests the compareKana() method.
+        """
+        Tests the compareKana() method.
         """
         assert scripts.compareKana(u'Aあア亜', u'Aアあ亜') == 0
         assert scripts.compareKana(u'あAア亜', u'アあ亜A') != 0
         return
 
     def testNormalizeAscii(self):
-        """ Tests that ascii characters are normalized correctly.
+        """
+        Tests that ascii characters are normalized correctly.
         """
         fullWidthString = u'ｋｌｉｎｇｏｎｓ　ｏｎ　ｔｈｅ　'\
             u'ｓｔａｒｂｏａｒｄ　ｂｏｗ！＠＃＆＊（）？，。；＋＝"'

@@ -26,7 +26,8 @@ def suite():
 
 class MiscTestCases(unittest.TestCase):
     def testSeparate(self):
-        """ Basic use of separate()
+        """
+        Basic use of separate()
         """
         def isEven(i):
             return i % 2 == 0
@@ -46,7 +47,8 @@ class MiscTestCases(unittest.TestCase):
         return
 
     def testUnzip(self):
-        """ Tests the unzip method.
+        """
+        Tests the unzip method.
         """
         data = zip(range(0, 5), range(4,9))
         unzippedData = sequences.unzip(data)
@@ -59,7 +61,8 @@ class MiscTestCases(unittest.TestCase):
 
 class ThreadingTestCase(unittest.TestCase):
     def testThread(self):
-        """ Tests the variety of thread/unthread methods.
+        """
+        Tests the variety of thread/unthread methods.
         """
         inputPairs = range(6)
         threadedPairs = sequences.thread(inputPairs)
@@ -71,7 +74,8 @@ class ThreadingTestCase(unittest.TestCase):
 
 class ZipWithTestCase(unittest.TestCase):
     def testBasic(self):
-        """ Tests basic functioning of the zipWith method.
+        """
+        Tests basic functioning of the zipWith method.
         """
         inputA = [1,-5, 0]
         inputB = [2, 5, 1]

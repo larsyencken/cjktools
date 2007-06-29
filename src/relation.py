@@ -7,7 +7,8 @@
 #
 #----------------------------------------------------------------------------#
 
-""" Implements relations, many-to-many mappings.
+"""
+Implements relations, many-to-many mappings.
 """
 
 #----------------------------------------------------------------------------#
@@ -18,14 +19,16 @@ import itertools
 #----------------------------------------------------------------------------#
 
 class Relation(object):
-    """ Implements a general relation, i.e. a many-to-many mapping.
+    """
+    Implements a general relation, i.e. a many-to-many mapping.
     """
     #------------------------------------------------------------------------#
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
     def __init__(self, forwardLabel=None, reverseLabel=None):
-        """ Constructor.
+        """
+        Constructor.
         """
         self.forwardLabel = forwardLabel
         self.reverseLabel = reverseLabel
@@ -38,7 +41,8 @@ class Relation(object):
     #------------------------------------------------------------------------#
    
     def fromSequence(self, sequence):
-        """ Loads the sequence from (aVal, bVal) pairs.
+        """
+        Loads the sequence from (aVal, bVal) pairs.
         """
         for aVal, bVal in sequence:
             self.add(aVal, bVal)
@@ -48,7 +52,8 @@ class Relation(object):
     #------------------------------------------------------------------------#
 
     def add(self, aVal, bVal):
-        """ Adds a pair to the relation.
+        """
+        Adds a pair to the relation.
         """
         if aVal in self._forwardMap:
             self._forwardMap[aVal].add(bVal)
@@ -65,7 +70,8 @@ class Relation(object):
     #------------------------------------------------------------------------#
 
     def remove(self, aVal, bVal):
-        """ Removes a pair from the relation.
+        """
+        Removes a pair from the relation.
         """
         self._forwardMap[aVal].remove(bVal)
         self._reverseMap[bVal].remove(aVal)
@@ -102,7 +108,8 @@ class Relation(object):
     #------------------------------------------------------------------------#
 
     def __contains__(self, pair):
-        """ Tests whether the pair is contained in the relation.
+        """
+        Tests whether the pair is contained in the relation.
         """
         aVal, bVal = pair
         return aVal in self._forwardMap and \
@@ -111,8 +118,9 @@ class Relation(object):
     #------------------------------------------------------------------------#
 
     def merge(self, rhs):
-        """ Return a new relation which is the result of merging this
-            relation with the rhs.
+        """
+        Return a new relation which is the result of merging this
+        relation with the rhs.
         """
         if self.forwardLabel == rhs.forwardLabel and \
                 self.reverseLabel == rhs.reverseLabel:
@@ -125,7 +133,8 @@ class Relation(object):
     #------------------------------------------------------------------------#
 
     def toSequence(self):
-        """ Returns the list of pairs which consist this relation.
+        """
+        Returns the list of pairs which consist this relation.
         """
         return list(self.iteritems())
 
@@ -137,14 +146,16 @@ class Relation(object):
     #------------------------------------------------------------------------#
 
     def __len__(self):
-        """ Returns the number of pairs in this relation.
+        """
+        Returns the number of pairs in this relation.
         """
         return sum(itertools.imap(len, self._forwardMap.itervalues()))
 
     #------------------------------------------------------------------------#
     
     def iteritems(self):
-        """ Returns an iterator over all pairs in the dictionary.
+        """
+        Returns an iterator over all pairs in the dictionary.
         """
         for aVal, bValues in self._forwardMap.iteritems():
             for bVal in bValues:
@@ -164,20 +175,22 @@ class Relation(object):
     #------------------------------------------------------------------------#
 
     def isSubRelation(self, rhs):
-        """ Returns True if the pairs contained in this relation are a
-            subset of the pairs in the rhs relation.
+        """
+        Returns True if the pairs contained in this relation are a
+        subset of the pairs in the rhs relation.
 
-            @type rhs: Relation
+        @type rhs: Relation
         """
         return set(self.iteritems()).issubset(rhs.iteritems())
 
     #------------------------------------------------------------------------#
 
     def isSuperRelation(self, rhs):
-        """ Returns True if the pairs contained in this relation are a
-            superset of the pairs in the rhs relation.
+        """
+        Returns True if the pairs contained in this relation are a
+        superset of the pairs in the rhs relation.
 
-            @type rhs: Relation
+        @type rhs: Relation
         """
         return set(self.iteritems()).issuperset(rhs.iteritems())
 
@@ -200,14 +213,16 @@ class Relation(object):
 #----------------------------------------------------------------------------#
 
 class ScoredRelation(Relation):
-    """ A relation where each pair is also scored.
+    """
+    A relation where each pair is also scored.
     """
     #------------------------------------------------------------------------#
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
     def __init__(self, *args):
-        """ Constructor.
+        """
+        Constructor.
         """
         apply(Relation.__init__, (self,) + args)
 
@@ -217,7 +232,8 @@ class ScoredRelation(Relation):
     #------------------------------------------------------------------------#
 
     def add(self, aVal, bVal, score):
-        """ Adds a scored value to the relation.
+        """
+        Adds a scored value to the relation.
         """
         Relation.add(self, aVal, bVal)
         self._scores[(aVal, bVal)] = score
@@ -242,7 +258,8 @@ class ScoredRelation(Relation):
     #------------------------------------------------------------------------#
 
     def __contains__(self, pair):
-        """ Check for containership.
+        """
+        Check for containership.
         """
         aVal, bVal = pair
         return (aVal, bVal) in self._scores
@@ -255,7 +272,8 @@ class ScoredRelation(Relation):
     #------------------------------------------------------------------------#
 
     def __getitem__(self, pair):
-        """ Return the score for the pair.
+        """
+        Return the score for the pair.
         """
         return self._scores[pair]
 

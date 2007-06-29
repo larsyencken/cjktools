@@ -7,21 +7,24 @@
 #
 #----------------------------------------------------------------------------#
 
-""" A series of useful, common exceptions.
+"""
+A series of useful, common exceptions.
 """
 
 #----------------------------------------------------------------------------#
 
 class AbstractMethodError(Exception):
-    """ Indicates that a base class has had its abstract method called.
+    """
+    Indicates that a base class has had its abstract method called.
     """
     pass
 
 #----------------------------------------------------------------------------#
 
 class NotYetImplementedError(Exception):
-    """ A placeholder to use when you define a method but haven't implemented
-        it yet.
+    """
+    A placeholder to use when you define a method but haven't implemented
+    it yet.
     """
     pass
 

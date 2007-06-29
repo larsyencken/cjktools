@@ -24,7 +24,8 @@ def suite():
 #----------------------------------------------------------------------------#
 
 class AlternationsTestCase(unittest.TestCase):
-    """ This class tests the Alternations class. 
+    """
+    This class tests the Alternations class. 
     """
     def setUp(self):
         pass

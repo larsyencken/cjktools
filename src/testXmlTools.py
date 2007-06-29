@@ -27,7 +27,8 @@ def suite():
 #----------------------------------------------------------------------------#
 
 class IndexTestCase(unittest.TestCase):
-    """ This class tests the Index class. 
+    """
+    This class tests the Index class. 
     """
     #------------------------------------------------------------------------#
 
@@ -44,7 +45,8 @@ class IndexTestCase(unittest.TestCase):
     #------------------------------------------------------------------------#
 
     def testIndexingByElement(self):
-        """ Checks for correct keys and values, indexing by elements.
+        """
+        Checks for correct keys and values, indexing by elements.
         """
         doc = IndexedDocument(self.sampleFile, 'targetElement', 'name')
         assert os.path.exists(self.indexFile)
@@ -63,7 +65,8 @@ class IndexTestCase(unittest.TestCase):
     #------------------------------------------------------------------------#
 
     def testIndexingByAttribute(self):
-        """ Checks for correct keys and values, indexing by attributes.
+        """
+        Checks for correct keys and values, indexing by attributes.
         """
         doc = IndexedDocument(self.sampleFile, 'targetElement', '@realname')
 

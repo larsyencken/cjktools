@@ -31,13 +31,15 @@ class Example(object):
         return
 
 class DecoratorsTestCase(unittest.TestCase):
-    """ This class tests the Decorators class. 
+    """
+    This class tests the Decorators class. 
     """
     def setUp(self):
         pass
 
     def testMemoized(self):
-        """ Tests for proper caching behaviour with a simple class.
+        """
+        Tests for proper caching behaviour with a simple class.
         """
         x = getExample()
         self.assertEqual(x.value, 3)
