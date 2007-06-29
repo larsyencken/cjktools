@@ -87,6 +87,15 @@ class KanaTable(object):
 
     #------------------------------------------------------------------------#
 
+    def fromCoords(self, consonant, vowel):
+        """
+        Converts a consonant and vowel pair to a single kana, provided they
+        generate a member of the table. 
+        """
+        return self._table[consonant][self.vowels.index(vowel)]
+
+    #------------------------------------------------------------------------#
+
     def toVowelLine(self, kana):
         """Returns the vowel line of the given kana."""
         return self._toVowelLine[kana]

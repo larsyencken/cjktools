@@ -43,6 +43,12 @@ class KanaTableTestCase(unittest.TestCase):
 
         return
 
+    def testFromCoords(self):
+        """Rendering kana from (consonant, vowel) coordinates."""
+
+        self.assertEqual(self.table.fromCoords(u'か', u'お'), u'こ')
+        self.assertEqual(self.table.fromCoords(u'ぱ', u'え'), u'ぺ')
+
     def tearDown(self):
         pass
 
