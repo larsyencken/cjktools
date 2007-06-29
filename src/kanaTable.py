@@ -42,6 +42,8 @@ class KanaTable(object):
         Constructor. Initializes internal dictionaries to make later lookup
         faster. 
         """
+        self.vowels = u'あいうえお'
+        self.consonants = u'かがさざただまはばぱなら'
         self._table = {
             u'あ': u'あいうえお',
             u'か': u'かきくけこ',
@@ -97,6 +99,12 @@ class KanaTable(object):
 
     #------------------------------------------------------------------------#
 
+    def isVoiced(self, kana):
+        """Returns True if the kana is voiced, False otherwise."""
+        return self.toConsonantLine(kana) in u'がだざびぴじ'
+
+    #------------------------------------------------------------------------#
+
     def getTable(self):
         """Return the kana table itself."""
         return copy.deepcopy(self._table)
@@ -126,4 +134,3 @@ class KanaTable(object):
     #------------------------------------------------------------------------#
 
 #----------------------------------------------------------------------------#
-

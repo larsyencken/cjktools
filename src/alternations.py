@@ -30,7 +30,7 @@ def canonicalForms(kanaSegments):
 
     @param kanaSegments: Reading segments in their surface form.
     """
-
+    table = kanaTable.KanaTable.getCached()
     numSegments = len(kanaSegments)
 
     candidateSets = []
@@ -42,7 +42,7 @@ def canonicalForms(kanaSegments):
             # Can restore onbin cases.
             variants.extend([segment[:-1] + c for c in u'いちりきつく'])
 
-        if i > 0 and isVoiced(segment[0]):
+        if i > 0 and table.isVoiced(segment[0]):
             # Can devoice.
             variants.extend([fromVoiced[v[0]] + v[1:] for v in variants])
 
@@ -153,28 +153,6 @@ def insertDuplicateKanji(kanjiString):
         loc = kanjiString.find(u'々')
 
     return kanjiString
-
-#----------------------------------------------------------------------------#
-
-def isVoiced(char):
-    """
-    Returns True if the character is a kana character which is voiced.
-
-        >>> isVoiced(unicode('だ', 'utf8'))
-        True
-        >>> isVoiced(unicode('た', 'utf8'))
-        False
-    """
-    table = kanaTable.KanaTable.getCached()
-    char = scripts.toHiragana(char)
-
-    try:
-        line = table.toConsonantLine(char)
-    except KeyError:
-        # Not a kana character.
-        return False
-
-    return line in u'がだざばぱ'
 
 #----------------------------------------------------------------------------#
 
