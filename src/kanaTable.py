@@ -110,7 +110,7 @@ class KanaTable(object):
 
     def isVoiced(self, kana):
         """Returns True if the kana is voiced, False otherwise."""
-        return self.toConsonantLine(kana) in u'がだざびぴじ'
+        return self.toConsonantLine(kana) in u'がだざびぴじばぱ'
 
     #------------------------------------------------------------------------#
 

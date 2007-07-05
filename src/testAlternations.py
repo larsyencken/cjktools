@@ -34,12 +34,15 @@ class AlternationsTestCase(unittest.TestCase):
         base = (u'ゆっ', u'ぐり')
         seg1Cases = [u'ゆ' + c for c in u'いちりきつくっ']
         seg2Cases = [u'くり', u'ぐり']
-        expected = stats.combinations([seg1Cases, seg2Cases])
+        expected = set(stats.combinations([seg1Cases, seg2Cases]))
 
-        self.assertEqual(
-                set(alternations.canonicalForms(base)),
-                set(expected),
-            )
+        self.assertEqual(set(alternations.canonicalForms(base)), expected)
+
+    def testCanonicalSegmentForms(self):
+        voiced = u'ばり'
+        expected = set([u'ばり', u'はり'])
+        result = set(alternations.canonicalSegmentForms(voiced, True, False))
+        self.assertEqual(result, expected)
     
     def tearDown(self):
         pass

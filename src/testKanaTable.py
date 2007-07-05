@@ -49,6 +49,13 @@ class KanaTableTestCase(unittest.TestCase):
         self.assertEqual(self.table.fromCoords(u'か', u'お'), u'こ')
         self.assertEqual(self.table.fromCoords(u'ぱ', u'え'), u'ぺ')
 
+    def testIsVoiced(self):
+        assert self.table.isVoiced(u'ば')
+        assert self.table.isVoiced(u'ぱ')
+        assert not self.table.isVoiced(u'は')
+        assert self.table.isVoiced(u'だ')
+        assert self.table.isVoiced(u'ざ')
+
     def tearDown(self):
         pass
 

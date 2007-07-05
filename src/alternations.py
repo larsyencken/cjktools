@@ -59,12 +59,13 @@ def canonicalSegmentForms(segment, leftContext=True, rightContext=True):
     sound euphony were possible (i.e. that the segment had both left
     and right context).
     """
+    table = kanaTable.KanaTable.getCached()
     variants = set([segment])
 
     if rightContext and len(segment) > 1 and segment.endswith(u'っ'):
         variants.update([segment[:-1] + c for c in u'いちりきつく'])
 
-    if leftContext and isVoiced(segment[0]):
+    if leftContext and table.isVoiced(segment[0]):
         variants.update([fromVoiced[v[0]] + v[1:] for v in variants])
 
     return variants
