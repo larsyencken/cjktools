@@ -44,6 +44,7 @@ class KanaTable(object):
         """
         self.vowels = u'あいうえお'
         self.consonants = u'かがさざただまはばぱなら'
+        self.voicedConsonants = set(u'がだざびぴじばぱ')
         self._table = {
             u'あ': u'あいうえお',
             u'か': u'かきくけこ',
@@ -98,19 +99,22 @@ class KanaTable(object):
 
     def toVowelLine(self, kana):
         """Returns the vowel line of the given kana."""
-        return self._toVowelLine[kana]
+        if kana == u'わ':
+            return u'あ'
+        else:
+            return self._toVowelLine.get(kana)
 
     #------------------------------------------------------------------------#
 
     def toConsonantLine(self, kana):
         """Returns the consonant line of the given kana."""
-        return self._toConsonantLine[kana]
+        return self._toConsonantLine.get(kana)
 
     #------------------------------------------------------------------------#
 
     def isVoiced(self, kana):
         """Returns True if the kana is voiced, False otherwise."""
-        return self.toConsonantLine(kana) in u'がだざびぴじばぱ'
+        return self.toConsonantLine(kana) in self.voicedConsonants
 
     #------------------------------------------------------------------------#
 

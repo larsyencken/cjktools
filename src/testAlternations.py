@@ -43,7 +43,10 @@ class AlternationsTestCase(unittest.TestCase):
         expected = set([u'ばり', u'はり'])
         result = set(alternations.canonicalSegmentForms(voiced, True, False))
         self.assertEqual(result, expected)
-    
+
+        self.assertEqual(alternations.canonicalSegmentForms(u'わ'),
+                set([u'わ']))
+
     def tearDown(self):
         pass
 
@@ -55,4 +58,3 @@ if __name__ == "__main__":
 #----------------------------------------------------------------------------#
 
 # vim: ts=4 sw=4 sts=4 et tw=78:
-

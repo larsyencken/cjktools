@@ -41,7 +41,11 @@ class KanaTableTestCase(unittest.TestCase):
         self.assertEqual(self.table.toVowelLine(u'あ'), u'あ')
         self.assertEqual(self.table.toVowelLine(u'ぎ'), u'い')
 
+        self.assertEqual(self.table.toVowelLine(u'わ'), u'あ')
         return
+
+    def testConsonantLine(self):
+        self.assertEqual(self.table.toConsonantLine(u'わ'), None)
 
     def testFromCoords(self):
         """Rendering kana from (consonant, vowel) coordinates."""
