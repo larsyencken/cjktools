@@ -17,3 +17,6 @@ cache/*
 tmp/*
 log/*
 *.swp
+MANIFEST
+dist/*
+*.deb
