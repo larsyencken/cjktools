@@ -378,3 +378,66 @@ def separateByClass(method, seq):
     return results
 
 #----------------------------------------------------------------------------#
+
+def head(n, iterator):
+    """
+    Returns an iterator over the first n items in a sequence.
+    
+    If the sequence is itself an iterator, this will also advance the
+    iterator n places.
+
+        >>> list(head(3, xrange(10)))
+        [0, 1, 2]
+
+        >>> x = iter(xrange(10))
+        >>> list(head(3, x))
+        [0, 1, 2]
+        >>> list(head(4, x))
+        [3, 4, 5, 6]
+        >>> list(head(100, x))
+        [7, 8, 9]
+    """
+    i = 0
+
+    # The empty case.
+    if n < 1:
+        return
+
+    for item in iterator:
+        yield item
+
+        i += 1
+        if i >= n:
+            break
+
+    return
+
+#----------------------------------------------------------------------------#
+
+def tail(n, iterator):
+    """
+    Returns a list of the last n items in the iterator.
+
+    This is particularly efficient if n is much smaller than the length of the
+    iterator. It also requires O(n) storage.
+
+        >>> tail(3, xrange(10))
+        [7, 8, 9]
+
+        >>> tail(10, xrange(3))
+        [0, 1, 2]
+    """
+    output = n * [None]
+    i = 0
+
+    for item in iterator:
+        output[i % n] = item
+        i += 1
+
+    if i <= n:
+        return output[:i]
+    else:
+        start = i % n
+        return output[start:] + output[:start]
+
+#----------------------------------------------------------------------------#
