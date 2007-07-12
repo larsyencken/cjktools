@@ -379,22 +379,61 @@ def separateByClass(method, seq):
 
 #----------------------------------------------------------------------------#
 
-def head(n, iterator):
+def head(n, seq):
     """
     Returns an iterator over the first n items in a sequence.
     
     If the sequence is itself an iterator, this will also advance the
     iterator n places.
 
-        >>> list(head(3, xrange(10)))
+        >>> head(3, range(10))
         [0, 1, 2]
 
         >>> x = iter(xrange(10))
-        >>> list(head(3, x))
+        >>> head(3, x)
         [0, 1, 2]
-        >>> list(head(4, x))
+        >>> head(4, x)
         [3, 4, 5, 6]
-        >>> list(head(100, x))
+        >>> head(100, x)
+        [7, 8, 9]
+    """
+    if hasattr(seq, '__getslice__'):
+        return seq[:n]
+
+    result = []
+    i = 0
+
+    # The empty case.
+    if n < 1:
+        return
+
+    for item in seq:
+        result.append(item)
+
+        i += 1
+        if i >= n:
+            break
+
+    return result
+
+#----------------------------------------------------------------------------#
+
+def ihead(n, seq):
+    """
+    Returns an iterator over the first n items in a sequence.
+    
+    If the sequence is itself an iterator, this will also advance the
+    iterator n places.
+
+        >>> list(ihead(3, xrange(10)))
+        [0, 1, 2]
+
+        >>> x = iter(xrange(10))
+        >>> list(ihead(3, x))
+        [0, 1, 2]
+        >>> list(ihead(4, x))
+        [3, 4, 5, 6]
+        >>> list(ihead(100, x))
         [7, 8, 9]
     """
     i = 0
@@ -403,7 +442,7 @@ def head(n, iterator):
     if n < 1:
         return
 
-    for item in iterator:
+    for item in seq:
         yield item
 
         i += 1
@@ -411,10 +450,9 @@ def head(n, iterator):
             break
 
     return
-
 #----------------------------------------------------------------------------#
 
-def tail(n, iterator):
+def tail(n, seq):
     """
     Returns a list of the last n items in the iterator.
 
@@ -430,7 +468,7 @@ def tail(n, iterator):
     output = n * [None]
     i = 0
 
-    for item in iterator:
+    for item in seq:
         output[i % n] = item
         i += 1
 
