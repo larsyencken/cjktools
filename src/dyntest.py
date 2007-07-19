@@ -81,7 +81,10 @@ def dynamicSuite(fileOrDirectory, excludes=[]):
                 suites.append(module.suite())
             else:
                 # Code modules can be doctested.
-                suites.append(doctest.DocTestSuite(module))
+                try:
+                    suites.append(doctest.DocTestSuite(module))
+                except ValueError:
+                    continue
     
     # Change back to the dir when this was called.
     os.chdir(originalDir)
