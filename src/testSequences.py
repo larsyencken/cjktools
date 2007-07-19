@@ -18,7 +18,6 @@ def suite():
             unittest.makeSuite(MiscTestCases),
             unittest.makeSuite(ThreadingTestCase),
             unittest.makeSuite(ZipWithTestCase),
-            doctest.DocTestSuite(sequences)
         ))
     return testSuite
 

@@ -17,7 +17,6 @@ from scripts import Script
 def suite():
     testSuite = unittest.TestSuite((
             unittest.makeSuite(ScriptsTestCase),
-            doctest.DocTestSuite(scripts)
         ))
     return testSuite
 

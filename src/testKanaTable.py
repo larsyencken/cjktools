@@ -16,7 +16,6 @@ import kanaTable
 def suite():
     testSuite = unittest.TestSuite((
             unittest.makeSuite(KanaTableTestCase),
-            doctest.DocTestSuite(kanaTable)
         ))
     return testSuite
 

@@ -17,7 +17,6 @@ import stats
 def suite():
     testSuite = unittest.TestSuite((
             unittest.makeSuite(AlternationsTestCase),
-            doctest.DocTestSuite(alternations)
         ))
     return testSuite
 

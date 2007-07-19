@@ -16,41 +16,72 @@ a suite of unit tests based on the current folder and subdirectories.
 #----------------------------------------------------------------------------#
 
 import os, sys, optparse, codecs
-import unittest
+import unittest, doctest
+from os.path import exists, isdir, join, abspath, dirname
 
 #----------------------------------------------------------------------------#
 # PUBLIC METHODS
 #----------------------------------------------------------------------------#
 
-def dynamicSuite(rootDirectory, excludes=[]):
+def dynamicSuite(fileOrDirectory, excludes=[]):
     """
     Generates a dynamic test suite out of the given directory.
+
+    If given a filename, it tests only that file. If given a directory name,
+    it tests all python packages under that directory.
     """
-    # Change to the original directory.
     originalDir = os.getcwd()
-    rootDirectory = os.path.abspath(rootDirectory)
+    singleMode = False
+    if isdir(fileOrDirectory):
+        rootDirectory = fileOrDirectory
+    else:
+        singleMode = True
+        moduleFilename = fileOrDirectory
+        rootDirectory = dirname(fileOrDirectory)
+
+    # Change to the root directory, and ensure we can import from there.
+    rootDirectory = abspath(rootDirectory)
     os.chdir(rootDirectory)
     if rootDirectory not in sys.path:
         sys.path.append(rootDirectory)
 
+    if singleMode:
+        filenames = [moduleFilename]
+        testFilename = 'test' + moduleFilename[0].upper() + moduleFilename[1:]
+        if exists(testFilename):
+            filenames.append(testFilename)
+        moduleIter = [('.', filenames)]
+    else:
+        moduleIter = _pythonWalk('.', excludes)
+
     suites = []
-    for dirPath, filenames in _pythonWalk('.', excludes):
+    for dirPath, filenames in moduleIter:
         importPath = dirPath.lstrip('.').split('/')[1:]
 
         for filename in filenames:
-            if filename.startswith('test') and filename.endswith('.py'):
-                # Import this test module.
+            try:
+                # Import the module.
                 moduleName = filename[:-len('.py')]
                 fullImportPath = importPath + [moduleName]
-
                 module = __import__('.'.join(fullImportPath))
 
-                if importPath:
-                    # Need to fetch the submodule
-                    for subModule in fullImportPath[1:]:
-                        module = getattr(module, subModule)
+            except (ImportError, SyntaxError):
+                print >> sys.stdout, "%s has errors -- skipping" % filename
+                continue
 
+            # If the one we care about is embedded deep within packages,
+            # fetch it out.
+            if importPath:
+                for subModule in fullImportPath[1:]:
+                    module = getattr(module, subModule)
+
+            if filename.startswith('test'):
+                # Test modules have an explicit suite() function by
+                # convention.
                 suites.append(module.suite())
+            else:
+                # Code modules can be doctested.
+                suites.append(doctest.DocTestSuite(module))
     
     # Change back to the dir when this was called.
     os.chdir(originalDir)
@@ -68,12 +99,12 @@ def _isPythonPackage(dirPath):
     dirPath = dirPath.lstrip('./').split('/')
 
     checkedPath = dirPath[0]
-    if not os.path.exists(os.path.join(checkedPath, '__init__.py')):
+    if not exists(join(checkedPath, '__init__.py')):
         return False
 
     while dirPath:
-        checkedPath = os.path.join(checkedPath, dirPath.pop(0))
-        if not os.path.exists(os.path.join(checkedPath, '__init__.py')):
+        checkedPath = join(checkedPath, dirPath.pop(0))
+        if not exists(join(checkedPath, '__init__.py')):
             return False
     else:
         return True
@@ -85,7 +116,7 @@ def _pythonWalk(basePath, excludes=[]):
     Similar to os.walk(), but only enters subdirectories which are python
     packages.
     """
-    excludes = map(os.path.abspath, excludes)
+    excludes = map(abspath, excludes)
 
     dirStack = [basePath]
 
@@ -95,20 +126,20 @@ def _pythonWalk(basePath, excludes=[]):
         files = []
         for filename in os.listdir(currentDir):
             # We have some files which are excluded from examination.
-            if os.path.abspath(filename) in excludes:
+            if abspath(filename) in excludes:
                 continue
 
-            qualifiedName = os.path.join(currentDir, filename)
-            if os.path.isdir(qualifiedName):
+            qualifiedName = join(currentDir, filename)
+            if isdir(qualifiedName):
                 # Only recurse into python modules.
-                if os.path.exists(os.path.join(qualifiedName, '__init__.py')):
+                if exists(join(qualifiedName, '__init__.py')):
                     dirStack.append(qualifiedName)
 
-            else:
-                # Regular file.
+            elif filename.endswith('.py'):
+                # Python file.
                 files.append(filename)
 
-        yield (currentDir, files)
+        yield currentDir, files
 
     return
 
@@ -135,6 +166,9 @@ runs all tests within them."""
     parser.add_option('--verbosity', '-v', action='store', type='int',
             dest='verbosity', default=1, help="How much detail to show [1]")
 
+    parser.add_option('-s', '--single', action='store', dest='filename',
+            help="Test a single python module.")
+            
     return parser
 
 #----------------------------------------------------------------------------#
@@ -159,7 +193,10 @@ def main(argv):
         except:
             pass
 
-    completeSuite = dynamicSuite(options.dirname)
+    if options.filename:
+        completeSuite = dynamicSuite(options.filename)
+    else:
+        completeSuite = dynamicSuite(options.dirname)
     unittest.TextTestRunner(verbosity=options.verbosity).run(completeSuite)
     
     return

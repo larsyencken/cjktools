@@ -19,7 +19,6 @@ def suite():
             unittest.makeSuite(KappaTest),
             unittest.makeSuite(CombinationTest),
             unittest.makeSuite(BasicStatsTest),
-            doctest.DocTestSuite(stats)
         ))
     return testSuite
 
