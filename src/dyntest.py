@@ -59,15 +59,10 @@ def dynamicSuite(fileOrDirectory, excludes=[]):
         importPath = dirPath.lstrip('.').split('/')[1:]
 
         for filename in filenames:
-            try:
-                # Import the module.
-                moduleName = filename[:-len('.py')]
-                fullImportPath = importPath + [moduleName]
-                module = __import__('.'.join(fullImportPath))
-
-            except (ImportError, SyntaxError):
-                print >> sys.stdout, "%s has errors -- skipping" % filename
-                continue
+            # Import the module.
+            moduleName = filename[:-len('.py')]
+            fullImportPath = importPath + [moduleName]
+            module = __import__('.'.join(fullImportPath))
 
             # If the one we care about is embedded deep within packages,
             # fetch it out.
