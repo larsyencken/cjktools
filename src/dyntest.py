@@ -155,9 +155,6 @@ runs all tests within them."""
 
     parser = optparse.OptionParser(usage)
 
-    parser.add_option('--debug', action='store_true', dest='debug',
-            default=False, help='Enables debugging mode [False]')
-
     parser.add_option('-d', '--dirname', action='store', dest='dirname',
             default='.', help="The directory tree to test [.]")
 
@@ -181,15 +178,6 @@ def main(argv):
     if args:
         parser.print_help()
         sys.exit(1)
-
-    if not options.debug:
-        # we don't want psyco in debugging mode, since it merges together
-        # stack frames
-        try:
-            import psyco
-            psyco.profile()
-        except:
-            pass
 
     if options.filename:
         completeSuite = dynamicSuite(options.filename)
