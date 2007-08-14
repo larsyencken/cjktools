@@ -8,7 +8,7 @@
 #----------------------------------------------------------------------------#
 
 """
-Package setup file for the jptools package.
+Package setup file for the cjktools package.
 """
 
 #----------------------------------------------------------------------------#
@@ -19,14 +19,14 @@ import re
 
 #----------------------------------------------------------------------------#
 
-jptoolsVersion = u'0.8a'
+cjktoolsVersion = u'0.8a'
 hgVersion = os.popen(u'hg parents').readlines()[0].rstrip()
 hgVersion = re.sub(r'^changeset:\s*(\d+):[^\s]+$', r'\1', hgVersion)
 
 setup(
-        name='jptools',
-        version='%s.%s' % (jptoolsVersion, hgVersion),
-        package_dir={'jptools': 'src'},
-        packages=['jptools'],
+        name='cjktools',
+        version='%s.%s' % (cjktoolsVersion, hgVersion),
+        package_dir={'cjktools': 'src'},
+        packages=['cjktools'],
         scripts=['src/dyntest.py']
     )
