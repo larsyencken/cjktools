@@ -472,3 +472,26 @@ def basicStats(values):
     return (meanVal, stddevVal)
 
 #----------------------------------------------------------------------------#
+
+def isNan(x):
+    """
+    Returns True if the number is NaN, False otherwise.
+
+    >>> x = 1e300
+    >>> isNan(x)
+    False
+    >>> inf = x*x
+    >>> isNan(inf)
+    False
+    >>> nan = inf - inf
+    >>> isNan(nan)
+    True
+    """
+    x = float(x)
+    if max(x, 1e10) is x and min(x, -1e10) is x:
+        return True
+    else:
+        return False
+
+#----------------------------------------------------------------------------#
+
