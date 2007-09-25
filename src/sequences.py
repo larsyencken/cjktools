@@ -418,6 +418,24 @@ def head(n, seq):
 
 #----------------------------------------------------------------------------#
 
+def groupsOfN(n, seq):
+    """
+    Returns an iterator which groups elements of the sequence n at a time.
+
+    >>> x = groupsOfN(3, range(10))
+    >>> list(x) == [[0, 1, 2], [3, 4, 5], [6, 7 ,8], [9]]
+    True
+    """
+    seq = iter(seq)
+    result = head(n, seq)
+    while result:
+        yield result
+        result = head(n, seq)
+
+    return
+
+#----------------------------------------------------------------------------#
+
 def ihead(n, seq):
     """
     Returns an iterator over the first n items in a sequence.
