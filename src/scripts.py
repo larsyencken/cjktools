@@ -22,14 +22,15 @@ import enum
 #----------------------------------------------------------------------------#
 
 Script = enum.Enum(u'Hiragana', u'Katakana', u'Kanji', u'Ascii',
-        u'FullAscii', u'Unknown')
+        u'FullAscii', u'HalfKatakana', u'Unknown')
 
 _knownBands = {
-        Script.Ascii:       (u'\u0021', u'\u00ff'),
-        Script.Hiragana:	(u'\u3041', u'\u3096'),
-        Script.Katakana:	(u'\u30a1', u'\u30f6'),
-        Script.Kanji:	    (u'\u4e00', u'\u9fa5'),
-        Script.FullAscii:	(u'\uff01', u'\uff5f'),
+        Script.Ascii:           (u'\u0021', u'\u00ff'),
+        Script.Hiragana:	    (u'\u3041', u'\u3096'),
+        Script.Katakana:	    (u'\u30a1', u'\u30f6'),
+        Script.Kanji:	        (u'\u4e00', u'\u9fa5'),
+        Script.FullAscii:	    (u'\uff01', u'\uff5f'),
+        Script.HalfKatakana:    (u'\uff61', u'\uff9f'),
     }
 
 _interKanaDistance = 96
@@ -100,6 +101,50 @@ def normalizeAscii(jString):
         result.append(_mappedChars.get(char, char))
 
     return _toAscii(u''.join(result))
+
+#----------------------------------------------------------------------------#
+
+_fullWidthKana = u"。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜"
+
+def normalizeKana(jString):
+    """
+    Normalizes all half-width katakana to normal width katakana. Leaves
+    all other characters unchanged.
+
+        >>> x = normalizeKana(unicode('ｶｷｸｹｺ', 'utf8'))
+        >>> x == unicode('カキクケコ', 'utf8') 
+        True
+
+    @param jString: The string to convert.
+    @type jString: unicode
+    @return: The converted string.
+    """
+    startHWKana, endHWKana = _knownBands[Script.HalfKatakana]
+    result = []
+    for char in jString:
+        if startHWKana <= char <= endHWKana:
+            result.append(_fullWidthKana[ord(char) - 0xff61])
+        else:
+            result.append(char)
+
+    return u''.join(result)
+
+#----------------------------------------------------------------------------#
+
+def normalize(jString):
+    """
+    Jointly normalized full width ascii to single width ascii and half-width
+    katakana to full with katakana.
+
+        >>> x = normalize(unicode('Aあア阿ｱＡ', 'utf8'))
+        >>> x == unicode('Aあア阿アA', 'utf8')
+        True
+
+    @param jString: The string to convert.
+    @type jString: unicode
+    @return: The converted string.
+    """
+    return normalizeAscii(normalizeKana(jString))
 
 #----------------------------------------------------------------------------#
 
