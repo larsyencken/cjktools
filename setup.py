@@ -19,12 +19,12 @@ import re
 
 #----------------------------------------------------------------------------#
 
-cjktoolsVersion = u'0.8a'
+cjktoolsVersion = u'0.9'
 hgVersion = os.popen(u'hg parents').readlines()[0].rstrip()
 hgVersion = re.sub(r'^changeset:\s*(\d+):[^\s]+$', r'\1', hgVersion)
 
 setup(
-        name='cjktools',
+        name='python-cjktools',
         version='%s.%s' % (cjktoolsVersion, hgVersion),
         package_dir={'cjktools': 'src'},
         packages=['cjktools', 'cjktools.dict'],
