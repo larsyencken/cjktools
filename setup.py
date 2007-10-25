@@ -27,6 +27,6 @@ setup(
         name='python-cjktools',
         version='%s.%s' % (cjktoolsVersion, hgVersion),
         package_dir={'cjktools': 'src'},
-        packages=['cjktools', 'cjktools.dict'],
+        packages=['cjktools', 'cjktools.resources'],
         scripts=['src/dyntest.py']
     )
