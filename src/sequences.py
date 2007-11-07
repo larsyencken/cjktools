@@ -426,12 +426,33 @@ def groupsOfN(n, seq):
     >>> list(x) == [[0, 1, 2], [3, 4, 5], [6, 7 ,8], [9]]
     True
     """
+    if hasattr(seq, '__getslice__'):
+        return groupsOfNSliced(n, seq)
+    else:
+        return groupsOfNIter(n, seq)
+
+#----------------------------------------------------------------------------#
+
+def groupsOfNIter(n, seq):
+    """A version of groupsOfN which always uses iterators."""
     seq = iter(seq)
     result = head(n, seq)
     while result:
         yield result
         result = head(n, seq)
 
+    return
+
+#----------------------------------------------------------------------------#
+
+def groupsOfNSliced(n, seq):
+    """A version of groupsOfN which always uses slices."""
+    i = 0
+    result = seq[i:i+n]
+    while result:
+        yield result
+        i += n
+        result = seq[i:i+n]
     return
 
 #----------------------------------------------------------------------------#
