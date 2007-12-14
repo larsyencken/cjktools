@@ -20,3 +20,4 @@ log/*
 MANIFEST
 dist/*
 *.deb
+.DS_Store
