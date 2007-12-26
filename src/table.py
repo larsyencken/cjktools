@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # tableData.py
-# Lars Yencken <lars.yencken@gmail.com>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Mon Mar 13 12:54:07 EST 2006
 #

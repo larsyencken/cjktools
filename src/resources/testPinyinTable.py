@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # testPinyinTable.py
-# Lars Yencken <lars.yencken@gmail.com>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue Dec 12 10:32:43 2006
 #

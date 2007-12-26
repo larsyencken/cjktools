@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # tree.py
-# Lars Yencken <lars.yencken@gmail.com>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Thu Jul 26 16:52:28 2007
 #

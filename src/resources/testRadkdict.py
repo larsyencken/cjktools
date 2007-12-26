@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # testRadkdict.py
-# Lars Yencken <lars.yencken@gmail.com>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue Dec  5 16:58:29 2006
 #

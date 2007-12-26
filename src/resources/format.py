@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # dictionaryFormat.py
-# Lars Yencken <lars.yencken@gmail.com>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Fri Dec 22 15:18:13 2006
 #

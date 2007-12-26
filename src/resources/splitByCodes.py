@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # splitByCodes.py
-# Lars Yencken <lars.yencken@gmail.com>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Wed Jun 13 10:10:23 EST 2007
 #

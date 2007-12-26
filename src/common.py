@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # common.py
-# Lars Yencken <lars.yencken@gmail.com>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Mon Feb 26 15:22:24 2007
 #

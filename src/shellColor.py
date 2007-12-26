@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # shellColor.py
-# Lars Yencken <lljy@csse.unimelb.edu.au>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue May  2 11:36:56 2006
 #

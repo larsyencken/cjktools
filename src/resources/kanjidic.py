@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
 # kanjidic.py
-# Lars Yencken <lljy@csse.unimelb.edu.au>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Fri Apr 28 16:09:09 2006
 #

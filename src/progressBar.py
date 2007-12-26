@@ -1,6 +1,5 @@
 #----------------------------------------------------------------------------#
 # progressBar.py
-# Lars Yencken <lars.yencken@gmail.com>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Thu Feb 10 12:25:51 EST 2005
 #

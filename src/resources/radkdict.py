@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 #----------------------------------------------------------------------------#
 # radkdict.py
-# Lars Yencken <lljy@csse.unimelb.edu.au>
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue May  2 15:44:24 2006
 #
