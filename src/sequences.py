@@ -96,7 +96,9 @@ def unzip(pairList):
 
     @param pairList: The sequence of tuples to draw the input from.
     """
-    assert pairList
+    if not pairList:
+        raise ValueError, "need a non-empty input list"
+
     numLists = len(pairList[0])
 
     newLists = []
