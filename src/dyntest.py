@@ -61,7 +61,13 @@ def dynamicSuite(fileOrDirectory, excludes=[]):
             # Import the module.
             moduleName = filename[:-len('.py')]
             fullImportPath = importPath + [moduleName]
-            module = __import__('.'.join(fullImportPath))
+            try:
+                module = __import__('.'.join(fullImportPath))
+            except ImportError, e:
+                print 'Error importing: %s' % '.'.join(fullImportPath)
+                print e.message
+                print 'Continuing...'
+                continue
 
             # If the one we care about is embedded deep within packages,
             # fetch it out.
