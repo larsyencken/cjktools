@@ -12,6 +12,7 @@ High-frequency, common tools.
 
 #----------------------------------------------------------------------------#
 
+import sys
 import codecs
 import bz2, gzip
 
