@@ -30,16 +30,11 @@ class Example(object):
         return
 
 class DecoratorsTestCase(unittest.TestCase):
-    """
-    This class tests the Decorators class. 
-    """
     def setUp(self):
         pass
 
     def testMemoized(self):
-        """
-        Tests for proper caching behaviour with a simple class.
-        """
+        """Tests for proper caching behaviour with a simple class."""
         x = getExample()
         self.assertEqual(x.value, 3)
 
@@ -49,6 +44,19 @@ class DecoratorsTestCase(unittest.TestCase):
         x.value = 5
         self.assertEqual(y.value, 5)
 
+        return
+
+    def testOneShot(self):
+        x = [1]
+
+        @oneShot
+        def f():
+            return x.pop()
+
+        self.assertEqual(f(), 1)
+        self.assertEqual(x, [])
+        self.assertEqual(f(), 1)
+        self.assertEqual(f(), 1)
         return
     
     def tearDown(self):
