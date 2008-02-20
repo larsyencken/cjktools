@@ -28,3 +28,18 @@ class NotYetImplementedError(Exception):
     pass
 
 #----------------------------------------------------------------------------#
+
+class NotEnoughDataError(Exception):
+    """
+    Raised when there is insufficient data in the input to the function for
+    it to evaluate correctly.
+    """
+    pass
+
+#----------------------------------------------------------------------------#
+
+class DomainError(Exception):
+    """Raised when the function is called outside its domain."""
+    pass
+
+#----------------------------------------------------------------------------#

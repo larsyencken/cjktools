@@ -13,9 +13,7 @@ A series of useful Python decorators.
 #----------------------------------------------------------------------------#
 
 def simpleDecorator(decorator):
-    """
-    Turns simple functions into well behaved decorators.
-    """
+    """Turns simple functions into well behaved decorators."""
     def new_decorator(f):
         g = decorator(f)
         g.__name__ = f.__name__
@@ -31,9 +29,7 @@ def simpleDecorator(decorator):
 #----------------------------------------------------------------------------#
 
 class memoized(object): 
-    """
-    A decorator which caches the functions values in a dictionary. 
-    """
+    """A decorator which caches the functions values in a dictionary."""
     def __init__(self, func):
         self.func = func
         self.cache = {}
@@ -54,6 +50,19 @@ class memoized(object):
 
     def __repr__(self):
         return repr(self.func)
+
+#----------------------------------------------------------------------------#
+
+@simpleDecorator
+def oneShot(f):
+    """Caches all calls to the function after the first."""
+    def wrapper():
+        if not hasattr(f, '_cached'):
+            f._cached = f()
+
+        return f._cached
+
+    return wrapper
 
 #----------------------------------------------------------------------------#
 
