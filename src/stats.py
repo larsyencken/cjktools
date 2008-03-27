@@ -142,10 +142,53 @@ def combinations(combinationList):
 
 #----------------------------------------------------------------------------#
 
+def iuniquePairs(inputList):
+    return UniquePairsIterator(inputList)
+
+class UniquePairsIterator(object):
+    """
+    An interator over pairings which also has a length method.
+
+    >>> x = UniquePairsIterator([1, 2, 3])
+    >>> len(x)
+    3
+    >>> list(x)
+    [(1, 2), (1, 3), (2, 3)]
+    """
+    def __init__(self, inputList):
+        self.i = 0
+        self.j = 1
+        self.inputList = sorted(inputList)
+        self.listLen = len(inputList)
+
+        if self.listLen < 2:
+            raise ValueError, "input must be of length at least 2"
+
+    def next(self):
+        if self.i == self.listLen - 1 and self.j >= self.listLen:
+            raise StopIteration
+
+        item = self.inputList[self.i], self.inputList[self.j]
+        self.j += 1
+        if self.j >= self.listLen:
+            self.i += 1
+            self.j = self.i + 1
+
+        return item
+
+    def __len__(self):
+        return self.listLen * (self.listLen - 1) / 2
+
+    def __iter__(self):
+        return self
+
+    def __repr__(self):
+        return '<UniquePairsIterator: %d items>' % len(self)
+
+#----------------------------------------------------------------------------#
+
 def uniqueTuples(inputList, n=2):
-    """
-    Similar to combinations, but selects from the same list.
-    """
+    "Similar to combinations, but selects from the same list."
     def filterFn(x):
         for i in xrange(n-1):
             if x[i] >= x[i+1]:
@@ -158,9 +201,7 @@ def uniqueTuples(inputList, n=2):
 #----------------------------------------------------------------------------#
 
 def iuniqueTuples(inputList, n=2):
-    """
-    An iterator version of uniqueTuples.
-    """
+    "An iterator version of uniqueTuples."
     def filterFn(x):
         for i in xrange(n-1):
             if x[i] >= x[i+1]:
