@@ -326,7 +326,7 @@ def kappa(responsesA, responsesB, potentialResponses=None):
     Assuming matched list of response values for each rater, determine
     their kappa value using Cohen's method.
     """
-    from nltk_lite.probability import FreqDist
+    from nltk.probability import FreqDist
 
     if not responsesA or not responsesB:
         raise InsufficientData, "Need at least one response to calculate kappa"
