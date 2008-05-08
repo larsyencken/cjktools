@@ -6,9 +6,7 @@
 #
 #----------------------------------------------------------------------------#
 
-"""
-Based on the radkfile, a dictionary mapping character to bag of radicals.
-"""
+"Based on the radkfile, a dictionary mapping character to bag of radicals."
 
 #----------------------------------------------------------------------------#
 
@@ -27,17 +25,13 @@ _defaultFile = path.join(settings.DATA_DIR, 'radkfile')
 #----------------------------------------------------------------------------#
 
 class RadkDict(dict):
-    """
-    Determines which radicals a character contains.
-    """
+    "Determines which radicals a character contains."
     #------------------------------------------------------------------------#
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
     def __init__(self, dictFile=_defaultFile):
         """
-        Constructor.
-        
         @param dictFile: The radkfile to parse.
         """
         self._parseRadkfile(dictFile)
@@ -84,26 +78,18 @@ class RadkDict(dict):
 
     #------------------------------------------------------------------------#
 
-#----------------------------------------------------------------------------#
+    @classmethod
+    def getCached(cls):
+        "Returns a memory-cached class instance."
+        if not hasattr(cls, '_cached'):
+            cls._cached = cls()
 
-_radicalDict = None
-
-def getRadkDict():
-    """
-    Fetches a new copy of the radical dictionary.
-    """
-    global _radicalDict
-    if _radicalDict is None:
-        _radicalDict = RadkDict()
-
-    return _radicalDict
+        return cls._cached
 
 #----------------------------------------------------------------------------#
 
 def printRadicals(kanjiList):
-    """
-    Print out each kanji and the radicals it contains.
-    """
+    "Print out each kanji and the radicals it contains."
     radicalDict = RadkDict()
     for kanji in kanjiList:
         kanji = unicode(kanji, 'utf8')
