@@ -22,7 +22,7 @@ from os.path import exists, isdir, join, abspath, dirname
 # PUBLIC METHODS
 #----------------------------------------------------------------------------#
 
-def dynamicSuite(fileOrDirectory, excludes=[]):
+def dynamicSuite(fileOrDirectory, excludes=[], baseImportPath=[]):
     """
     Generates a dynamic test suite out of the given directory.
 
@@ -54,8 +54,9 @@ def dynamicSuite(fileOrDirectory, excludes=[]):
         moduleIter = _pythonWalk('.', excludes)
 
     suites = []
+
     for dirPath, filenames in moduleIter:
-        importPath = dirPath.lstrip('.').split('/')[1:]
+        importPath = baseImportPath + dirPath.lstrip('.').split('/')[1:]
 
         for filename in filenames:
             # Import the module.
