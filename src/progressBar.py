@@ -22,17 +22,21 @@ import common
 
 _currentBar = None
 
-def withProgress(iterator, modValue=1, size=None):
-    """
-    A wrapper for a sized iterator which adds a progress bar.
-    """
+def withProgress(iterator, modValue=1, size=None, force=False):
+    "A wrapper for a sized iterator which adds a progress bar."
     global _currentBar
 
     progress = ProgressBar()
-    if size is not None:
-        progress.start(size)
+    if size is None:
+        if hasattr(iterator, '__len__'):
+            progress.start(len(iterator))
+        elif force:
+            iterator = list(iterator)
+            progress.start(len(iterator))
+        else:
+            raise ValueError, "iterator has no __len__ method"
     else:
-        progress.start(len(iterator))
+        progress.start(size)
 
     _currentBar = progress
 
@@ -60,13 +64,9 @@ def tick():
 #----------------------------------------------------------------------------#
 
 class ProgressBar:
-    """
-    A progress bar which gets printed to stdout.
-    """
+    "A progress bar which gets printed to stdout."
     def __init__(self, stringSize=20):
-        """
-        Creates a new instance, setting the size as needed.
-        """
+        "Creates a new instance, setting the size as needed."
         self._stringSize = stringSize
         self._count = 0
         self._totalCount = None
@@ -80,9 +80,7 @@ class ProgressBar:
         return
 
     def reset(self):
-        """
-        Resets the progress bar to initial conditions.
-        """
+        "Resets the progress bar to initial conditions."
         self._count = 0
         self._totalCount = None
         self._lastLineSize = None
@@ -145,25 +143,19 @@ class ProgressBar:
         return
 
     def tick(self):
-        """
-        Perform a quick update.
-        """
+        "Perform a quick update."
         self.update(self._count)
         return
 
     def fractional(self, fraction):
-        """
-        Set a fractional percentage completion, e.g. 0.3333 -> 33%.
-        """
+        "Set a fractional percentage completion, e.g. 0.3333 -> 33%."
         assert fraction >= 0 and fraction <= 1
         self.update(int(fraction * self._totalCount))
 
         return
     
     def finish(self):
-        """
-        Fixes to 100% complete, and writes the time taken.
-        """
+        "Fixes to 100% complete, and writes the time taken."
         assert self._totalCount > 0, "Progress bar wasn't initialised"
         self.update(self._totalCount)
 
@@ -188,9 +180,7 @@ class ProgressBar:
 #----------------------------------------------------------------------------#
 
 def linesWithProgress(filename, encoding='utf8', modValue=None):
-    """
-    A progress bar over the lines in an uncompressed file.
-    """
+    "A progress bar over the lines in an uncompressed file."
     # We can't provide progress in these cases.
     if filename.endswith('.gz') or filename.endswith('.bz2'):
         iStream = common.sopen(filename, 'r', encoding)
