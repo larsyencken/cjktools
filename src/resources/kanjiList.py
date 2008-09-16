@@ -19,7 +19,7 @@ from cjktools import scripts
 
 #----------------------------------------------------------------------------#
 
-_kanjiListDir = os.path.join(settings.DATA_DIR, 'kanji-lists')
+_kanjiListDir = os.path.join(settings.DATA_DIR, 'lists', 'char')
 
 #----------------------------------------------------------------------------#
 
