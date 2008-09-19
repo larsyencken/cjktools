@@ -48,6 +48,13 @@ def flatten(objectSeq):
     """
     Flattens all levels of lists from the input, preserving original order
     of items.
+
+    >>> flatten([1, [2, [3, [], [4, 5, [6]]]]])
+    [1, 2, 3, 4, 5, 6]
+    >>> flatten([1, set(['a'])])
+    [1, 'a']
+    >>> flatten([1, set([u'a'])])
+    [1, u'a']
     """
     return list(iflatten(objectSeq))
 
@@ -69,6 +76,9 @@ def iflatten(objectSeq):
         try:
             item = objectSeq.next()
 
+            if type(item) in (unicode, str):
+                yield item
+                continue
             try:
                 # Try to coerce this item into a sequence.
                 subSeq = iter(item)
