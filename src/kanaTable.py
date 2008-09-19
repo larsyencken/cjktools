@@ -83,7 +83,7 @@ class KanaTable(object):
         if not self._toConsonantLine or not self._toVowelLine:
             self._buildDicts()
 
-        return (self._toConsonantLine(kana), self._toVowelLine(kana))
+        return (self._toConsonantLine[kana], self._toVowelLine[kana])
 
     #------------------------------------------------------------------------#
 
