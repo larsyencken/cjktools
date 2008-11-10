@@ -10,6 +10,17 @@
 
 #----------------------------------------------------------------------------#
 
-DATA_DIR = '/usr/share/cjktools-data'
+import os
+
+_candidates = [
+        '/usr/share/cjktools-data',
+        '/usr/local/share/cjktools-data',
+    ]
+
+DATA_DIR = None
+for candidate in _candidates:
+    if os.path.isdir(candidate):
+        DATA_DIR = candidate
+        break
 
 #----------------------------------------------------------------------------#
