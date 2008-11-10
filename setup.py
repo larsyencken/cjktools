@@ -19,13 +19,17 @@ import re
 
 #----------------------------------------------------------------------------#
 
+def get_hg_version():
+    version = None
+    if os.system('which hg >/dev/null 2>/dev/null') == 0:
+        version = os.popen('hg id -n 2>/dev/null').read().strip():
+    return version or 'unknown'
+
 cjktoolsVersion = u'0.9'
-hgVersion = os.popen(u'hg parents').readlines()[0].rstrip()
-hgVersion = re.sub(r'^changeset:\s*(\d+):[^\s]+$', r'\1', hgVersion)
 
 setup(
         name='python-cjktools',
-        version='%s.%s' % (cjktoolsVersion, hgVersion),
+        version='%s.%s' % (cjktoolsVersion, get_hg_version()),
         package_dir={'cjktools': 'src'},
         packages=['cjktools', 'cjktools.resources'],
         scripts=['src/dyntest.py']
