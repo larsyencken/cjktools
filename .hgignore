@@ -21,3 +21,4 @@ MANIFEST
 dist/*
 *.deb
 .DS_Store
+data
