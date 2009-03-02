@@ -25,7 +25,7 @@ def get_hg_version():
         version = os.popen('hg id -i 2>/dev/null').read().strip().rstrip('+')
     return version or 'unknown'
 
-cjktoolsVersion = u'1.0'
+cjktoolsVersion = u'1.1dev'
 
 setup(
         name='cjktools',
