@@ -22,3 +22,4 @@ dist/*
 *.deb
 .DS_Store
 data
+cjktools.egg-info/*

@@ -13,7 +13,7 @@ Package setup file for the cjktools package.
 
 #----------------------------------------------------------------------------#
 
-from distutils.core import setup
+from setuptools import setup
 import os
 import re
 
@@ -22,15 +22,21 @@ import re
 def get_hg_version():
     version = None
     if os.system('which hg >/dev/null 2>/dev/null') == 0:
-        version = os.popen('hg id -n 2>/dev/null').read().strip()
+        version = os.popen('hg id -i 2>/dev/null').read().strip().rstrip('+')
     return version or 'unknown'
 
-cjktoolsVersion = u'0.9'
+cjktoolsVersion = u'1.0'
 
 setup(
-        name='python-cjktools',
-        version='%s.%s' % (cjktoolsVersion, get_hg_version()),
+        name='cjktools',
+        description="A library for basic CJK processing and lexicography.",
+        url="http://bitbucket.org/lars512/cjktools/",
+        version='%s.r%s' % (cjktoolsVersion, get_hg_version()),
+        author="Lars Yencken",
+        author_email="lljy@csse.unimelb.edu.au",
+        license="BSD",
+
         package_dir={'cjktools': 'src'},
         packages=['cjktools', 'cjktools.resources'],
-        scripts=['src/dyntest.py']
+        scripts=['src/dyntest.py'],
     )
