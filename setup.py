@@ -30,6 +30,10 @@ cjktoolsVersion = u'1.1dev'
 setup(
         name='cjktools',
         description="A library for basic CJK processing and lexicography.",
+        long_description = """
+        Provides basic script detection, manipulation of kana and interfaces
+        for the popular EDICT and KANJIDIC families of dictionaries.
+        """,
         url="http://bitbucket.org/lars512/cjktools/",
         version='%s.r%s' % (cjktoolsVersion, get_hg_version()),
         author="Lars Yencken",
