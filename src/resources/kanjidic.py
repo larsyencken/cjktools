@@ -22,9 +22,10 @@ from os import path
 
 #----------------------------------------------------------------------------#
 
-defaultFiles = [
-        path.join(settings.DATA_DIR, 'kanjidic'),
-        path.join(settings.DATA_DIR, 'kanjd212')
+def getDefaultFiles():
+    return [
+        path.join(settings.getDataDir(), 'kanjidic'),
+        path.join(settings.getDataDir(), 'kanjd212')
     ]
 
 #----------------------------------------------------------------------------#
@@ -127,7 +128,7 @@ class Kanjidic(dict):
         dict.__init__(self)
 
         if kanjidicFiles is None:
-            kanjidicFiles = defaultFiles
+            kanjidicFiles = getDefaultFiles()
 
         self._parseKanjidic(kanjidicFiles)
 

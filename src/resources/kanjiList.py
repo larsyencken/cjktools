@@ -19,7 +19,8 @@ from cjktools import scripts
 
 #----------------------------------------------------------------------------#
 
-_kanjiListDir = os.path.join(settings.DATA_DIR, 'lists', 'char')
+def getKanjiListDir():
+    return os.path.join(settings.getDataDir(), 'lists', 'char')
 
 #----------------------------------------------------------------------------#
 
@@ -27,9 +28,8 @@ def getLists():
     """
     Returns list containing the names of all existing kanji lists.
     """
-    global _kanjiListDir
     result = []
-    for filename in os.listdir(_kanjiListDir):
+    for filename in os.listdir(getKanjiListDir()):
         result.append(os.path.splitext(filename)[0])
 
     return result
@@ -40,7 +40,7 @@ def getList(listName):
     """
     Returns the kanji in the given list.
     """
-    iStream = sopen(os.path.join(_kanjiListDir, '%s.list' % listName))
+    iStream = sopen(os.path.join(getKanjiListDir(), '%s.list' % listName))
     data = iStream.read()
     iStream.close()
 

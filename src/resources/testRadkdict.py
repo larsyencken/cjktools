@@ -30,7 +30,7 @@ class RadkdictTestCase(unittest.TestCase):
         """
         Tests that the radkdict constructs itself properly.
         """
-        dict = getRadkDict()
+        dict = RadkDict.getCached()
         return
 
     def testFetchRadicals(self):
@@ -38,7 +38,7 @@ class RadkdictTestCase(unittest.TestCase):
         Tests fetching radicals from the radkfile. 
         """
         key = u'偏'
-        dict = getRadkDict()
+        dict = RadkDict.getCached()
         radicals = set(dict[key])
         expectedRadicals = set([u'一', u'｜', u'化', u'冂', u'戸', u'冊'])
         self.assertEqual(radicals, expectedRadicals)

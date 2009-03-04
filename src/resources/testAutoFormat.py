@@ -7,11 +7,12 @@
 #----------------------------------------------------------------------------# 
 
 import unittest
+from os import path
+
 from autoFormat import *
 from bilingualDict import BilingualDictionary
 
-from settings import DATA_DIR
-from os import path
+import settings
 
 #----------------------------------------------------------------------------#
 
@@ -30,7 +31,7 @@ class AutoFormatTestCase(unittest.TestCase):
     #------------------------------------------------------------------------#
 
     def setUp(self):
-        dictDir = path.join(DATA_DIR, 'dict')
+        dictDir = path.join(settings.getDataDir(), 'dict')
         self.je_edict = path.join(dictDir, 'je_edict')
         self.je_jplaces = path.join(dictDir, 'je_jplaces')
         pass

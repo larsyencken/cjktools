@@ -18,7 +18,7 @@ from cjktools.maps import invertMapping
 import cjktools.stats
 
 import zhuyinTable
-from settings import DATA_DIR
+import settings
 
 #----------------------------------------------------------------------------#
 # PUBLIC
@@ -37,8 +37,9 @@ toneToVowels = {
 _cachedPinyinTable = None
 _cachedPinyinSegmenter = None
 
-_equivalenceTable = os.path.join(DATA_DIR, 'tables', 'pinyin_ambiguous_table')
-_gbkTable = os.path.join(DATA_DIR, 'tables', 'gbk_pinyin_table')
+
+def getGbkTableFile():
+    return os.path.join(settings.getDataDir(), 'tables', 'gbk_pinyin_table')
 
 #----------------------------------------------------------------------------#
 
@@ -60,7 +61,7 @@ class PinyinTable(dict):
         self._segmenter = getPinyinSegmenter()
 
         # Load the table mapping hanzi to pinyin.
-        iStream = sopen(_gbkTable)
+        iStream = sopen(getGbkTableFile())
         for line in filterComments(iStream):
             entries = line.rstrip().split()
             hanzi = entries[0]

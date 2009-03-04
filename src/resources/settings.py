@@ -15,12 +15,23 @@ import os
 _candidates = [
         '/usr/share/cjktools-data',
         '/usr/local/share/cjktools-data',
+        # Add an explicit directory where data files are stored here.
     ]
 
-DATA_DIR = None
-for candidate in _candidates:
-    if os.path.isdir(candidate):
-        DATA_DIR = candidate
-        break
+
+_cachedDataDir = None
+
+def getDataDir():
+    global _cachedDataDir
+    if _cachedDataDir is None:
+        for candidate in _candidates:
+            if os.path.isdir(candidate):
+                _cachedDataDir = candidate
+                break
+    
+    if _cachedDataDir is None:
+        raise Exception('no default data directory found')
+    
+    return _cachedDataDir
 
 #----------------------------------------------------------------------------#

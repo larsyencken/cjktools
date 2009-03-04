@@ -20,7 +20,8 @@ import sys
 
 #----------------------------------------------------------------------------#
 
-_defaultFile = path.join(settings.DATA_DIR, 'radkfile')
+def getDefaultFile():
+    return path.join(settings.getDataDir(), 'radkfile')
 
 #----------------------------------------------------------------------------#
 
@@ -30,10 +31,11 @@ class RadkDict(dict):
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
-    def __init__(self, dictFile=_defaultFile):
+    def __init__(self, dictFile=None):
         """
         @param dictFile: The radkfile to parse.
         """
+        dictFile = dictFile or getDefaultFile()
         self._parseRadkfile(dictFile)
         return
 

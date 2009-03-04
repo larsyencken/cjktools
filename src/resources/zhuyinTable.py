@@ -20,15 +20,16 @@ import settings
 
 #----------------------------------------------------------------------------#
 
-_conversionTable = os.path.join(settings.DATA_DIR, 'tables',
-        'zhuyin_pinyin_conv_table')
+def getConversionFile():
+    return os.path.join(settings.getDataDir(), 'tables',
+            'zhuyin_pinyin_conv_table')
 
 #----------------------------------------------------------------------------#
 
 def getZhuyinToPinyinTable():
     """Returns a dictionary mapping zhuyin to pinyin."""
     table = {}
-    for zhuyin, pinyin in parseLines(sopen(_conversionTable)):
+    for zhuyin, pinyin in parseLines(sopen(getConversionFile())):
         table[zhuyin] = pinyin
 
     return table
@@ -36,11 +37,9 @@ def getZhuyinToPinyinTable():
 #----------------------------------------------------------------------------#
 
 def getPinyinToZhuyinTable():
-    """Returns a dictionary mapping zhuyin to pinyin."""
-    global _conversionTable
-    
+    """Returns a dictionary mapping zhuyin to pinyin."""    
     table = {}
-    for zhuyin, pinyin in parseLines(sopen(_conversionTable)):
+    for zhuyin, pinyin in parseLines(sopen(getConversionFile())):
         table[pinyin] = zhuyin
 
     return table
@@ -51,11 +50,9 @@ def pinyinRegexPattern():
     """
     Returns a pinyin regex pattern, with optional tone number.
     """
-    global _conversionTable
-
     allPinyin = ['r']
 
-    for zhuyin, pinyin in parseLines(sopen(_conversionTable)):
+    for zhuyin, pinyin in parseLines(sopen(getConversionFile())):
         allPinyin.append(pinyin)
 
     # Sort from longest to shortest, so as to make maximum matches whenever
@@ -73,11 +70,9 @@ def zhuyinRegexPattern():
     """
     Returns a zhuyin regex pattern.
     """
-    global _conversionTable
-
     allPinyin = []
 
-    for zhuyin, pinyin in parseLines(sopen(_conversionTable)):
+    for zhuyin, pinyin in parseLines(sopen(getConversionFile())):
         allPinyin.append(pinyin)
 
     pattern = '(%s)[0-4]?' % '|'.join(allPinyin)

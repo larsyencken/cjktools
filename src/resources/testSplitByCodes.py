@@ -25,9 +25,9 @@ class SplitByCodesTestCase(unittest.TestCase):
     This class tests the SplitByCodes class. 
     """
     def setUp(self):
-        self.enamdictFile = os.path.join(settings.DATA_DIR, 'dict',
+        self.enamdictFile = os.path.join(settings.getDataDir(), 'dict',
                 'je_enamdict')
-        self.edictFile = os.path.join(settings.DATA_DIR, 'dict',
+        self.edictFile = os.path.join(settings.getDataDir(), 'dict',
                 'je_edict')
         pass
 
