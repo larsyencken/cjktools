@@ -22,7 +22,6 @@ __all__ = [
     'exceptions',
     'kanaTable',
     'maps',
-    'progressBar',
     'relation',
     'scripts',
     'sequences',

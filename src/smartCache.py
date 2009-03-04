@@ -18,7 +18,6 @@ import time
 import types
 from os import path, environ
 import sys, os
-import progressBar
 
 #----------------------------------------------------------------------------#
 
