@@ -22,7 +22,7 @@ import re
 def get_hg_version():
     version = None
     if os.system('which hg >/dev/null 2>/dev/null') == 0:
-        version = os.popen('hg id -i 2>/dev/null').read().strip().rstrip('+')
+        version = os.popen('hg id -n 2>/dev/null').read().strip().rstrip('+')
     return version or 'unknown'
 
 cjktoolsVersion = u'1.1dev'
