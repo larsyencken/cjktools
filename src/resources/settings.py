@@ -15,6 +15,7 @@ import os
 _candidates = [
         '/usr/share/cjktools-data',
         '/usr/local/share/cjktools-data',
+        '/opt/local/share/cjktools-data',
         # Add an explicit directory where data files are stored here.
     ]
 
