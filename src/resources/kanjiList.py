@@ -40,7 +40,7 @@ def getList(listName):
     """
     Returns the kanji in the given list.
     """
-    iStream = sopen(os.path.join(getKanjiListDir(), '%s.list' % listName))
+    iStream = sopen(os.path.join(getKanjiListDir(), listName))
     data = iStream.read()
     iStream.close()
 
