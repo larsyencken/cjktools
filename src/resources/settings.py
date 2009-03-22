@@ -20,7 +20,7 @@ _candidates = [
     ]
 
 
-_cachedDataDir = None
+_cachedDataDir = os.environ.get('CJKTOOLS_DATA_DIR', None)
 
 def getDataDir():
     global _cachedDataDir
@@ -31,7 +31,7 @@ def getDataDir():
                 break
     
     if _cachedDataDir is None:
-        raise Exception('no default data directory found')
+        raise Exception('no default data directory found -- set CJKTOOLS_DATA_DIR environment variable')
     
     return _cachedDataDir
 
