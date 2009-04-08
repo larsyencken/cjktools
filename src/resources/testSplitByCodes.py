@@ -7,8 +7,9 @@
 #----------------------------------------------------------------------------# 
 
 import unittest
-from splitByCodes import *
-import settings
+import pkg_resources
+
+from splitByCodes import loadCodedDictionary
 
 #----------------------------------------------------------------------------#
 
@@ -25,10 +26,10 @@ class SplitByCodesTestCase(unittest.TestCase):
     This class tests the SplitByCodes class. 
     """
     def setUp(self):
-        self.enamdictFile = os.path.join(settings.getDataDir(), 'dict',
-                'je_enamdict')
-        self.edictFile = os.path.join(settings.getDataDir(), 'dict',
-                'je_edict')
+        self.enamdictFile = pkg_resources.resource_filename('cjktools_data', 
+                'dict/je_enamdict')
+        self.edictFile = pkg_resources.resource_filename('cjktools_data',
+                'dict/je_edict')
         pass
 
     def testEnamdict(self):

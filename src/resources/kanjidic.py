@@ -12,21 +12,12 @@ A nice interface to the Kanjidic dictionary.
 
 #----------------------------------------------------------------------------#
 
-from cjktools.common import smartLineIter
-from cjktools import scripts
-
-import settings
-
 import re
 from os import path
+from itertools import chain
 
-#----------------------------------------------------------------------------#
-
-def getDefaultFiles():
-    return [
-        path.join(settings.getDataDir(), 'kanjidic'),
-        path.join(settings.getDataDir(), 'kanjd212')
-    ]
+from cjktools import scripts
+from cjktools.common import sopen
 
 #----------------------------------------------------------------------------#
 
@@ -69,7 +60,7 @@ remappings = {
 
 #----------------------------------------------------------------------------#
 
-class KanjidicEntry:
+class KanjidicEntry(object):
     """
     A single entry in the kanjidic file.
     """
@@ -128,9 +119,15 @@ class Kanjidic(dict):
         dict.__init__(self)
 
         if kanjidicFiles is None:
-            kanjidicFiles = getDefaultFiles()
+            import cjktools_data
+            line_stream = chain(
+                    cjktools_data.open_file('kanjidic'),
+                    cjktools_data.open_file('kanjd212'),
+                )
+        else:
+            line_stream = reduce(chain, [sopen(f) for f in kanjidicFiles])
 
-        self._parseKanjidic(kanjidicFiles)
+        self._parse_kanjidic(line_stream)
 
         return
 
@@ -147,7 +144,7 @@ class Kanjidic(dict):
     # PRIVATE
     #------------------------------------------------------------------------#
 
-    def _parseKanjidic(self, files):
+    def _parse_kanjidic(self, line_stream):
         """
         Parses the kanjidic file for its contents, updating this class
         with a kanji -> info mapping.
@@ -156,18 +153,18 @@ class Kanjidic(dict):
         """
         self._dictionary = {}
 
-        for line in smartLineIter(files):
+        for line in line_stream:
             if line.startswith('#'):
                 continue
 
-            entry = self._parseLine(line)
+            entry = self._parse_line(line)
             self.__setitem__(entry.kanji, entry)
 
         return
 
     #------------------------------------------------------------------------#
 
-    def _parseLine(self, line):
+    def _parse_line(self, line):
         """
         Parses a single line in the kanjdic file, returning an entry.
         """

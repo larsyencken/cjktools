@@ -8,8 +8,9 @@
 
 import unittest
 from os import path
+import pkg_resources
 
-from autoFormat import *
+from autoFormat import detectFormat, loadDictionary
 from bilingualDict import BilingualDictionary
 
 import settings
@@ -32,9 +33,10 @@ class AutoFormatTestCase(unittest.TestCase):
 
     def setUp(self):
         dictDir = path.join(settings.getDataDir(), 'dict')
-        self.je_edict = path.join(dictDir, 'je_edict')
-        self.je_jplaces = path.join(dictDir, 'je_jplaces')
-        pass
+        self.je_edict = pkg_resources.resource_filename('cjktools_data', 
+                'dict/je_edict')
+        self.je_jplaces = pkg_resources.resource_filename('cjktools_data', 
+                        'dict/je_jplaces')
 
     #------------------------------------------------------------------------#
 

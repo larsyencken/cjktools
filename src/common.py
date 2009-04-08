@@ -33,23 +33,6 @@ def filterComments(fileStream):
 
 #----------------------------------------------------------------------------#
 
-def smartLineIter(filenames, encoding='utf8'):
-    """
-    Returns an interator over the lines in the given files.
-
-    @param filenames: A sequence of files whose lines to iterate over.
-    @param encoding: The encoding to use [utf8]
-    """
-    for filename in filenames:
-        iStream = sopen(filename, 'r', encoding)
-        for line in iStream:
-            yield line
-        iStream.close()
-
-    return
-
-#----------------------------------------------------------------------------#
-
 def sopen(filename, mode='rb', encoding='utf8'):
     """
     Transparently uses compression on the given file based on file

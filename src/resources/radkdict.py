@@ -10,18 +10,11 @@
 
 #----------------------------------------------------------------------------#
 
+import sys
+import pkg_resources
+
 from cjktools import maps
 from cjktools.common import sopen
-
-import settings
-
-from os import path
-import sys
-
-#----------------------------------------------------------------------------#
-
-def getDefaultFile():
-    return path.join(settings.getDataDir(), 'radkfile')
 
 #----------------------------------------------------------------------------#
 
@@ -31,19 +24,24 @@ class RadkDict(dict):
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
-    def __init__(self, dictFile=None):
+    def __init__(self, dict_file=None):
         """
         @param dictFile: The radkfile to parse.
         """
-        dictFile = dictFile or getDefaultFile()
-        self._parseRadkfile(dictFile)
+        if dict_file is None:
+            line_stream = pkg_resources.resource_stream('cjktools_data',
+                    'radkfile')
+        else:
+            line_stream = sopen(dict_file)
+            
+        self._parse_radkfile(line_stream)
         return
 
     #------------------------------------------------------------------------#
     # PRIVATE METHODS
     #------------------------------------------------------------------------#
 
-    def _parseRadkfile(self, filename):
+    def _parse_radkfile(self, line_stream):
         """
         Parses the radkfile and populates the current dictionary.
         
@@ -55,7 +53,7 @@ class RadkDict(dict):
         currentRadical = None
         strokeCount = None
 
-        for line in sopen(filename, 'r', 'utf8'):
+        for line in line_stream:
             if line.startswith('#'):
                 # found a comment line
                 continue

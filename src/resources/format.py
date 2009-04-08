@@ -68,7 +68,7 @@ class DictionaryFormat(object):
 
     #------------------------------------------------------------------------#
 
-    def parseLine(self, entryLine):
+    def parse_line(self, entryLine):
         """
         Parses a dictionary entry from the given line.
         """
@@ -92,7 +92,7 @@ class DictionaryFormat(object):
 
         dictObj = BilingualDictionary(self, sourceLang, targetLang)
         for line in iStream:
-            entry = self.parseLine(line)
+            entry = self.parse_line(line)
 
             if entry.word in dictObj:
                 # Already an entry here, so update it with new readings and
@@ -124,7 +124,7 @@ class DictionaryFormat(object):
 
         dictObj = BilingualDictionary(self, sourceLang, targetLang)
         for line in iStream:
-            yield self.parseLine(line)
+            yield self.parse_line(line)
 
         iStream.close()
 
@@ -168,7 +168,7 @@ class RegexFormat(DictionaryFormat):
 
     #------------------------------------------------------------------------#
 
-    def parseLine(self, entryLine):
+    def parse_line(self, entryLine):
         """
         See parent class.
         """

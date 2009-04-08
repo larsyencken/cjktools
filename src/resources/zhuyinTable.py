@@ -12,24 +12,21 @@ An interface to the zhuyin <-> pinyin table.
 
 #----------------------------------------------------------------------------#
 
-import os, re
-import cjktools.common
-from cjktools.common import sopen
+import codecs
+import pkg_resources
+
 from cjktools.table import parseLines 
-import settings
 
 #----------------------------------------------------------------------------#
 
-def getConversionFile():
-    return os.path.join(settings.getDataDir(), 'tables',
-            'zhuyin_pinyin_conv_table')
-
-#----------------------------------------------------------------------------#
+def _open_conversion_file():
+    return codecs.getreader('utf8')(pkg_resources.resource_stream(
+            'cjktools_data', 'tables/zhuyin_pinyin_conv_table'))
 
 def getZhuyinToPinyinTable():
     """Returns a dictionary mapping zhuyin to pinyin."""
     table = {}
-    for zhuyin, pinyin in parseLines(sopen(getConversionFile())):
+    for zhuyin, pinyin in parseLines(_open_conversion_file()):
         table[zhuyin] = pinyin
 
     return table
@@ -39,7 +36,7 @@ def getZhuyinToPinyinTable():
 def getPinyinToZhuyinTable():
     """Returns a dictionary mapping zhuyin to pinyin."""    
     table = {}
-    for zhuyin, pinyin in parseLines(sopen(getConversionFile())):
+    for zhuyin, pinyin in parseLines(_open_conversion_file()):
         table[pinyin] = zhuyin
 
     return table
@@ -52,7 +49,7 @@ def pinyinRegexPattern():
     """
     allPinyin = ['r']
 
-    for zhuyin, pinyin in parseLines(sopen(getConversionFile())):
+    for zhuyin, pinyin in parseLines(_open_conversion_file()):
         allPinyin.append(pinyin)
 
     # Sort from longest to shortest, so as to make maximum matches whenever
@@ -72,7 +69,7 @@ def zhuyinRegexPattern():
     """
     allPinyin = []
 
-    for zhuyin, pinyin in parseLines(sopen(getConversionFile())):
+    for zhuyin, pinyin in parseLines(_open_conversion_file()):
         allPinyin.append(pinyin)
 
     pattern = '(%s)[0-4]?' % '|'.join(allPinyin)

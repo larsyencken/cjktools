@@ -13,14 +13,10 @@ An interface to the kanji lists.
 #----------------------------------------------------------------------------#
 
 import os
-import settings
+import pkg_resources
+
 from cjktools.common import sopen
 from cjktools import scripts
-
-#----------------------------------------------------------------------------#
-
-def getKanjiListDir():
-    return os.path.join(settings.getDataDir(), 'lists', 'char')
 
 #----------------------------------------------------------------------------#
 
@@ -29,21 +25,19 @@ def getLists():
     Returns list containing the names of all existing kanji lists.
     """
     result = []
-    for filename in os.listdir(getKanjiListDir()):
-        result.append(os.path.splitext(filename)[0])
+    for filename in pkg_resources.resource_listdir('cjktools_data',
+            'lists/char'):
+        result.append(filename)
 
     return result
 
 #----------------------------------------------------------------------------#
 
-def getList(listName):
+def getList(list_name):
     """
     Returns the kanji in the given list.
     """
-    iStream = sopen(os.path.join(getKanjiListDir(), listName))
-    data = iStream.read()
-    iStream.close()
-
-    return scripts.uniqueKanji(data)
+    return scripts.uniqueKanji(pkg_resources.resource_string('cjktools_data', 
+            'lists/char/%s' % list_name).decode('utf8'))
 
 #----------------------------------------------------------------------------#

@@ -11,14 +11,10 @@ A table for conversion of hanzi to pinyin.
 
 #----------------------------------------------------------------------------#
 
-import os, re
-
-from cjktools.common import sopen, filterComments
-from cjktools.maps import invertMapping
-import cjktools.stats
+import re
+import pkg_resources
 
 import zhuyinTable
-import settings
 
 #----------------------------------------------------------------------------#
 # PUBLIC
@@ -36,10 +32,6 @@ toneToVowels = {
 
 _cachedPinyinTable = None
 _cachedPinyinSegmenter = None
-
-
-def getGbkTableFile():
-    return os.path.join(settings.getDataDir(), 'tables', 'gbk_pinyin_table')
 
 #----------------------------------------------------------------------------#
 
@@ -61,8 +53,11 @@ class PinyinTable(dict):
         self._segmenter = getPinyinSegmenter()
 
         # Load the table mapping hanzi to pinyin.
-        iStream = sopen(getGbkTableFile())
-        for line in filterComments(iStream):
+        iStream = pkg_resources.resource_stream('cjktools_data',
+                'tables/gbk_pinyin_table')
+        for line in iStream:
+            if line.startswith('#'):
+                continue
             entries = line.rstrip().split()
             hanzi = entries[0]
             numericReadings = tuple(entries[1:])

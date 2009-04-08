@@ -6,8 +6,10 @@
 #
 #----------------------------------------------------------------------------# 
 
+import re
 import unittest
-from zhuyinTable import *
+
+import zhuyinTable
 
 #----------------------------------------------------------------------------#
 
@@ -27,17 +29,17 @@ class ZhuyinTableTestCase(unittest.TestCase):
         pass
 
     def testZhuyinToPinyin(self):
-        dictObj = getZhuyinToPinyinTable()
+        dictObj = zhuyinTable.getZhuyinToPinyinTable()
         self.assertEqual(dictObj[u'ㄔㄚ'], u'cha')
         return
     
     def testPinyinToZhuyin(self):
-        dictObj = getPinyinToZhuyinTable()
+        dictObj = zhuyinTable.getPinyinToZhuyinTable()
         self.assertEqual(dictObj[u'cha'], u'ㄔㄚ')
         return
 
     def testPinyinParsing(self):
-        basePattern = pinyinRegexPattern()
+        basePattern = zhuyinTable.pinyinRegexPattern()
         pattern = re.compile(r'^(%s)+$' % basePattern, re.UNICODE)
         assert not pattern.match(u'gdaymatehowsitgoing')
         assert pattern.match(u'woshangbeijingdaxue')
