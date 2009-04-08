@@ -30,7 +30,6 @@ __all__ = [
     'smartCache',
     'stats',
     'table',
-    'xmlTools',
     'resources',
 ]
 
