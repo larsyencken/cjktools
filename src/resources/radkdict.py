@@ -10,6 +10,7 @@
 
 #----------------------------------------------------------------------------#
 
+import codecs
 import sys
 import pkg_resources
 
@@ -29,8 +30,9 @@ class RadkDict(dict):
         @param dictFile: The radkfile to parse.
         """
         if dict_file is None:
-            line_stream = pkg_resources.resource_stream('cjktools_data',
-                    'radkfile')
+            line_stream = codecs.getreader('utf8')(
+                    pkg_resources.resource_stream('cjktools_data', 'radkfile')
+                )
         else:
             line_stream = sopen(dict_file)
             
