@@ -12,6 +12,7 @@ A table for conversion of hanzi to pinyin.
 #----------------------------------------------------------------------------#
 
 import re
+import codecs
 import pkg_resources
 
 import zhuyinTable
@@ -53,8 +54,10 @@ class PinyinTable(dict):
         self._segmenter = getPinyinSegmenter()
 
         # Load the table mapping hanzi to pinyin.
-        iStream = pkg_resources.resource_stream('cjktools_data',
+        iStream = codecs.getreader('utf8')(
+                pkg_resources.resource_stream('cjktools_data',
                 'tables/gbk_pinyin_table')
+            )
         for line in iStream:
             if line.startswith('#'):
                 continue
