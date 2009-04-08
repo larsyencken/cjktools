@@ -7,7 +7,10 @@
 #----------------------------------------------------------------------------# 
 
 import unittest
-from radkdict import *
+import pkg_resources
+
+from radkdict import RadkDict
+from cjktools.scripts import uniqueKanji
 
 #----------------------------------------------------------------------------#
 
@@ -30,16 +33,18 @@ class RadkdictTestCase(unittest.TestCase):
         """
         Tests that the radkdict constructs itself properly.
         """
-        dict = RadkDict.getCached()
-        return
+        rkd = RadkDict()
+        n_kanji = len(uniqueKanji(pkg_resources.resource_string(
+                'cjktools_data', 'radkfile').decode('utf8')))
+        self.assertEqual(len(rkd), n_kanji)
 
     def testFetchRadicals(self):
         """
         Tests fetching radicals from the radkfile. 
         """
         key = u'偏'
-        dict = RadkDict.getCached()
-        radicals = set(dict[key])
+        rkd = RadkDict()
+        radicals = set(rkd[key])
         expectedRadicals = set([u'一', u'｜', u'化', u'冂', u'戸', u'冊'])
         self.assertEqual(radicals, expectedRadicals)
         return
