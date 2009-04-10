@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# setup.py
-# Lars Yencken <lars.yencken@gmail.com>
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Wed Jun 27 12:30:37 2007
 #
-#----------------------------------------------------------------------------#
+#  setup.py
+#  cjktools
+# 
+#  Created by Lars Yencken on 10-04-2009.
+#  Copyright 2009 Lars Yencken. All rights reserved.
+#
 
 """
 Package setup file for the cjktools package.
@@ -41,5 +41,5 @@ setup(
 
         package_dir={'cjktools': 'src'},
         packages=['cjktools', 'cjktools.resources'],
-        scripts=['src/dyntest.py'],
+        scripts=['src/dyntest'],
     )
