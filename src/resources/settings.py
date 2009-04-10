@@ -20,19 +20,19 @@ _candidates = [
     ]
 
 
-_cachedDataDir = os.environ.get('CJKTOOLS_DATA_DIR', None)
+_cached_data_dir = os.environ.get('CJKTOOLS_DATA_DIR', None)
 
-def getDataDir():
-    global _cachedDataDir
-    if _cachedDataDir is None:
+def get_data_dir():
+    global _cached_data_dir
+    if _cached_data_dir is None:
         for candidate in _candidates:
             if os.path.isdir(candidate):
-                _cachedDataDir = candidate
+                _cached_data_dir = candidate
                 break
     
-    if _cachedDataDir is None:
+    if _cached_data_dir is None:
         raise Exception('no default data directory found -- set CJKTOOLS_DATA_DIR environment variable')
     
-    return _cachedDataDir
+    return _cached_data_dir
 
 #----------------------------------------------------------------------------#

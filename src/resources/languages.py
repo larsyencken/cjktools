@@ -14,11 +14,11 @@ A list of common languages and character codes.
 
 import os, sys
 
-from cjktools.maps import invertInjectiveMapping
+from cjktools.maps import invert_injective_mapping
 
 #----------------------------------------------------------------------------#
 
-toOneCharCode = {
+to_one_char_code = {
             'English':      'e',
             'Chinese':      'c',
             'Japanese':     'j',
@@ -28,17 +28,17 @@ toOneCharCode = {
             'Portugese':    'p',
         }
 
-fromOneCharCode = invertInjectiveMapping(toOneCharCode)
+from_one_char_code = invert_injective_mapping(to_one_char_code)
 
 #----------------------------------------------------------------------------#
 
-toTwoCharCode = {
+to_two_char_code = {
             'English':      'en',
             'Chinese':      'cn',
             'Japanese':     'jp',
         }
 
-fromTwoCharCode = invertInjectiveMapping(toTwoCharCode)
+from_two_char_code = invert_injective_mapping(to_two_char_code)
 
 #----------------------------------------------------------------------------#
 

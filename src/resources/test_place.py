@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# testPlace.py
+# test_place.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Sat Jun  9 15:09:12 2007
 #
@@ -18,10 +18,10 @@ warnings.simplefilter("ignore", RuntimeWarning)
 #----------------------------------------------------------------------------#
 
 def suite():
-    testSuite = unittest.TestSuite((
+    test_suite = unittest.TestSuite((
             unittest.makeSuite(PlaceTestCase)
         ))
-    return testSuite
+    return test_suite
 
 #----------------------------------------------------------------------------#
 
@@ -35,7 +35,7 @@ class PlaceTestCase(unittest.TestCase):
         self.filename = os.tmpnam()
         pass
 
-    def testBasics(self):
+    def test_basics(self):
         self.assertEqual(self.melb.label, u'Melbourne')
         self.assertEqual(self.melb.reading, u'メルボルン')
 
@@ -44,20 +44,20 @@ class PlaceTestCase(unittest.TestCase):
         assert self.melb.label in self.aust
         return
 
-    def testFormatting(self):
-        originalPlace = self.aust
+    def test_formatting(self):
+        original_place = self.aust
         melbourne = self.melb
         melbourne.append(Place('St_Kilda', u'セーントキルダ'))
         melbourne.append(Place('Collingwood', u'コーリングウード'))
-        originalPlace.append(melbourne)
+        original_place.append(melbourne)
         sydney = Place('Sydney', u'シドニー')
         self.assertRaises(ValueError, Place, "Anja's place")
         sydney.append(Place("Anja's_place"))
-        originalPlace.append(sydney)
+        original_place.append(sydney)
 
-        originalPlace.dump(self.filename)
-        newCopy = Place.fromFile(self.filename)
-        self.assertEqual(newCopy, originalPlace)
+        original_place.dump(self.filename)
+        new_copy = Place.from_file(self.filename)
+        self.assertEqual(new_copy, original_place)
 
     def tearDown(self):
         # Clean up the temp file we may have used.

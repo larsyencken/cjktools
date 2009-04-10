@@ -25,71 +25,71 @@ class Relation(object):
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
-    def __init__(self, forwardLabel=None, reverseLabel=None):
+    def __init__(self, forward_label=None, reverse_label=None):
         """
         Constructor.
         """
-        self.forwardLabel = forwardLabel
-        self.reverseLabel = reverseLabel
+        self.forward_label = forward_label
+        self.reverse_label = reverse_label
 
-        self._forwardMap = {}
-        self._reverseMap = {}
+        self._forward_map = {}
+        self._reverse_map = {}
 
         return
 
     #------------------------------------------------------------------------#
    
-    def fromSequence(self, sequence):
+    def from_sequence(self, sequence):
         """
-        Loads the sequence from (aVal, bVal) pairs.
+        Loads the sequence from (a_val, b_val) pairs.
         """
-        for aVal, bVal in sequence:
-            self.add(aVal, bVal)
+        for a_val, b_val in sequence:
+            self.add(a_val, b_val)
 
         return self
 
     #------------------------------------------------------------------------#
 
-    def add(self, aVal, bVal):
+    def add(self, a_val, b_val):
         """
         Adds a pair to the relation.
         """
-        if aVal in self._forwardMap:
-            self._forwardMap[aVal].add(bVal)
+        if a_val in self._forward_map:
+            self._forward_map[a_val].add(b_val)
         else:
-            self._forwardMap[aVal] = set([bVal])
+            self._forward_map[a_val] = set([b_val])
 
-        if bVal in self._reverseMap:
-            self._reverseMap[bVal].add(aVal)
+        if b_val in self._reverse_map:
+            self._reverse_map[b_val].add(a_val)
         else:
-            self._reverseMap[bVal] = set([aVal])
+            self._reverse_map[b_val] = set([a_val])
 
         return self
 
     #------------------------------------------------------------------------#
 
-    def remove(self, aVal, bVal):
+    def remove(self, a_val, b_val):
         """
         Removes a pair from the relation.
         """
-        self._forwardMap[aVal].remove(bVal)
-        self._reverseMap[bVal].remove(aVal)
+        self._forward_map[a_val].remove(b_val)
+        self._reverse_map[b_val].remove(a_val)
         return self
 
     #------------------------------------------------------------------------#
 
-    def inASet(self, aVal):
-        return aVal in self._forwardMap
+    def in_a_set(self, a_val):
+        return a_val in self._forward_map
 
     #------------------------------------------------------------------------#
 
-    def inBSet(self, bVal):
-        return bVal in self._reverseMap
+    def in_b_set(self, b_val):
+        return b_val in self._reverse_map
 
     #------------------------------------------------------------------------#
 
-    def forwardGet(self, aVal):
-        result = self._forwardMap.get(aVal)
+    def forward_get(self, a_val):
+        result = self._forward_map.get(a_val)
         if result is None:
             return set()
         else:
@@ -97,8 +97,8 @@ class Relation(object):
 
     #------------------------------------------------------------------------#
 
-    def reverseGet(self, bVal):
-        result = self._reverseMap.get(bVal)
+    def reverse_get(self, b_val):
+        result = self._reverse_map.get(b_val)
         if result is None:
             return set()
         else:
@@ -110,9 +110,9 @@ class Relation(object):
         """
         Tests whether the pair is contained in the relation.
         """
-        aVal, bVal = pair
-        return aVal in self._forwardMap and \
-                bVal in self._forwardMap.__getitem__(aVal)
+        a_val, b_val = pair
+        return a_val in self._forward_map and \
+                b_val in self._forward_map.__getitem__(a_val)
 
     #------------------------------------------------------------------------#
 
@@ -121,9 +121,9 @@ class Relation(object):
         Return a new relation which is the result of merging this
         relation with the rhs.
         """
-        if self.forwardLabel == rhs.forwardLabel and \
-                self.reverseLabel == rhs.reverseLabel:
-            return Relation(self.forwardLabel, self.reverseLabel).fromSequence(
+        if self.forward_label == rhs.forward_label and \
+                self.reverse_label == rhs.reverse_label:
+            return Relation(self.forward_label, self.reverse_label).from_sequence(
                     itertools.chain(self.iteritems(), rhs.iteritems())
                 )
         else:
@@ -131,7 +131,7 @@ class Relation(object):
 
     #------------------------------------------------------------------------#
 
-    def toSequence(self):
+    def to_sequence(self):
         """
         Returns the list of pairs which consist this relation.
         """
@@ -148,7 +148,7 @@ class Relation(object):
         """
         Returns the number of pairs in this relation.
         """
-        return sum(itertools.imap(len, self._forwardMap.itervalues()))
+        return sum(itertools.imap(len, self._forward_map.itervalues()))
 
     #------------------------------------------------------------------------#
     
@@ -156,9 +156,9 @@ class Relation(object):
         """
         Returns an iterator over all pairs in the dictionary.
         """
-        for aVal, bValues in self._forwardMap.iteritems():
-            for bVal in bValues:
-                yield aVal, bVal
+        for a_val, b_values in self._forward_map.iteritems():
+            for b_val in b_values:
+                yield a_val, b_val
 
         return
 
@@ -166,14 +166,14 @@ class Relation(object):
 
     def __repr__(self):
         return '<Relation %s <-> %s, %d pairs>' % (
-                self.forwardLabel,
-                self.reverseLabel,
+                self.forward_label,
+                self.reverse_label,
                 len(self),
             )
 
     #------------------------------------------------------------------------#
 
-    def isSubRelation(self, rhs):
+    def is_sub_relation(self, rhs):
         """
         Returns True if the pairs contained in this relation are a
         subset of the pairs in the rhs relation.
@@ -184,7 +184,7 @@ class Relation(object):
 
     #------------------------------------------------------------------------#
 
-    def isSuperRelation(self, rhs):
+    def is_super_relation(self, rhs):
         """
         Returns True if the pairs contained in this relation are a
         superset of the pairs in the rhs relation.
@@ -195,13 +195,13 @@ class Relation(object):
 
     #------------------------------------------------------------------------#
 
-    def forwardMap(self):
-        return self._forwardMap.copy()
+    def forward_map(self):
+        return self._forward_map.copy()
 
     #------------------------------------------------------------------------#
 
-    def reverseMap(self):
-        return self._reverseMap.copy()
+    def reverse_map(self):
+        return self._reverse_map.copy()
 
     #------------------------------------------------------------------------#
     # PRIVATE METHODS
@@ -230,19 +230,19 @@ class ScoredRelation(Relation):
 
     #------------------------------------------------------------------------#
 
-    def add(self, aVal, bVal, score):
+    def add(self, a_val, b_val, score):
         """
         Adds a scored value to the relation.
         """
-        Relation.add(self, aVal, bVal)
-        self._scores[(aVal, bVal)] = score
+        Relation.add(self, a_val, b_val)
+        self._scores[(a_val, b_val)] = score
         return self
 
     #------------------------------------------------------------------------#
 
-    def remove(self, aVal, bVal):
-        Relation.remove(self, aVal, bVal)
-        del self._scores[(aVal, bVal)]
+    def remove(self, a_val, b_val):
+        Relation.remove(self, a_val, b_val)
+        del self._scores[(a_val, b_val)]
         return self
 
     #------------------------------------------------------------------------#
@@ -260,8 +260,8 @@ class ScoredRelation(Relation):
         """
         Check for containership.
         """
-        aVal, bVal = pair
-        return (aVal, bVal) in self._scores
+        a_val, b_val = pair
+        return (a_val, b_val) in self._scores
 
     #------------------------------------------------------------------------#
 
@@ -278,16 +278,16 @@ class ScoredRelation(Relation):
 
     #------------------------------------------------------------------------#
 
-    def forwardGet(self, aVal):
-        values = Relation.forwardGet(self, aVal)
-        results = dict((v, self._scores[(aVal, v)]) for v in values)
+    def forward_get(self, a_val):
+        values = Relation.forward_get(self, a_val)
+        results = dict((v, self._scores[(a_val, v)]) for v in values)
         return results
 
     #------------------------------------------------------------------------#
 
-    def reverseGet(self, bVal):
-        values = Relation.reverseGet(self, bVal)
-        results = dict((v, self._scores[(v, bVal)]) for v in values)
+    def reverse_get(self, b_val):
+        values = Relation.reverse_get(self, b_val)
+        results = dict((v, self._scores[(v, b_val)]) for v in values)
         return results
 
     #------------------------------------------------------------------------#

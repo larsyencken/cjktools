@@ -28,7 +28,7 @@ class Enum:
     def __len__(self):
         return len(self._constants)
 
-    def fromString(self, name):
+    def from_string(self, name):
         for constant in self._constants:
             if constant._name == name:
                 return constant

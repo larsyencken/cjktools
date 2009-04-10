@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# autoFormat.py
+# auto_format.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue Dec 26 13:55:56 2006
 #
@@ -22,7 +22,7 @@ import languages
 
 #----------------------------------------------------------------------------#
 
-def detectFormat(filename):
+def detect_format(filename):
     """
     Reads the first line of the filename, and attempts to determine the
     format of the dictionary. The matching format is returned, or an
@@ -30,41 +30,41 @@ def detectFormat(filename):
 
     @param filename: The file to attempt to read.
     """
-    global knownFormats
+    global known_formats
 
-    iStream = sopen(filename, 'r')
-    header = iStream.readline()
-    iStream.close()
+    i_stream = sopen(filename, 'r')
+    header = i_stream.readline()
+    i_stream.close()
 
-    for format in knownFormats:
-        if format.matchHeader(header):
+    for format in known_formats:
+        if format.match_header(header):
             return format
     else:
         raise UnknownFormatError, filename
 
 #----------------------------------------------------------------------------#
 
-def loadDictionary(filename):
+def load_dictionary(filename):
     """
     Attempts to detect the format of and parse a dictionary, returning the
     dictionary object on success.
     """
-    return detectFormat(filename).parseDictionary(filename)
+    return detect_format(filename).parse_dictionary(filename)
 
 #----------------------------------------------------------------------------#
 
-def iterEntries(filename):
+def iter_entries(filename):
     """
     Iterates over dictionary entries, without storing them all in memory
     at once.
     """
-    return detectFormat(filename).iterEntries(filename)
+    return detect_format(filename).iter_entries(filename)
 
 #----------------------------------------------------------------------------#
 # DICTIONARY FORMATS
 #----------------------------------------------------------------------------#
 
-knownFormats = [
+known_formats = [
         RegexFormat('edict',
                 u'^？？？？.*$',
                 u'^(?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\] )?(?P<senses>.*)$',

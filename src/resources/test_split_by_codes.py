@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# testSplitByCodes.py
+# test_split_by_codes.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Wed Jun 13 10:38:14 2007
 #
@@ -9,15 +9,15 @@
 import unittest
 import pkg_resources
 
-from splitByCodes import loadCodedDictionary
+from split_by_codes import load_coded_dictionary
 
 #----------------------------------------------------------------------------#
 
 def suite():
-    testSuite = unittest.TestSuite((
+    test_suite = unittest.TestSuite((
             unittest.makeSuite(SplitByCodesTestCase)
         ))
-    return testSuite
+    return test_suite
 
 #----------------------------------------------------------------------------#
 
@@ -26,30 +26,30 @@ class SplitByCodesTestCase(unittest.TestCase):
     This class tests the SplitByCodes class. 
     """
     def setUp(self):
-        self.enamdictFile = pkg_resources.resource_filename('cjktools_data', 
+        self.enamdict_file = pkg_resources.resource_filename('cjktools_data', 
                 'dict/je_enamdict')
-        self.edictFile = pkg_resources.resource_filename('cjktools_data',
+        self.edict_file = pkg_resources.resource_filename('cjktools_data',
                 'dict/je_edict')
         pass
 
-    def testEnamdict(self):
+    def test_enamdict(self):
         """
         Checks code splitting for enamdict. 
         """
-        enamdicCoded = loadCodedDictionary(self.enamdictFile)
-        for knownCode  in ['u', 'p', 's', 'f', 'm', 'pr', 'st', 'co']:
-            assert knownCode in enamdicCoded
+        enamdic_coded = load_coded_dictionary(self.enamdict_file)
+        for known_code  in ['u', 'p', 's', 'f', 'm', 'pr', 'st', 'co']:
+            assert known_code in enamdic_coded
 
-        assert u'秋葉橋' in enamdicCoded['p']
-        assert u'秋葉橋' not in enamdicCoded['s']
+        assert u'秋葉橋' in enamdic_coded['p']
+        assert u'秋葉橋' not in enamdic_coded['s']
 
         return
 
-    def testEdict(self):
-        edictCoded = loadCodedDictionary(self.edictFile)
+    def test_edict(self):
+        edict_coded = load_coded_dictionary(self.edict_file)
 
-        assert 'adj' in edictCoded
-        adjectives = edictCoded['adj']
+        assert 'adj' in edict_coded
+        adjectives = edict_coded['adj']
         assert u'素晴らしい' in adjectives
         subarashii = adjectives[u'素晴らしい']
         assert subarashii.readings[0] == u'すばらしい'

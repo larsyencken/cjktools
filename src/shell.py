@@ -17,7 +17,7 @@ import os
 
 #----------------------------------------------------------------------------#
 
-def setScreenTitle(title):
+def set_screen_title(title):
     """
     Sets the title of a screen window using the given escape sequence.
     """

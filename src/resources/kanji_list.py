@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# kanjiList.py
+# kanji_list.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue Dec 12 19:18:19 2006
 #
@@ -20,7 +20,7 @@ from cjktools import scripts
 
 #----------------------------------------------------------------------------#
 
-def getLists():
+def get_lists():
     """
     Returns list containing the names of all existing kanji lists.
     """
@@ -33,11 +33,11 @@ def getLists():
 
 #----------------------------------------------------------------------------#
 
-def getList(list_name):
+def get_list(list_name):
     """
     Returns the kanji in the given list.
     """
-    return scripts.uniqueKanji(pkg_resources.resource_string('cjktools_data', 
+    return scripts.unique_kanji(pkg_resources.resource_string('cjktools_data', 
             'lists/char/%s' % list_name).decode('utf8'))
 
 #----------------------------------------------------------------------------#

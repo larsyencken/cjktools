@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# shellColor.py
+# shell_color.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue May  2 11:36:56 2006
 #
@@ -14,28 +14,28 @@ non-supporting platforms.
 #----------------------------------------------------------------------------#
 
 # whether color output is currently enabled or not
-_enableColor = True
+_enable_color = True
 
 #----------------------------------------------------------------------------#
 
-def enableColor():
+def enable_color():
     """Enable colorized output from this module's methods."""
-    global _enableColor
-    _enableColor = True
+    global _enable_color
+    _enable_color = True
     return
 
 #----------------------------------------------------------------------------#
 
-def disableColor():
+def disable_color():
     """Disable colorized output from this module's methods."""
-    global _enableColor
-    _enableColor = False
+    global _enable_color
+    _enable_color = False
     return
 
 #----------------------------------------------------------------------------#
 
-_colString = '\x1b[01;%.2dm'
-_resetString = '\x1b[01;00m'
+_col_string = '\x1b[01;%.2dm'
+_reset_string = '\x1b[01;00m'
 
 colors = {
     'regular':      0,
@@ -48,61 +48,61 @@ colors = {
 
 #----------------------------------------------------------------------------#
 
-def color(strObj, color):
+def color(str_obj, color):
     """
     Changes the color of the given string as printed on a UNIX shell.
     
     The returned string contains escape sequences which
     """ 
-    global _enableColor
-    if _enableColor:
-        return (_colString % colors[color]) + strObj + (_colString % 0)
+    global _enable_color
+    if _enable_color:
+        return (_col_string % colors[color]) + str_obj + (_col_string % 0)
     else:
-        return strObj
+        return str_obj
 
 #----------------------------------------------------------------------------#
 
-def changeColor(color):
+def change_color(color):
     """ Change the color for the remaining text after this is printed to the
         given color.
     """
-    global _enableColor
-    if _enableColor:
-        return _colString % colors[color]
+    global _enable_color
+    if _enable_color:
+        return _col_string % colors[color]
     else:
         return ''
 
 #----------------------------------------------------------------------------#
 
-def realLen(strObj):
+def real_len(str_obj):
     """
     Determine the real length of a string object.
     """
-    finalLen = 0
-    startIndex = 0
+    final_len = 0
+    start_index = 0
 
-    colorStr = '\x1b[01;'
+    color_str = '\x1b[01;'
 
-    nextColor = strObj.find(colorStr, startIndex)
-    while nextColor != -1:
-        finalLen += nextColor - startIndex
-        startIndex = nextColor + len(_resetString)
-        nextColor = strObj.find(colorStr, startIndex)
+    next_color = str_obj.find(color_str, start_index)
+    while next_color != -1:
+        final_len += next_color - start_index
+        start_index = next_color + len(_reset_string)
+        next_color = str_obj.find(color_str, start_index)
 
-    finalLen += len(strObj) - startIndex
+    final_len += len(str_obj) - start_index
 
-    return finalLen
+    return final_len
 
 #----------------------------------------------------------------------------#
 
-def resetColor():
+def reset_color():
     """
     Return the string to print to reset the color to the default.
     """
-    global _enableColor
+    global _enable_color
 
-    if _enableColor:
-        return _resetString
+    if _enable_color:
+        return _reset_string
 
     return ''
 

@@ -27,7 +27,7 @@ class RadkDict(dict):
 
     def __init__(self, dict_file=None):
         """
-        @param dictFile: The radkfile to parse.
+        @param dict_file: The radkfile to parse.
         """
         if dict_file is None:
             line_stream = codecs.getreader('utf8')(
@@ -49,11 +49,11 @@ class RadkDict(dict):
         
         @param filename: The radkfile to parse.
         """
-        radicalToKanji = {}
-        radicalToStrokeCount = {}
+        radical_to_kanji = {}
+        radical_to_stroke_count = {}
 
-        currentRadical = None
-        strokeCount = None
+        current_radical = None
+        stroke_count = None
 
         for line in line_stream:
             if line.startswith('#'):
@@ -62,26 +62,26 @@ class RadkDict(dict):
 
             if line.startswith('$'):
                 # found a line with a new radical
-                dollar, currentRadical, strokeCount = line.split()
-                radicalToStrokeCount[currentRadical] = int(strokeCount)
+                dollar, current_radical, stroke_count = line.split()
+                radical_to_stroke_count[current_radical] = int(stroke_count)
                 continue
 
             # found a line of kanji
             kanji = line.strip()
-            radicalToKanji.setdefault(currentRadical, []).extend(kanji)
+            radical_to_kanji.setdefault(current_radical, []).extend(kanji)
 
-        self.update(maps.invertMapping(radicalToKanji))
-        maps.mapDict(tuple, self, inPlace=True)
+        self.update(maps.invert_mapping(radical_to_kanji))
+        maps.map_dict(tuple, self, in_place=True)
 
-        self.radicalToStrokeCount = radicalToStrokeCount
-        self.radicalToKanji = radicalToKanji
+        self.radical_to_stroke_count = radical_to_stroke_count
+        self.radical_to_kanji = radical_to_kanji
 
         return
 
     #------------------------------------------------------------------------#
 
     @classmethod
-    def getCached(cls):
+    def get_cached(cls):
         "Returns a memory-cached class instance."
         if not hasattr(cls, '_cached'):
             cls._cached = cls()
@@ -90,12 +90,12 @@ class RadkDict(dict):
 
 #----------------------------------------------------------------------------#
 
-def printRadicals(kanjiList):
+def print_radicals(kanji_list):
     "Print out each kanji and the radicals it contains."
-    radicalDict = RadkDict()
-    for kanji in kanjiList:
+    radical_dict = RadkDict()
+    for kanji in kanji_list:
         kanji = unicode(kanji, 'utf8')
-        radicals = radicalDict[kanji]
+        radicals = radical_dict[kanji]
 
         print '%s: ' % kanji, ' '.join(sorted(radicals))
 
@@ -104,5 +104,5 @@ def printRadicals(kanjiList):
 #----------------------------------------------------------------------------#
 
 if __name__ == '__main__':
-    printRadicals(sys.argv[1:])
+    print_radicals(sys.argv[1:])
 

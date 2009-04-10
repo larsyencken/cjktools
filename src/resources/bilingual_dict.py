@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# bilingualDict.py
+# bilingual_dict.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue Dec 26 13:57:31 2006
 #
@@ -31,37 +31,37 @@ class BilingualDictionary(dict):
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
-    def __init__(self, format, sourceLanguage, targetLanguage):
+    def __init__(self, format, source_language, target_language):
         """
         Constructor.
 
         @param format: The format object for this dictionary.
         @type format: DictionaryFormat
-        @param sourceLangauge: The source language used for headwords.
-        @type sourceLangauge: str
-        @param targetLanguage: The target language used for the translated
+        @param source_langauge: The source language used for headwords.
+        @type source_langauge: str
+        @param target_language: The target language used for the translated
             meanings.
-        @type targetLanguage: str
+        @type target_language: str
         """
         self.format = format
-        self.sourceLanguage = sourceLanguage
-        self.targetLanguage = targetLanguage
+        self.source_language = source_language
+        self.target_language = target_language
         return
 
     #------------------------------------------------------------------------#
 
-    def update(self, rhsDictionary, clashPolicy=ClashPolicy.Overwrite):
+    def update(self, rhs_dictionary, clash_policy=ClashPolicy.Overwrite):
         """
         Merges another dictionary into this one, in-place. Entries are
         """
-        if self.sourceLanguage != rhsDictionary.sourceLanguage or \
-                self.targetLanguage != rhsDictionary.targetLanguage:
+        if self.source_language != rhs_dictionary.source_language or \
+                self.target_language != rhs_dictionary.target_language:
             raise Exception, "Source and target languages must be identical"
 
-        if clashPolicy == ClashPolicy.Merge:
+        if clash_policy == ClashPolicy.Merge:
             raise NotYetImplementedError
 
-        return dict.update(self, rhsDictionary)
+        return dict.update(self, rhs_dictionary)
 
     #------------------------------------------------------------------------#
 
@@ -90,15 +90,15 @@ class DictionaryEntry(object):
 
     #------------------------------------------------------------------------#
 
-    def update(self, rhsEntry):
+    def update(self, rhs_entry):
         """
         Update this entry with readings and senses from another homograph.
         The additional readings and senses are added to this entry.
         
-        @param rhsEntry: Another entry to update details from.
-        @type rhsEntry: DictionaryEntry
+        @param rhs_entry: Another entry to update details from.
+        @type rhs_entry: DictionaryEntry
         """
-        if not self.word == rhsEntry.word:
+        if not self.word == rhs_entry.word:
             raise Exception, "Can only merge homographs"
 
         #print 'Merging entries for %s' % self.word
@@ -107,29 +107,29 @@ class DictionaryEntry(object):
         if len(self.readings) == 1:
             self.readings = len(self.senses)*self.readings
 
-        # Do the same for the rhsEntry.
-        if len(rhsEntry.readings) == 1:
-            rhsEntry.readings = len(rhsEntry.senses)*rhsEntry.readings
+        # Do the same for the rhs_entry.
+        if len(rhs_entry.readings) == 1:
+            rhs_entry.readings = len(rhs_entry.senses)*rhs_entry.readings
 
         # Add the readings and senses from the other entry.
-        self.readings += rhsEntry.readings
-        self.senses += rhsEntry.senses
+        self.readings += rhs_entry.readings
+        self.senses += rhs_entry.senses
 
         return
 
     #------------------------------------------------------------------------#
 
-    def sensesByReading(self):
+    def senses_by_reading(self):
         """Returns a dictionary mapping reading to senses."""
         result = {}
         if len(self.readings) > 1:
             assert len(self.senses) == len(self.readings)
             for reading, sense in zip(self.readings, self.senses):
-                senseList = result.setdefault(reading, [])
-                senseList.append(sense)
+                sense_list = result.setdefault(reading, [])
+                sense_list.append(sense)
         else:
-            uniqueReading, = self.readings
-            result[uniqueReading] = self.senses[:]
+            unique_reading, = self.readings
+            result[unique_reading] = self.senses[:]
 
         return result
 

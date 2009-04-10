@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# tableData.py
+# table_data.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Mon Mar 13 12:54:07 EST 2006
 #
@@ -19,19 +19,19 @@ import types
 
 #----------------------------------------------------------------------------#
 
-def parseLines(fileStream, separator=' ', n=None):
+def parse_lines(file_stream, separator=' ', n=None):
     """
     An iterator which wraps a filestream, expecting either comment lines
     or space separated values. Yields the tuples.
     """
     if n is None:
-        for line in fileStream:
+        for line in file_stream:
             if line.startswith('#'):
                 continue
 
             yield line.rstrip().split(separator)
     else:
-        for line in fileStream:
+        for line in file_stream:
             if line.startswith('#'):
                 continue
 
@@ -41,176 +41,176 @@ def parseLines(fileStream, separator=' ', n=None):
 
 #----------------------------------------------------------------------------#
 
-def intListPack(intList):
+def int_list_pack(int_list):
     """
     Packs a list of integers into a csv string.
 
-        >>> intListPack([1, 2, 3, 7])
+        >>> int_list_pack([1, 2, 3, 7])
         '1-3,7'
     """
-    if intList == []:
+    if int_list == []:
         # handle an empty list on packing and unpacking
         return ''
 
-    intList.sort()
+    int_list.sort()
 
-    packedElems = []
+    packed_elems = []
 
-    startRange = lastInRange = intList[0]
+    start_range = last_in_range = int_list[0]
 
-    if startRange < 0:
+    if start_range < 0:
         raise Exception, "Don't deal with negative numbers"
 
     i = 1
-    intListLen = len(intList)
-    while i < intListLen:
-        while i < intListLen and intList[i] == lastInRange + 1:
-            lastInRange += 1
+    int_list_len = len(int_list)
+    while i < int_list_len:
+        while i < int_list_len and int_list[i] == last_in_range + 1:
+            last_in_range += 1
             i += 1
 
-        if lastInRange - startRange >= 1:
+        if last_in_range - start_range >= 1:
             # pack in short form
-            packedElems.append('%d-%d' % (startRange, lastInRange))
+            packed_elems.append('%d-%d' % (start_range, last_in_range))
         else:
-            packedElems.append(str(startRange))
+            packed_elems.append(str(start_range))
 
-        if i == intListLen:
+        if i == int_list_len:
             break
 
-        startRange = lastInRange = intList[i]
+        start_range = last_in_range = int_list[i]
         i += 1
     else:
-        packedElems.append(str(startRange))
+        packed_elems.append(str(start_range))
 
-    return ','.join(packedElems)
+    return ','.join(packed_elems)
 
 #----------------------------------------------------------------------------#
 
-def intListUnpack(packedList):
+def int_list_unpack(packed_list):
     """
     Unpacks a packed integer list.
 
-        >>> intListUnpack('1-3,7')
+        >>> int_list_unpack('1-3,7')
         [1, 2, 3, 7]
     """
     # handle an empty packed list
-    if packedList == '':
+    if packed_list == '':
         return []
 
-    packedItems = packedList.split(',')
+    packed_items = packed_list.split(',')
 
-    unpackedElems = []
-    for item in packedItems:
+    unpacked_elems = []
+    for item in packed_items:
         if '-' in item:
-            startRange, endRange = item.split('-')
-            unpackedElems.extend(xrange(int(startRange), int(endRange)+1))
+            start_range, end_range = item.split('-')
+            unpacked_elems.extend(xrange(int(start_range), int(end_range)+1))
         else:
-            unpackedElems.append(int(item))
+            unpacked_elems.append(int(item))
     
-    return unpackedElems
+    return unpacked_elems
 
 #----------------------------------------------------------------------------#
 
-def flattenOnce(itemList):
+def flatten_once(item_list):
     """
     Performs a single flatten on the given data list.
 
-    @param itemList: The original data list.
+    @param item_list: The original data list.
     @return: A new list containing the same items, but with one level of
         list structure removed.
     """
-    newItemList = []
-    for item in itemList:
+    new_item_list = []
+    for item in item_list:
         if type(item) in (types.ListType, types.TupleType):
-            newItemList.extend(item)
+            new_item_list.extend(item)
         else:
-            newItemList.append(item)
+            new_item_list.append(item)
 
-    return newItemList
+    return new_item_list
 
 #----------------------------------------------------------------------------#
 
-def groupByField(key, items, deleteField=False):
+def group_by_field(key, items, delete_field=False):
     """
     Performs a grouping of the items by key.
     """
     groups = {}
     for item in items:
-        keyValue = item[key]
-        if deleteField:
+        key_value = item[key]
+        if delete_field:
             del item[key]
 
-        itemList = groups.setdefault(keyValue, [])
-        itemList.append(item)
+        item_list = groups.setdefault(key_value, [])
+        item_list.append(item)
     
     return groups
 
 #----------------------------------------------------------------------------#
 
-def fieldHierarchy(fieldNames, recordList, deleteField=False):
+def field_hierarchy(field_names, record_list, delete_field=False):
     """
-    The same as groupByField(), but it deletes the field key afterwards.
+    The same as group_by_field(), but it deletes the field key afterwards.
     """
-    if len(fieldNames) == 1:
+    if len(field_names) == 1:
         # recursive base case
-        return groupByField(fieldNames[0], recordList, deleteField)
+        return group_by_field(field_names[0], record_list, delete_field)
 
-    elif len(fieldNames) > 1:
+    elif len(field_names) > 1:
         # group once then recurse for each key
-        groupedFields = groupByField(fieldNames.pop(0), recordList,
-                deleteField)
-        for fieldKey in groupedFields.iterkeys():
-            groupedFields[fieldKey] = fieldHierarchy(fieldNames,
-                    groupedFields[fieldKey], deleteField)
-        return groupedFields
+        grouped_fields = group_by_field(field_names.pop(0), record_list,
+                delete_field)
+        for field_key in grouped_fields.iterkeys():
+            grouped_fields[field_key] = field_hierarchy(field_names,
+                    grouped_fields[field_key], delete_field)
+        return grouped_fields
 
     else:
         raise Exception, "Can't group by an empty path"
 
 #----------------------------------------------------------------------------#
   
-def tableToFields(headers, rows):
+def table_to_fields(headers, rows):
     """
     Restructures data between table form (a list of headers and rows) and
     field form (a list of key->value row dictionaries).
     """
-    fieldRows = []
+    field_rows = []
 
     for row in rows:
-        fieldRows.append(dict(zip(headers, row)))
+        field_rows.append(dict(zip(headers, row)))
     
-    return fieldRows
+    return field_rows
 
 #----------------------------------------------------------------------------#
 
-def fieldsToTable(fieldRows, order=None):
+def fields_to_table(field_rows, order=None):
     """
-    The reverse transformation to that performed by tableToFields(). If
+    The reverse transformation to that performed by table_to_fields(). If
     desired, the header fields can be given an order by specifying them in
     a list as the second argument. The number of table columns can be
     reduced by omitting some from the order list.
     """
     # first pass, accumulate unique keys
     headers = set()
-    for fieldRow in fieldRows:
-        for key in fieldRow.iterkeys():
+    for field_row in field_rows:
+        for key in field_row.iterkeys():
             headers.add(key)
 
     # second pass, create table rows
     if order is None:
-        headerList = list(headers)
+        header_list = list(headers)
     else:
         assert set(order).issubset(headers)
-        headerList = order
+        header_list = order
 
     rows = []
-    for fieldRow in fieldRows:
+    for field_row in field_rows:
         row = []
-        for key in headerList:
-            row.append(fieldRow.get(key))
+        for key in header_list:
+            row.append(field_row.get(key))
         rows.append(tuple(row))
 
-    return headerList, rows
+    return header_list, rows
 
 #----------------------------------------------------------------------------#
 #----------------------------------------------------------------------------#
@@ -223,19 +223,19 @@ class CsvTable:
 
     #------------------------------------------------------------------------#
 
-    def __init__(self, outputFile, columnsPerLine=20):
+    def __init__(self, output_file, columns_per_line=20):
         """
         Constructor. Needs the labels for all the rows defined in a block.
         """
         self._blocks = []
-        self._rowLabels = []
+        self._row_labels = []
 
-        self._currentWidth = 0
+        self._current_width = 0
 
-        self._colsPerLine = columnsPerLine
+        self._cols_per_line = columns_per_line
 
         self._lines = []
-        self._oCsv = csv.writer(open(outputFile, 'w'))
+        self._o_csv = csv.writer(open(output_file, 'w'))
         return
 
     #------------------------------------------------------------------------#
@@ -247,76 +247,77 @@ class CsvTable:
         if not self._blocks:
             return
 
-        headerRow = ['']
-        subheaderRow = ['']
+        header_row = ['']
+        subheader_row = ['']
         for block in self._blocks:
-            headerRow.extend(block.header())
-            subheaderRow.extend(block.subheader())
+            header_row.extend(block.header())
+            subheader_row.extend(block.subheader())
 
-        self._oCsv.writerow(headerRow)
-        self._oCsv.writerow(subheaderRow)
+        self._o_csv.writerow(header_row)
+        self._o_csv.writerow(subheader_row)
 
-        blockRows = map(
-                flattenOnce, 
+        block_rows = map(
+                flatten_once, 
                 apply( zip, [x.rows() for x in self._blocks] )
             )
 
-        for rowLabel, row in zip(self._rowLabels, blockRows):
-            self._oCsv.writerow([rowLabel] + row)
+        for row_label, row in zip(self._row_labels, block_rows):
+            self._o_csv.writerow([row_label] + row)
 
-        self._oCsv.writerow([]) # add a black row between blocks
+        self._o_csv.writerow([]) # add a black row between blocks
 
         # delete the blocks now that they've been printed
         self._blocks = []
-        self._currentWidth = 0
-        self._rowLabels = []
+        self._current_width = 0
+        self._row_labels = []
 
         return
 
     #------------------------------------------------------------------------#
 
-    def addBlock(self, block):
+    def add_block(self, block):
         """
         Adds a block to the file, flushing out as necessary.
         """
-        rowLabelsMatch = self._checkRowLabels(block.rowLabels())
-        withinMaxCols = block.width() + self._currentWidth < self._colsPerLine
+        row_labels_match = self._check_row_labels(block.row_labels())
+        within_max_cols = block.width() + self._current_width < \
+                self._cols_per_line
 
-        if rowLabelsMatch and withinMaxCols:
+        if row_labels_match and within_max_cols:
             # all ok, within the maximum number of columns
             self._blocks.append(block)
-            self._currentWidth += block.width()
+            self._current_width += block.width()
         else:
             self.flush()
 
             # must fix labels before adding block
-            self._checkRowLabels(block.rowLabels())
+            self._check_row_labels(block.row_labels())
 
             # add the new block
             self._blocks = [block]
-            self._currentWidth = block.width()
+            self._current_width = block.width()
 
         return
 
     #------------------------------------------------------------------------#
 
-    def _checkRowLabels(self, rowLabels):
+    def _check_row_labels(self, row_labels):
         """
         Checks to ensure that the given row labels match the existing
         ones. In the case of an empty bock, adds the row labels in.
         Returns True if the labels match (or if the block was empty),
         False otherwise.
 
-        @param rowLabels: The new block labels to check against the
+        @param row_labels: The new block labels to check against the
             existing labels.
         @return: True if no flush is needed, False otherwise.
         """
         if self._blocks:
             # return True if the labels match
-            return self._rowLabels == rowLabels
+            return self._row_labels == row_labels
         else:
             # set the row labels to these ones
-            self._rowLabels = rowLabels
+            self._row_labels = row_labels
             return True
 
     #------------------------------------------------------------------------#
@@ -339,28 +340,28 @@ class CsvBlock:
     columns. A block is typically a self-contained.
     """
 
-    def __init__(self, blockLabel, rowLabels, columnLabels):
+    def __init__(self, block_label, row_labels, column_labels):
         self._rows = []
 
-        self._blockLabel = blockLabel
-        self._rowLabels = rowLabels
-        self._columnLabels = columnLabels
-        self._rowSize = None
+        self._block_label = block_label
+        self._row_labels = row_labels
+        self._column_labels = column_labels
+        self._row_size = None
         return
 
     #------------------------------------------------------------------------#
 
-    def addRow(self, row):
+    def add_row(self, row):
         """
         Adds a row to the block.
         """
-        rowLen = len(row)
-        desiredSize = self._rowSize
-        if desiredSize is not None and rowLen != desiredSize:
+        row_len = len(row)
+        desired_size = self._row_size
+        if desired_size is not None and row_len != desired_size:
             raise Exception, "The added row is of the wrong size"
 
         self._rows.append(tuple(row))
-        self._rowSize = rowLen
+        self._row_size = row_len
         return
 
     #------------------------------------------------------------------------#
@@ -369,7 +370,7 @@ class CsvBlock:
         """
         Returns the number of columns in the block.
         """
-        return len(self._columnLabels)
+        return len(self._column_labels)
     
     #------------------------------------------------------------------------#
 
@@ -377,7 +378,7 @@ class CsvBlock:
         """
         Determines the number of rows in the block.
         """
-        return len(self._rowLabels)
+        return len(self._row_labels)
     
     #------------------------------------------------------------------------#
 
@@ -389,16 +390,16 @@ class CsvBlock:
 
     #------------------------------------------------------------------------#
 
-    def sameRowLabels(self, rhsBlock):
+    def same_row_labels(self, rhs_block):
         """
         Determine if two blocks share row labels....
         """
-        return self._rowLabels == rhsBlock._rowLabels
+        return self._row_labels == rhs_block._row_labels
 
     #------------------------------------------------------------------------#
 
-    def rowLabels(self):
-        return self._rowLabels
+    def row_labels(self):
+        return self._row_labels
 
     #------------------------------------------------------------------------#
 
@@ -406,7 +407,7 @@ class CsvBlock:
         """
         Returns the block header.
         """
-        return [self._blockLabel] + [""]*(self.width()-1)
+        return [self._block_label] + [""]*(self.width()-1)
 
     #------------------------------------------------------------------------#
 
@@ -414,25 +415,25 @@ class CsvBlock:
         """
         Returns the block subheader.
         """
-        return self._columnLabels
+        return self._column_labels
 
     #------------------------------------------------------------------------#
 
-    def dump(self, outputFile):
+    def dump(self, output_file):
         """
         Dumps this block to a csv file.
         """
-        oCsv = csv.writer(open(outputFile, 'w'))
-        oCsv.writerow(self.header())
-        oCsv.writerow(self.subheader())
+        o_csv = csv.writer(open(output_file, 'w'))
+        o_csv.writerow(self.header())
+        o_csv.writerow(self.subheader())
         for row in self._rows:
-            oCsv.writerow(row)
+            o_csv.writerow(row)
 
         return
 
     #------------------------------------------------------------------------#
 
-    def isEmpty(self):
+    def is_empty(self):
         """
         Returns True if the block is filled with only blank spaces, False
         otherwise.

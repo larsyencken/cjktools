@@ -12,7 +12,7 @@ A series of useful Python decorators.
 
 #----------------------------------------------------------------------------#
 
-def simpleDecorator(decorator):
+def simple_decorator(decorator):
     """Turns simple functions into well behaved decorators."""
     def new_decorator(f):
         g = decorator(f)
@@ -35,13 +35,13 @@ class memoized(object):
         self.cache = {}
 
     def __call__(self, *args, **kwargs):
-        kwargsKey = tuple(kwargs.items())
+        kwargs_key = tuple(kwargs.items())
         try:
-            return self.cache[(args, kwargsKey)]
+            return self.cache[(args, kwargs_key)]
 
         except KeyError:
             value = self.func(*args, **kwargs)
-            self.cache[(args, kwargsKey)] = value
+            self.cache[(args, kwargs_key)] = value
             return value
 
         except TypeError:
@@ -53,8 +53,8 @@ class memoized(object):
 
 #----------------------------------------------------------------------------#
 
-@simpleDecorator
-def oneShot(f):
+@simple_decorator
+def one_shot(f):
     """Caches all calls to the function after the first."""
     def wrapper():
         if not hasattr(f, '_cached'):

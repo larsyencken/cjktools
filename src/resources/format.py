@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# dictionaryFormat.py
+# dictionary_format.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Fri Dec 22 15:18:13 2006
 #
@@ -10,7 +10,7 @@
 An abstract dictionary interface. Quickly provides an interface to any
 dictionary which is line-based, and whose entries are flat text, and thus
 amenable to being parsed with regular expressions. The list of known
-formats is provided in the knownFormats object. 
+formats is provided in the known_formats object. 
 """
 
 #----------------------------------------------------------------------------#
@@ -20,7 +20,7 @@ import os, sys
 
 from cjktools.common import sopen
 from cjktools.exceptions import NotYetImplementedError
-from bilingualDict import BilingualDictionary, DictionaryEntry
+from bilingual_dict import BilingualDictionary, DictionaryEntry
 import languages
 
 #----------------------------------------------------------------------------#
@@ -59,7 +59,7 @@ class DictionaryFormat(object):
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
-    def matchHeader(self, headerLine):
+    def match_header(self, header_line):
         """
         Returns True if the header pattern matches the line given,
         False otherwise.
@@ -68,7 +68,7 @@ class DictionaryFormat(object):
 
     #------------------------------------------------------------------------#
 
-    def parse_line(self, entryLine):
+    def parse_line(self, entry_line):
         """
         Parses a dictionary entry from the given line.
         """
@@ -76,57 +76,57 @@ class DictionaryFormat(object):
 
     #------------------------------------------------------------------------#
 
-    def parseDictionary(self, filename):
+    def parse_dictionary(self, filename):
         """
         Parses the given filename using this format, returning a
         dictionary object containing all the dictionary entries.
         """
         # Determine the source and target language.
-        sourceLang, targetLang = detectLanguage(filename)
+        source_lang, target_lang = detect_language(filename)
 
-        iStream = sopen(filename, 'r')
-        header = iStream.readline()
+        i_stream = sopen(filename, 'r')
+        header = i_stream.readline()
 
-        if not self.matchHeader(header):
+        if not self.match_header(header):
             raise UnknownFormatError, filename
 
-        dictObj = BilingualDictionary(self, sourceLang, targetLang)
-        for line in iStream:
+        dict_obj = BilingualDictionary(self, source_lang, target_lang)
+        for line in i_stream:
             entry = self.parse_line(line)
 
-            if entry.word in dictObj:
+            if entry.word in dict_obj:
                 # Already an entry here, so update it with new readings and
                 # senses.
-                oldEntry = dictObj[entry.word]
-                oldEntry.update(entry)
+                old_entry = dict_obj[entry.word]
+                old_entry.update(entry)
             else:
-                dictObj[entry.word] = entry
+                dict_obj[entry.word] = entry
 
-        iStream.close()
+        i_stream.close()
 
-        return dictObj
+        return dict_obj
 
     #------------------------------------------------------------------------#
 
-    def iterEntries(self, filename):
+    def iter_entries(self, filename):
         """
         Parses the given filename using this format, returning a
         dictionary object containing all the dictionary entries.
         """
         # Determine the source and target language.
-        sourceLang, targetLang = detectLanguage(filename)
+        source_lang, target_lang = detect_language(filename)
 
-        iStream = sopen(filename, 'r')
-        header = iStream.readline()
+        i_stream = sopen(filename, 'r')
+        header = i_stream.readline()
 
-        if not self.matchHeader(header):
+        if not self.match_header(header):
             raise UnknownFormatError, filename
 
-        dictObj = BilingualDictionary(self, sourceLang, targetLang)
-        for line in iStream:
+        dict_obj = BilingualDictionary(self, source_lang, target_lang)
+        for line in i_stream:
             yield self.parse_line(line)
 
-        iStream.close()
+        i_stream.close()
 
         return
 
@@ -148,43 +148,43 @@ class RegexFormat(DictionaryFormat):
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
-    def __init__(self, name, headerPattern, linePattern, sensePattern):
+    def __init__(self, name, header_pattern, line_pattern, sense_pattern):
         """
         Constructor.
         """
         self.name = name
-        self.headerPattern = re.compile(headerPattern, re.UNICODE)
-        self.linePattern = re.compile(linePattern, re.UNICODE)
-        self.sensePattern = re.compile(sensePattern, re.UNICODE)
+        self.header_pattern = re.compile(header_pattern, re.UNICODE)
+        self.line_pattern = re.compile(line_pattern, re.UNICODE)
+        self.sense_pattern = re.compile(sense_pattern, re.UNICODE)
         return
 
     #------------------------------------------------------------------------#
 
-    def matchHeader(self, headerLine):
+    def match_header(self, header_line):
         """
         See parent class.
         """
-        return bool(self.headerPattern.match(headerLine))
+        return bool(self.header_pattern.match(header_line))
 
     #------------------------------------------------------------------------#
 
-    def parse_line(self, entryLine):
+    def parse_line(self, entry_line):
         """
         See parent class.
         """
-        match = self.linePattern.match(entryLine)
+        match = self.line_pattern.match(entry_line)
         if not match:
-            raise FormatError, u"Bad line: %s" % entryLine
+            raise FormatError, u"Bad line: %s" % entry_line
         
-        matchDict = match.groupdict()
+        match_dict = match.groupdict()
 
-        word = matchDict['word'].replace(' ', '')
-        reading = (matchDict.get('reading') or word).replace(' ', '')
+        word = match_dict['word'].replace(' ', '')
+        reading = (match_dict.get('reading') or word).replace(' ', '')
         readings = [reading]
-        senseLine = matchDict.get('senses')
+        sense_line = match_dict.get('senses')
 
         senses = []
-        for match in self.sensePattern.finditer(senseLine):
+        for match in self.sense_pattern.finditer(sense_line):
             senses.append(match.groupdict()['sense'])
 
         if not senses:
@@ -196,7 +196,7 @@ class RegexFormat(DictionaryFormat):
 
 #----------------------------------------------------------------------------#
 
-def detectLanguage(filename):
+def detect_language(filename):
     """
     Tries to determine the source and target language of a given
     dictionary from its filename. Defaults to 'Unknown', 'Unknown' if the
@@ -204,13 +204,13 @@ def detectLanguage(filename):
     """
     filename = os.path.basename(filename)
     if len(filename) > 3 and filename[2] == '_':
-        fromCode = filename[0]
-        toCode = filename[1]
+        from_code = filename[0]
+        to_code = filename[1]
 
         try:
-            fromLang = languages.fromOneCharCode[fromCode]
-            toLang = languages.fromOneCharCode[toCode]
-            return fromLang, toLang
+            from_lang = languages.from_one_char_code[from_code]
+            to_lang = languages.from_one_char_code[to_code]
+            return from_lang, to_lang
         except KeyError:
             pass
 

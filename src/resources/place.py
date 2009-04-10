@@ -49,10 +49,10 @@ class Place(dict):
 
     #------------------------------------------------------------------------#
 
-    def getChildren(self):
+    def get_children(self):
         return self.values()
 
-    children = property(getChildren)
+    children = property(get_children)
 
     #------------------------------------------------------------------------#
 
@@ -74,57 +74,57 @@ class Place(dict):
         """
         Dump this place hierarchy to the given filename.
         """
-        oStream = sopen(filename, 'w')
+        o_stream = sopen(filename, 'w')
         for depth, place in self.walk():
-            print >> oStream, place._toLine(depth)
-        oStream.close()
+            print >> o_stream, place._to_line(depth)
+        o_stream.close()
         return
 
     #------------------------------------------------------------------------#
 
     @classmethod
-    def fromFile(cls, filename):
+    def from_file(cls, filename):
         """
         Construct a new place hierarchy from the given filename.
         """
-        iStream = sopen(filename)
-        lines = iter(enumerate(iStream))
+        i_stream = sopen(filename)
+        lines = iter(enumerate(i_stream))
 
-        depth, rootNode = cls._fromLine(lines.next()[1])
+        depth, root_node = cls._from_line(lines.next()[1])
         if depth != 0:
             raise Exception, "File %s should start with a root node" % filename
 
-        path = [rootNode]
-        lastDepth = depth
-        lastNode = rootNode
-        for lineNo, line in lines:
-            depth, node = cls._fromLine(line)
-            if depth == lastDepth + 1:
+        path = [root_node]
+        last_depth = depth
+        last_node = root_node
+        for line_no, line in lines:
+            depth, node = cls._from_line(line)
+            if depth == last_depth + 1:
                 # One level deeper, the last node was the parent.
-                path.append(lastNode)
+                path.append(last_node)
 
-            elif depth == lastDepth:
+            elif depth == last_depth:
                 # Same level, same parent.
                 pass
 
-            elif depth < lastDepth:
+            elif depth < last_depth:
                 # Up one or more levels.
-                depthDiff = lastDepth - depth
-                path = path[:-depthDiff]
+                depth_diff = last_depth - depth
+                path = path[:-depth_diff]
 
             else:
                 raise Exception, "Strange depth found %s (line %d)" % (
                         filename,
-                        lineNo + 1
+                        line_no + 1
                     )
 
             path[-1].append(node)
-            lastNode = node
-            lastDepth = depth
+            last_node = node
+            last_depth = depth
 
-        iStream.close()
+        i_stream.close()
 
-        return rootNode
+        return root_node
 
     #------------------------------------------------------------------------#
 
@@ -137,7 +137,7 @@ class Place(dict):
 
     #------------------------------------------------------------------------#
 
-    def findNode(self, label):
+    def find_node(self, label):
         """
         Searches for the given node name in a breadth first manner.
         Returns a (node, path) tuple.
@@ -145,38 +145,38 @@ class Place(dict):
         if label == self.label:
             return []
 
-        nextFrontier = []
+        next_frontier = []
         frontier = [([], self)]
 
-        while frontier or nextFrontier:
+        while frontier or next_frontier:
             while frontier:
-                currentPath, nextNode = frontier.pop()
-                if label in nextNode:
+                current_path, next_node = frontier.pop()
+                if label in next_node:
                     # Success!
-                    targetNode = nextNode[label]
-                    targetPath = currentPath + [label]
-                    return targetNode, targetPath
+                    target_node = next_node[label]
+                    target_path = current_path + [label]
+                    return target_node, target_path
                 else:
-                    for newLabel, newNode in nextNode.iteritems():
-                        nextFrontier.append(
-                                (currentPath + [newLabel], newNode)
+                    for new_label, new_node in next_node.iteritems():
+                        next_frontier.append(
+                                (current_path + [new_label], new_node)
                             )
             else:
-                frontier = nextFrontier
-                nextFrontier = []
+                frontier = next_frontier
+                next_frontier = []
                 random.shuffle(frontier)
 
         raise KeyError, 'No such node %s' % label
 
     #------------------------------------------------------------------------#
 
-    def findAll(self, label):
+    def find_all(self, label):
         """
         Finds all nodes which match the given label.
         """
         results = []
 
-        for path, node in self.walkWithPath():
+        for path, node in self.walk_with_path():
             if node.label == label:
                 results.append( (path, node) )
 
@@ -191,51 +191,51 @@ class Place(dict):
         """
         # Use an output stack to avoid recursion. The reverse() calls ensure
         # that they get re-parsed in the same order they came out.
-        outputStack = [(0, self)]
-        outputStack.reverse()
-        while outputStack:
-            depth, place = outputStack.pop()
+        output_stack = [(0, self)]
+        output_stack.reverse()
+        while output_stack:
+            depth, place = output_stack.pop()
             yield depth, place
             children = [(depth+1, p) for p in place.values()]
             children.reverse()
-            outputStack.extend(children)
+            output_stack.extend(children)
         
         return
 
     #------------------------------------------------------------------------#
 
-    def walkWithPath(self):
+    def walk_with_path(self):
         """
         Returns an iterator over the entire tree. Each node is iterated
         over as a (path, node) pair.
         """
         path = []
-        lastDepth = 0
-        lastNode = None
+        last_depth = 0
+        last_node = None
         for depth, node in self.walk():
-            if depth == lastDepth + 1:
+            if depth == last_depth + 1:
                 # One level deeper, the last node was the parent.
-                path.append(lastNode.label)
+                path.append(last_node.label)
 
-            elif depth == lastDepth:
+            elif depth == last_depth:
                 # Same level, same parent.
                 pass
 
-            elif depth < lastDepth:
+            elif depth < last_depth:
                 # Up one or more levels.
-                depthDiff = lastDepth - depth
-                path = path[:-depthDiff]
+                depth_diff = last_depth - depth
+                path = path[:-depth_diff]
 
             else:
                 raise Exception, "Strange depth found %s (line %d)" % (
                         filename,
-                        lineNo + 1
+                        line_no + 1
                     )
 
             yield '/'.join(path), node
 
-            lastNode = node
-            lastDepth = depth
+            last_node = node
+            last_depth = depth
 
         return
 
@@ -243,7 +243,7 @@ class Place(dict):
     # PRIVATE METHODS
     #------------------------------------------------------------------------#
 
-    def _toLine(self, depth):
+    def _to_line(self, depth):
         """
         Given a depth, returns an output line as a string.
         """
@@ -256,20 +256,20 @@ class Place(dict):
     #------------------------------------------------------------------------#
 
     @staticmethod
-    def _fromLine(line):
+    def _from_line(line):
         """
         Parses a single line, returning a (depth, Place) pair.
         """
-        lineObjs = line.rstrip().split()
-        if len(lineObjs) == 3:
-            depth, label, reading = lineObjs
+        line_objs = line.rstrip().split()
+        if len(line_objs) == 3:
+            depth, label, reading = line_objs
             depth = int(depth)
             if reading == 'None':
                 reading = None
             return depth, Place(label, reading)
 
-        elif len(lineObjs) == 4:
-            depth, label, reading, aliases = lineObjs
+        elif len(line_objs) == 4:
+            depth, label, reading, aliases = line_objs
             depth = int(depth)
             if reading == 'None':
                 reading = None

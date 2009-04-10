@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# testStats.py
+# test_stats.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Mon Feb 20 18:01:32 EST 2006
 #
@@ -14,12 +14,12 @@ from stats import *
 
 def suite():
     import stats
-    testSuite = unittest.TestSuite((
+    test_suite = unittest.TestSuite((
             unittest.makeSuite(KappaTest),
             unittest.makeSuite(CombinationTest),
             unittest.makeSuite(BasicStatsTest),
         ))
-    return testSuite
+    return test_suite
 
 #----------------------------------------------------------------------------#
 
@@ -34,7 +34,7 @@ class BasicStatsTest(unittest.TestCase):
         self.stddevB = 33.70824
         return
 
-    def testMean(self):
+    def test_mean(self):
         """
         Check that mean works as expected.
         """
@@ -42,65 +42,65 @@ class BasicStatsTest(unittest.TestCase):
         self.assertAlmostEqual(mean(self.dataB), self.meanB, 5)
         return
 
-    def testBinsByData(self):
+    def test_bins_by_data(self):
         """
         Tests splitting data into bins.
         """
         data = [3,2,5,1,7,3,0]
 
-        expectedLabels = [(0,3), (3,5), (5,7)]
-        expectedBins = [[0,1,2], [3,3], [5,7]]
+        expected_labels = [(0,3), (3,5), (5,7)]
+        expected_bins = [[0,1,2], [3,3], [5,7]]
 
         self.assertEqual(
-                list(binsByData(data, 3)),
-                zip(expectedLabels, expectedBins)
+                list(bins_by_data(data, 3)),
+                zip(expected_labels, expected_bins)
             )
 
         return
 
-    def testBinsByRange(self):
+    def test_bins_by_range(self):
         """
         Tests splitting data into bins.
         """
         data = [3,2,5,1,9,3,0]
 
-        expectedLabels = [(0.0,3.0), (3.0,6.0), (6.0,9.0)]
-        expectedBins = [[0,1,2], [3,3,5], [9]]
+        expected_labels = [(0.0,3.0), (3.0,6.0), (6.0,9.0)]
+        expected_bins = [[0,1,2], [3,3,5], [9]]
 
         self.assertEqual(
-                list(binsByRange(data, 3, lambda x: x)),
-                zip(expectedLabels, expectedBins)
+                list(bins_by_range(data, 3, lambda x: x)),
+                zip(expected_labels, expected_bins)
             )
 
         return
 
-    def testBinsByInc(self):
+    def test_bins_by_inc(self):
         """
         Tests splitting data into bins.
         """
         data = [3,2,5,1,8,3,0]
 
-        expectedLabels = [(0.0,3.0), (3.0,6.0), (6.0,9.0)]
-        expectedBins = [[0,1,2], [3,3,5], [8]]
+        expected_labels = [(0.0,3.0), (3.0,6.0), (6.0,9.0)]
+        expected_bins = [[0,1,2], [3,3,5], [8]]
 
         self.assertEqual(
-                list(binsByIncrement(data, 3.0, lambda x: x)),
-                zip(expectedLabels, expectedBins)
+                list(bins_by_increment(data, 3.0, lambda x: x)),
+                zip(expected_labels, expected_bins)
             )
 
         data = [3,2,5,1,9,3,0]
 
-        expectedLabels = [(0.0,3.0), (3.0,6.0), (6.0,9.0), (9.0, 12.0)]
-        expectedBins = [[0,1,2], [3,3,5], [], [9]]
+        expected_labels = [(0.0,3.0), (3.0,6.0), (6.0,9.0), (9.0, 12.0)]
+        expected_bins = [[0,1,2], [3,3,5], [], [9]]
 
         self.assertEqual(
-                list(binsByIncrement(data, 3.0, lambda x: x)),
-                zip(expectedLabels, expectedBins)
+                list(bins_by_increment(data, 3.0, lambda x: x)),
+                zip(expected_labels, expected_bins)
             )
 
         return
 
-    def testBadStddev(self):
+    def test_bad_stddev(self):
         """
         Check stddev on a list of length 0.
         """
@@ -113,7 +113,7 @@ class BasicStatsTest(unittest.TestCase):
 
         return
 
-    def testStddev(self):
+    def test_stddev(self):
         """
         Check that stddev works as expected.
         """
@@ -121,7 +121,7 @@ class BasicStatsTest(unittest.TestCase):
         self.assertAlmostEqual(stddev(self.dataB), self.stddevB, 5)
         return
 
-    def testOnTuples(self):
+    def test_on_tuples(self):
         """
         Checks that methods also work on tuples.
         """
@@ -131,23 +131,23 @@ class BasicStatsTest(unittest.TestCase):
         self.assertAlmostEqual(stddev(tuple(self.dataB)), self.stddevB, 5)
         return
 
-    def testBasicStats(self):
+    def test_basic_stats(self):
         """
         Test that the basic stats method works.
         """
-        meanA, stddevA = basicStats(self.dataA)
+        meanA, stddevA = basic_stats(self.dataA)
         self.assertAlmostEqual(meanA, mean(self.dataA))
         self.assertAlmostEqual(stddevA, stddev(self.dataA))
         return
 
-    def testSegmentCombinations(self):
+    def test_segment_combinations(self):
         result = set([('d', 'o', 'g'), ('do', 'g'), ('d', 'og'), ('dog',)])
         self.assertEqual(
-                set(segmentCombinations(['d', 'o', 'g'])),
+                set(segment_combinations(['d', 'o', 'g'])),
                 result
             )
         self.assertEqual(
-                set(isegmentCombinations(['d', 'o', 'g'])),
+                set(isegment_combinations(['d', 'o', 'g'])),
                 result
             )
 
@@ -161,25 +161,25 @@ class KappaTest(unittest.TestCase):
         self.dataA = [1, 2, 3, 4]
         self.dataB = [2, 3, 4, 5]
 
-    def testHighKappa(self):
+    def test_high_kappa(self):
         """
         Tests a high kappa value
         """
-        kappaVal = kappa(self.dataA, self.dataA)
-        self.assertAlmostEqual(kappaVal, 1.0)
+        kappa_val = kappa(self.dataA, self.dataA)
+        self.assertAlmostEqual(kappa_val, 1.0)
         return
     
-    def testNoAgreement(self):
+    def test_no_agreement(self):
         """
         Tests the no agreement case.
         """
-        kappaVal = kappa(self.dataA, self.dataB)
-        self.assertAlmostEqual(kappaVal, -0.23076923076923078)
+        kappa_val = kappa(self.dataA, self.dataB)
+        self.assertAlmostEqual(kappa_val, -0.23076923076923078)
         return
 
-    def testZeroKappa(self):
-        kappaVal = kappa(self.dataA, [0,0,6,6])
-        self.assertAlmostEqual(kappaVal, 0)
+    def test_zero_kappa(self):
+        kappa_val = kappa(self.dataA, [0,0,6,6])
+        self.assertAlmostEqual(kappa_val, 0)
         return
 
     def tearDown(self):
@@ -191,34 +191,34 @@ class CombinationTest(unittest.TestCase):
     def setUp(self):
         self.dataA = [1,2,3]
 
-    def testCombinations(self):
+    def test_combinations(self):
         self.assertEqual(combinations([self.dataA, self.dataA]),
                 [(1,1),(2,1),(3,1),(1,2),(2,2),(3,2),(1,3),(2,3),(3,3)])
         return
 
-    def testICombinations(self):
+    def test_i_combinations(self):
         self.assertEqual(list(icombinations([self.dataA, self.dataA])),
                 [(1,1),(2,1),(3,1),(1,2),(2,2),(3,2),(1,3),(2,3),(3,3)])
 
         return
 
-    def testUniqueTuples(self):
-        self.assertEqual(uniqueTuples([1,2]), [(1,2)])
-        self.assertEqual(uniqueTuples([1,2,3]), [(1,2), (1,3), (2,3)])
+    def test_unique_tuples(self):
+        self.assertEqual(unique_tuples([1,2]), [(1,2)])
+        self.assertEqual(unique_tuples([1,2,3]), [(1,2), (1,3), (2,3)])
 
         return
 
-    def testInclusionCombination(self):
+    def test_inclusion_combination(self):
         self.assertEqual(
-                set(map(tuple, inclusionCombinations([1,2]))),
+                set(map(tuple, inclusion_combinations([1,2]))),
                 set(map(tuple, [[], [1], [2], [1,2]])),
             )
-        self.assertEqual(inclusionCombinations([]), [[]])
+        self.assertEqual(inclusion_combinations([]), [[]])
         return
 
-    def testIUniqueTuples(self):
-        self.assertEqual(list(iuniqueTuples([1,2])), [(1,2)])
-        self.assertEqual(list(iuniqueTuples([1,2,3])), [(1,2), (1,3), (2,3)])
+    def test_i_unique_tuples(self):
+        self.assertEqual(list(iunique_tuples([1,2])), [(1,2)])
+        self.assertEqual(list(iunique_tuples([1,2,3])), [(1,2), (1,3), (2,3)])
 
         return
 

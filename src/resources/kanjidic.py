@@ -21,11 +21,11 @@ from cjktools.common import sopen
 
 #----------------------------------------------------------------------------#
 
-basicFeatures = set([
+basic_features = set([
         'gloss',
-        'strokeCount',
-        'jyouyouGrade',
-        'skipCode',
+        'stroke_count',
+        'jyouyou_grade',
+        'skip_code',
         'onyomi',
         'kunyomi',
         'unicode'
@@ -34,28 +34,28 @@ basicFeatures = set([
 #----------------------------------------------------------------------------#
 
 remappings = {
-        'B':    'radicalIndex',
-        'C':    'classicalRadicalIndex',
+        'B':    'radical_index',
+        'C':    'classical_radical_index',
         'F':    'frequency',
-        'G':    'jyouyouGrade',
-        'H':    'halpernIndex',
-        'N':    'nelsonIndex',
-        'V':    'newNelsonIndex',
-        'D':    'dictionaryCode',
-        'P':    'skipCode',
-        'S':    'strokeCount',
+        'G':    'jyouyou_grade',
+        'H':    'halpern_index',
+        'N':    'nelson_index',
+        'V':    'new_nelson_index',
+        'D':    'dictionary_code',
+        'P':    'skip_code',
+        'S':    'stroke_count',
         'U':    'unicode',
-        'I':    'spahnCode',
-        'Q':    'fourCornerCode',
-        'M':    'morohashiIndex',
-        'E':    'henshallCode',
-        'K':    'gakkenCode',
-        'L':    'heisigCode',
-        'O':    'oneillCode',
-        'W':    'koreanReading',
-        'Y':    'pinyinReading',
-        'X':    'crossReferences',
-        'Z':    'misclassifiedAs'
+        'I':    'spahn_code',
+        'Q':    'four_corner_code',
+        'M':    'morohashi_index',
+        'E':    'henshall_code',
+        'K':    'gakken_code',
+        'L':    'heisig_code',
+        'O':    'oneill_code',
+        'W':    'korean_reading',
+        'Y':    'pinyin_reading',
+        'X':    'cross_references',
+        'Z':    'misclassified_as'
     }
 
 #----------------------------------------------------------------------------#
@@ -66,20 +66,20 @@ class KanjidicEntry(object):
     """
     #------------------------------------------------------------------------#
 
-    def __init__(self, entryDetails):
-        assert 'onReadings' in entryDetails and 'kunReadings' in entryDetails
-        self.__dict__.update(entryDetails)
+    def __init__(self, entry_details):
+        assert 'on_readings' in entry_details and 'kun_readings' in entry_details
+        self.__dict__.update(entry_details)
         return
 
     #------------------------------------------------------------------------#
 
-    def getAllReadings(self):
+    def get_all_readings(self):
         """
         Construct a reading pool for this entry.
         """
-        readingSet = set()
-        for reading in self.kunReadings + \
-                    map(scripts.toHiragana, self.onReadings):
+        reading_set = set()
+        for reading in self.kun_readings + \
+                    map(scripts.to_hiragana, self.on_readings):
             # Ignore suffix/prefix information about readings.
             if '-' in reading:
                 reading = reading.replace('-', '')
@@ -89,11 +89,11 @@ class KanjidicEntry(object):
                 stem, suffix = reading.split('.')
                 reading = stem
 
-            readingSet.add(reading)
+            reading_set.add(reading)
 
-        return readingSet
+        return reading_set
 
-    allReadings = property(getAllReadings)
+    all_readings = property(get_all_readings)
 
     #------------------------------------------------------------------------#
 
@@ -110,22 +110,22 @@ class Kanjidic(dict):
     # PUBLIC METHODS
     #------------------------------------------------------------------------#
 
-    def __init__(self, kanjidicFiles=None):
+    def __init__(self, kanjidic_files=None):
         """
         Constructor.
 
-        @param kanjidicFiles: The files corresponding to kanjidic.
+        @param kanjidic_files: The files corresponding to kanjidic.
         """
         dict.__init__(self)
 
-        if kanjidicFiles is None:
+        if kanjidic_files is None:
             import cjktools_data
             line_stream = chain(
                     cjktools_data.open_file('kanjidic'),
                     cjktools_data.open_file('kanjd212'),
                 )
         else:
-            line_stream = reduce(chain, [sopen(f) for f in kanjidicFiles])
+            line_stream = reduce(chain, [sopen(f) for f in kanjidic_files])
 
         self._parse_kanjidic(line_stream)
 
@@ -134,7 +134,7 @@ class Kanjidic(dict):
     #------------------------------------------------------------------------#
 
     @classmethod
-    def getCached(cls):
+    def get_cached(cls):
         if not hasattr(cls, '_cached'):
             cls._cached = cls()
 
@@ -168,70 +168,70 @@ class Kanjidic(dict):
         """
         Parses a single line in the kanjdic file, returning an entry.
         """
-        segmentPattern = re.compile('[^ {]+|{.*?}', re.UNICODE)
-        segments = segmentPattern.findall(line.strip())
+        segment_pattern = re.compile('[^ {]+|{.*?}', re.UNICODE)
+        segments = segment_pattern.findall(line.strip())
 
         kanji = segments[0]
-        jisCode = int(segments[1], 16)
-        kanjiInfo = {
+        jis_code = int(segments[1], 16)
+        kanji_info = {
                 'kanji':        kanji,
                 'gloss':        [],
-                'onReadings':   [],
-                'kunReadings':  [],
-                'jisCode':      jisCode
+                'on_readings':   [],
+                'kun_readings':  [],
+                'jis_code':      jis_code
             }
 
         i = 2
-        numSegments = len(segments)
-        while i < numSegments:
-            thisSegment = segments[i]
+        num_segments = len(segments)
+        while i < num_segments:
+            this_segment = segments[i]
             i += 1
 
-            if thisSegment.startswith('{'):
+            if this_segment.startswith('{'):
                 # It's a gloss.
-                kanjiInfo['gloss'].append(thisSegment[1:-1])
+                kanji_info['gloss'].append(this_segment[1:-1])
 
-            elif (scripts.scriptType(thisSegment) != scripts.Script.Ascii 
-                    or thisSegment.startswith('-')):
+            elif (scripts.script_type(this_segment) != scripts.Script.Ascii 
+                    or this_segment.startswith('-')):
                 # It must be a reading.
-                char = thisSegment[0]
+                char = this_segment[0]
                 if char == '-':
-                    char = thisSegment[1]
+                    char = this_segment[1]
 
-                if scripts.scriptType(char) == scripts.Script.Katakana:
-                    kanjiInfo['onReadings'].append(thisSegment)
-                elif scripts.scriptType(char) == scripts.Script.Hiragana:
-                    kanjiInfo['kunReadings'].append(thisSegment)
+                if scripts.script_type(char) == scripts.Script.Katakana:
+                    kanji_info['on_readings'].append(this_segment)
+                elif scripts.script_type(char) == scripts.Script.Hiragana:
+                    kanji_info['kun_readings'].append(this_segment)
                 else:
-                    raise Exception, "Unknown segment %s" % thisSegment
+                    raise Exception, "Unknown segment %s" % this_segment
 
-            elif thisSegment in ('T1', 'T2'):
+            elif this_segment in ('T1', 'T2'):
                 continue
 
             else:
                 # handle various codes
-                code = thisSegment[0]
-                remainder = thisSegment[1:]
+                code = this_segment[0]
+                remainder = this_segment[1:]
                 try:
                     remainder = int(remainder)
                 except:
                     pass
 
-                kanjiInfo.setdefault(remappings[code], []).append(
+                kanji_info.setdefault(remappings[code], []).append(
                     remainder)
 
-        kanjiInfo['strokeCount'] = kanjiInfo['strokeCount'][0]
-        if kanjiInfo.has_key('frequency'):
-            kanjiInfo['frequency'] = int(kanjiInfo['frequency'][0])
+        kanji_info['stroke_count'] = kanji_info['stroke_count'][0]
+        if kanji_info.has_key('frequency'):
+            kanji_info['frequency'] = int(kanji_info['frequency'][0])
 
-        kanjiInfo['skipCode'] = tuple(map(
+        kanji_info['skip_code'] = tuple(map(
                 int,
-                kanjiInfo['skipCode'][0].split('-')
+                kanji_info['skip_code'][0].split('-')
             ))
 
-        kanjidicEntry = KanjidicEntry(kanjiInfo)
+        kanjidic_entry = KanjidicEntry(kanji_info)
 
-        return kanjidicEntry
+        return kanjidic_entry
 
     #------------------------------------------------------------------------#
 
@@ -242,6 +242,6 @@ class Kanjidic(dict):
 #----------------------------------------------------------------------------#
 
 # An in-memory cached version.
-_cachedKanjidic = None
+_cached_kanjidic = None
 
 #----------------------------------------------------------------------------#

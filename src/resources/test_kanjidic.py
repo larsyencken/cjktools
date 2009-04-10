@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# testKanjidic.py
+# test_kanjidic.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue Dec  5 17:04:51 2006
 #
@@ -12,10 +12,10 @@ from kanjidic import *
 #----------------------------------------------------------------------------#
 
 def suite():
-    testSuite = unittest.TestSuite((
+    test_suite = unittest.TestSuite((
             unittest.makeSuite(KanjidicTestCase)
         ))
-    return testSuite
+    return test_suite
 
 #----------------------------------------------------------------------------#
 
@@ -27,14 +27,14 @@ class KanjidicTestCase(unittest.TestCase):
         self.kd = Kanjidic()
         pass
 
-    def testLookup(self):
+    def test_lookup(self):
         """
         Tests lookup of some kanji using kanjidic.
         """
         key = u'冊'
         result = self.kd[key]
-        self.assertEqual(result.strokeCount, 5)
-        self.assertEqual(result.skipCode, (4, 5, 1))
+        self.assertEqual(result.stroke_count, 5)
+        self.assertEqual(result.skip_code, (4, 5, 1))
 
         key = u'悪'
         result = self.kd[key]
@@ -42,9 +42,9 @@ class KanjidicTestCase(unittest.TestCase):
 
         return
 
-    def testErrorCase(self):
+    def test_error_case(self):
         key = u'粉'
-        assert u'こ'in self.kd[key].allReadings
+        assert u'こ'in self.kd[key].all_readings
         return
     
     def tearDown(self):

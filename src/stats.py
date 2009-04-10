@@ -35,7 +35,7 @@ class InsufficientData(Exception):
 # PUBLIC METHODS
 #----------------------------------------------------------------------------#
 
-def binsByData(data, n):
+def bins_by_data(data, n):
     """
     Puts the data into n sorted bins. Where n does not divide the length
     of the data directly, distributes the remainder as evenly as possible.
@@ -47,25 +47,25 @@ def binsByData(data, n):
 
     assert n <= len(data), "Can't split a group more ways than its length"
 
-    itemsPerGroup, remainder = divmod(len(data), n)
+    items_per_group, remainder = divmod(len(data), n)
 
-    startAt = 0
+    start_at = 0
     for i in xrange(n):
-        endAt = startAt + itemsPerGroup
+        end_at = start_at + items_per_group
 
         if remainder > 0:
-            endAt += 1
+            end_at += 1
             remainder -= 1
 
-        yield (startAt, endAt), data[startAt:endAt]
+        yield (start_at, end_at), data[start_at:end_at]
 
-        startAt = endAt
+        start_at = end_at
 
     return
 
 #----------------------------------------------------------------------------#
 
-def binsByIncrement(data, inc, keyMethod=lambda x: x[0]):
+def bins_by_increment(data, inc, key_method=lambda x: x[0]):
     """
     Calculates bins by range increment. Assumes data is a sequence of
     tuples, where the first tuple is the one whose range is divided up.
@@ -74,22 +74,22 @@ def binsByIncrement(data, inc, keyMethod=lambda x: x[0]):
     data.sort()
 
     # add _eps to the end of the range to ensure we capture that object
-    startRange = keyMethod(data[0])
-    endRange = keyMethod(data[-1]) + _eps
+    start_range = key_method(data[0])
+    end_range = key_method(data[-1]) + _eps
 
-    for binStart in frange(startRange, endRange, inc):
-        binEnd = binStart + inc
+    for bin_start in frange(start_range, end_range, inc):
+        bin_end = bin_start + inc
 
-        binData = [x for x in data if keyMethod(x) >= binStart and \
-                keyMethod(x) < binEnd]
+        bin_data = [x for x in data if key_method(x) >= bin_start and \
+                key_method(x) < bin_end]
 
-        yield (binStart, binEnd), binData
+        yield (bin_start, bin_end), bin_data
 
     return
 
 #----------------------------------------------------------------------------#
 
-def binsByRange(data, n, keyMethod=lambda x: x[0]):
+def bins_by_range(data, n, key_method=lambda x: x[0]):
     """
     Calculates bins by range. Assumes data is a sequence of tuples, where
     the first tuple is the one whose range is divided up.
@@ -97,59 +97,59 @@ def binsByRange(data, n, keyMethod=lambda x: x[0]):
     data = list(data)
     data.sort()
 
-    startRange = keyMethod(data[0])
-    endRange = keyMethod(data[-1])
-    binSize = (endRange - startRange)/float(n)
+    start_range = key_method(data[0])
+    end_range = key_method(data[-1])
+    bin_size = (end_range - start_range)/float(n)
 
     for i in xrange(n):
-        binStart = startRange + i*binSize
-        binEnd = startRange + (i+1)*binSize
+        bin_start = start_range + i*bin_size
+        bin_end = start_range + (i+1)*bin_size
 
         # add eps to the size of the last bin to ensure we capture that
         # object
         if i == (n-1):
-            useBinEnd = binEnd + _eps
+            use_bin_end = bin_end + _eps
         else:
-            useBinEnd = binEnd
+            use_bin_end = bin_end
 
-        binData = [x for x in data if keyMethod(x) >= binStart and \
-                keyMethod(x) < useBinEnd]
+        bin_data = [x for x in data if key_method(x) >= bin_start and \
+                key_method(x) < use_bin_end]
 
-        yield (binStart, binEnd), binData
+        yield (bin_start, bin_end), bin_data
 
     return
 
 #----------------------------------------------------------------------------#
 
-def combinations(combinationList):
+def combinations(combination_list):
     """
     Generates a list of all possible combinations of one element from the
-    first item in combinationList, one from the second, etc. For example::
+    first item in combination_list, one from the second, etc. For example::
 
         >>> combinations([[1, 2], ['dog'], ['a', 'b']])
         [(1, 'dog', 'a'), (2, 'dog', 'a'), (1, 'dog', 'b'), (2, 'dog', 'b')]
     """
-    combinationList = list(combinationList[:])
-    combinationList.reverse()
+    combination_list = list(combination_list[:])
+    combination_list.reverse()
 
-    firstList = combinationList.pop()
-    combos = map(lambda x: (x,), firstList)
+    first_list = combination_list.pop()
+    combos = map(lambda x: (x,), first_list)
 
-    while combinationList:
-        nextLevelCombos = []
-        for itemToAdd in combinationList.pop():
+    while combination_list:
+        next_level_combos = []
+        for item_to_add in combination_list.pop():
             # add this item to the end of every existing combo 
-            for existingCombo in combos:
-                nextLevelCombos.append(existingCombo + (itemToAdd,))
+            for existing_combo in combos:
+                next_level_combos.append(existing_combo + (item_to_add,))
 
-        combos = nextLevelCombos
+        combos = next_level_combos
 
     return combos
 
 #----------------------------------------------------------------------------#
 
-def iuniquePairs(inputList):
-    return UniquePairsIterator(inputList)
+def iunique_pairs(input_list):
+    return UniquePairsIterator(input_list)
 
 class UniquePairsIterator(object):
     """
@@ -161,29 +161,29 @@ class UniquePairsIterator(object):
     >>> list(x)
     [(1, 2), (1, 3), (2, 3)]
     """
-    def __init__(self, inputList):
+    def __init__(self, input_list):
         self.i = 0
         self.j = 1
-        self.inputList = sorted(inputList)
-        self.listLen = len(inputList)
+        self.input_list = sorted(input_list)
+        self.list_len = len(input_list)
 
-        if self.listLen < 2:
+        if self.list_len < 2:
             raise ValueError, "input must be of length at least 2"
 
     def next(self):
-        if self.i == self.listLen - 1 and self.j >= self.listLen:
+        if self.i == self.list_len - 1 and self.j >= self.list_len:
             raise StopIteration
 
-        item = self.inputList[self.i], self.inputList[self.j]
+        item = self.input_list[self.i], self.input_list[self.j]
         self.j += 1
-        if self.j >= self.listLen:
+        if self.j >= self.list_len:
             self.i += 1
             self.j = self.i + 1
 
         return item
 
     def __len__(self):
-        return self.listLen * (self.listLen - 1) / 2
+        return self.list_len * (self.list_len - 1) / 2
 
     def __iter__(self):
         return self
@@ -193,104 +193,104 @@ class UniquePairsIterator(object):
 
 #----------------------------------------------------------------------------#
 
-def uniqueTuples(inputList, n=2):
+def unique_tuples(input_list, n=2):
     "Similar to combinations, but selects from the same list."
-    def filterFn(x):
+    def filter_fn(x):
         for i in xrange(n-1):
             if x[i] >= x[i+1]:
                 return False
         else:
             return True
 
-    return filter(filterFn, combinations(n*[inputList]))
+    return filter(filter_fn, combinations(n*[input_list]))
 
 #----------------------------------------------------------------------------#
 
-def iuniqueTuples(inputList, n=2):
-    "An iterator version of uniqueTuples."
-    def filterFn(x):
+def iunique_tuples(input_list, n=2):
+    "An iterator version of unique_tuples."
+    def filter_fn(x):
         for i in xrange(n-1):
             if x[i] >= x[i+1]:
                 return False
         else:
             return True
 
-    return ifilter(filterFn, icombinations(n*[inputList]))
+    return ifilter(filter_fn, icombinations(n*[input_list]))
 
 #----------------------------------------------------------------------------#
 
-def icombinations(combinationLists):
+def icombinations(combination_lists):
     """
     As for combinations(), but returns an iterator.
     """
-    combinationLists = map(list, combinationLists)
-    lengths = map(len, combinationLists)
-    combined = zip(combinationLists, lengths)
-    nCombs = reduce(lambda x, y: x*y, lengths)
+    combination_lists = map(list, combination_lists)
+    lengths = map(len, combination_lists)
+    combined = zip(combination_lists, lengths)
+    n_combs = reduce(lambda x, y: x*y, lengths)
 
-    for i in xrange(nCombs):
+    for i in xrange(n_combs):
         item = ()
-        for itemList, listLength in combined:
-            i, offset = divmod(i, listLength)
-            item += (itemList[offset],)
+        for item_list, list_length in combined:
+            i, offset = divmod(i, list_length)
+            item += (item_list[offset],)
         yield item
 
     return
 
 #----------------------------------------------------------------------------#
 
-def combinationSeqs(combinationList):
+def combination_seqs(combination_list):
     """
     As with combinations() above, except that each potential item is
     assumed to already be in sequence form. For example::
 
-        >>> combinationSeqs([ [(1, 2), (3, 4)], [('dog',), ('cat',)] ])
+        >>> combination_seqs([ [(1, 2), (3, 4)], [('dog',), ('cat',)] ])
         [(1, 2, 'dog'), (3, 4, 'dog'), (1, 2, 'cat'), (3, 4, 'cat')]
     """
-    return list(icombinationSeqs(combinationList))
+    return list(icombination_seqs(combination_list))
 
 #----------------------------------------------------------------------------#
 
-def icombinationSeqs(combinationLists):
+def icombination_seqs(combination_lists):
     """
     As for combinations(), but returns an iterator.
 
-        >>> list(icombinationSeqs([ [(1, 2), (3, 4)], [('dog',), ('cat',)] ]))
+        >>> list(icombination_seqs([ [(1, 2), (3, 4)], [('dog',), ('cat',)] ]))
         [(1, 2, 'dog'), (3, 4, 'dog'), (1, 2, 'cat'), (3, 4, 'cat')]
     """
-    for seqCombs in icombinations(combinationLists):
+    for seq_combs in icombinations(combination_lists):
         result = []
-        for seq in seqCombs:
+        for seq in seq_combs:
             result.extend(seq)
         yield tuple(result)
     return
 
 #----------------------------------------------------------------------------#
 
-def segmentCombinations(gString):    
+def segment_combinations(g_string):    
     """
     Determines the possible segment combinations based on the grapheme
     string alone, in particular due to kanji placement. For example::
 
-        >>> segmentCombinations('ab')
+        >>> segment_combinations('ab')
         [('a', 'b'), ('ab',)]
     
     """
     # start out with just the first character
-    segmentations = [[gString[0]]]
+    segmentations = [[g_string[0]]]
 
     # add remaining characters one by one
-    for char in gString[1:]: 
-        nextSegmentationRound = []
+    for char in g_string[1:]: 
+        next_segmentation_round = []
         for segment in segmentations:
             # the new char in its own segment
-            nextSegmentationRound.append(segment + [char])
+            next_segmentation_round.append(segment + [char])
 
             # the new char as part of the previous segment
             segment[-1] += char
-            nextSegmentationRound.append(segment)
+            next_segmentation_round.append(segment)
 
-        segmentations = nextSegmentationRound
+        segmentations = next_segmentation_round
     
     segmentations = map(tuple, segmentations)
 
@@ -298,36 +298,36 @@ def segmentCombinations(gString):
 
 #----------------------------------------------------------------------------#
 
-def isegmentCombinations(gString):
+def isegment_combinations(g_string):
     """
-    As for segmentCombinations(), but returns an iterator.
+    As for segment_combinations(), but returns an iterator.
 
-        >>> list(sorted(isegmentCombinations('ab')))
+        >>> list(sorted(isegment_combinations('ab')))
         [('a', 'b'), ('ab',)]
 
     Note that the order may be different.
     """
-    if not gString:
+    if not g_string:
         return
 
-    gStringSize = len(gString)
-    nCombs = 2**(gStringSize-1)
+    g_string_size = len(g_string)
+    n_combs = 2**(g_string_size-1)
 
-    for i in xrange(nCombs):
-        currentComb = [gString[0]]
-        for j in xrange(1,gStringSize):
-            i, hasBoundary = divmod(i, 2)
-            if hasBoundary:
-                currentComb.append(gString[j])
+    for i in xrange(n_combs):
+        current_comb = [g_string[0]]
+        for j in xrange(1,g_string_size):
+            i, has_boundary = divmod(i, 2)
+            if has_boundary:
+                current_comb.append(g_string[j])
             else:
-                currentComb[-1] += gString[j]
-        yield tuple(currentComb)
+                current_comb[-1] += g_string[j]
+        yield tuple(current_comb)
 
     return
 
 #----------------------------------------------------------------------------#
 
-def kappa(responsesA, responsesB, potentialResponses=None):
+def kappa(responsesA, responsesB, potential_responses=None):
     """
     Assuming matched list of response values for each rater, determine
     their kappa value using Cohen's method.
@@ -349,35 +349,35 @@ def kappa(responsesA, responsesB, potentialResponses=None):
     for sample in responsesB:
         biasB.inc(sample)
 
-    if potentialResponses is None:
+    if potential_responses is None:
         # Detect the sample range.
-        potentialResponses = set(biasA.samples()).union(biasB.samples())
+        potential_responses = set(biasA.samples()).union(biasB.samples())
     
-    # calculate pAgreement: the actual frequency of agreement
-    nAgreements = 0
-    nQuestions = 0
+    # calculate p_agreement: the actual frequency of agreement
+    n_agreements = 0
+    n_questions = 0
     for responseA, responseB in izip(responsesA, responsesB):
         if responseA == responseB:
             # they agreed 
-            nAgreements += 1
+            n_agreements += 1
 
-        nQuestions += 1
+        n_questions += 1
 
-    assert nQuestions > 0
-    pAgreement = nAgreements / float(nQuestions)
+    assert n_questions > 0
+    p_agreement = n_agreements / float(n_questions)
 
-    assert 0 <= pAgreement <= 1, "P(Agreement) should be a defined probability"
+    assert 0 <= p_agreement <= 1, "P(Agreement) should be a defined probability"
 
-    # calculate pExpected: the agreement expected by chance
-    pExpected = 0.0
-    for response in potentialResponses:
-        pExpected += biasA.freq(response) * biasB.freq(response)
+    # calculate p_expected: the agreement expected by chance
+    p_expected = 0.0
+    for response in potential_responses:
+        p_expected += biasA.freq(response) * biasB.freq(response)
     
-    assert 0 <= pExpected <= 1, \
-        "P(Expected) should be bewteeen 0 and 1, not %.2f" % pExpected
+    assert 0 <= p_expected <= 1, \
+        "P(Expected) should be bewteeen 0 and 1, not %.2f" % p_expected
 
     # calculate kappa
-    kappa = (pAgreement - pExpected)/(1 - pExpected)
+    kappa = (p_agreement - p_expected)/(1 - p_expected)
 
     return kappa
 
@@ -412,25 +412,25 @@ def frange(start, end=None, inc=None):
 
 #----------------------------------------------------------------------------#
 
-def inclusionCombinations(sequence):
+def inclusion_combinations(sequence):
     """
     Returns a list of all combinations of inclusion/exclusion of the
     elements of the given sequence.
 
-        >>> inclusionCombinations([])
+        >>> inclusion_combinations([])
         [[]]
-        >>> inclusionCombinations([1, 2])
+        >>> inclusion_combinations([1, 2])
         [[], [1], [2], [1, 2]]
     """
-    currentCombs = [[]]
+    current_combs = [[]]
     for element in sequence:
-        nextSet = []
-        for comb in currentCombs:
-            nextSet.append(comb + [element])
+        next_set = []
+        for comb in current_combs:
+            next_set.append(comb + [element])
 
-        currentCombs += nextSet
+        current_combs += next_set
 
-    return currentCombs
+    return current_combs
 
 #----------------------------------------------------------------------------#
 
@@ -442,16 +442,16 @@ def mean(values):
         >>> mean([1, 2, 3])
         2.0
     """
-    valuesIter = iter(values)
+    values_iter = iter(values)
     n = 1
 
     # Need at least one value.
     try:
-        total = valuesIter.next()
+        total = values_iter.next()
     except StopIteration:
         raise InsufficientData
 
-    for value in valuesIter:
+    for value in values_iter:
         total += value
         n += 1
 
@@ -464,19 +464,19 @@ def stddev(values):
     Returns the standard deviation of a sequence of values. If less than three
     values are provided, raises an InsufficientData error.
     """
-    valuesIter = iter(values)
+    values_iter = iter(values)
     try:
-        value = valuesIter.next()
+        value = values_iter.next()
     except StopIteration:
         raise InsufficientData
 
     total = value
-    totalSquared = value * value
+    total_squared = value * value
     n = 1
 
-    for value in valuesIter:
+    for value in values_iter:
         total += value
-        totalSquared += value * value
+        total_squared += value * value
         n += 1
 
     # Need at least two values.
@@ -484,53 +484,53 @@ def stddev(values):
         raise InsufficientData
 
     n = float(n)
-    return sqrt((totalSquared - total * total / n) / (n - 1))
+    return sqrt((total_squared - total * total / n) / (n - 1))
 
 #----------------------------------------------------------------------------#
 
-def basicStats(values):
+def basic_stats(values):
     """
     Returns the mean and standard deviation of the sample as a tuple.
     """
-    valuesIter = iter(values)
+    values_iter = iter(values)
     try:
-        value = valuesIter.next()
+        value = values_iter.next()
     except StopIteration:
         raise InsufficientData
 
     total = value
-    totalSquared = value * value
+    total_squared = value * value
     n = 1
 
-    for value in valuesIter:
+    for value in values_iter:
         total += value
-        totalSquared += value * value
+        total_squared += value * value
         n += 1
 
     n = float(n)
     if n > 2:
-        stddevVal = sqrt((totalSquared - total * total / n) / (n - 1))
+        stddev_val = sqrt((total_squared - total * total / n) / (n - 1))
     else:
-        stddevVal = None
+        stddev_val = None
 
-    meanVal = total / n
+    mean_val = total / n
 
-    return (meanVal, stddevVal)
+    return (mean_val, stddev_val)
 
 #----------------------------------------------------------------------------#
 
-def isNan(x):
+def is_nan(x):
     """
     Returns True if the number is NaN, False otherwise.
 
     >>> x = 1e300
-    >>> isNan(x)
+    >>> is_nan(x)
     False
     >>> inf = x*x
-    >>> isNan(inf)
+    >>> is_nan(inf)
     False
     >>> nan = inf - inf
-    >>> isNan(nan)
+    >>> is_nan(nan)
     True
     """
     x = float(x)

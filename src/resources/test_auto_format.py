@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# testAutoFormat.py
+# test_auto_format.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue Dec 26 11:37:59 2006
 #
@@ -10,18 +10,18 @@ import unittest
 from os import path
 import pkg_resources
 
-from autoFormat import detectFormat, loadDictionary
-from bilingualDict import BilingualDictionary
+from auto_format import detect_format, load_dictionary
+from bilingual_dict import BilingualDictionary
 
 import settings
 
 #----------------------------------------------------------------------------#
 
 def suite():
-    testSuite = unittest.TestSuite((
+    test_suite = unittest.TestSuite((
             unittest.makeSuite(AutoFormatTestCase)
         ))
-    return testSuite
+    return test_suite
 
 #----------------------------------------------------------------------------#
 
@@ -32,7 +32,7 @@ class AutoFormatTestCase(unittest.TestCase):
     #------------------------------------------------------------------------#
 
     def setUp(self):
-        dictDir = path.join(settings.getDataDir(), 'dict')
+        dict_dir = path.join(settings.get_data_dir(), 'dict')
         self.je_edict = pkg_resources.resource_filename('cjktools_data', 
                 'dict/je_edict')
         self.je_jplaces = pkg_resources.resource_filename('cjktools_data', 
@@ -40,31 +40,31 @@ class AutoFormatTestCase(unittest.TestCase):
 
     #------------------------------------------------------------------------#
 
-    def testFormats(self):
+    def test_formats(self):
         """
         Tests correct format detection for a variety of dictionaries.
         """
-        self.assertEqual(detectFormat(self.je_edict).name, 'edict')
-        self.assertEqual(detectFormat(self.je_jplaces).name, 'edict')
+        self.assertEqual(detect_format(self.je_edict).name, 'edict')
+        self.assertEqual(detect_format(self.je_jplaces).name, 'edict')
         return
 
     #------------------------------------------------------------------------#
 
-    def testEdict(self):
+    def test_edict(self):
         """
         Tests correct detection and parsing of edict.
         """
-        dictObj = loadDictionary(self.je_edict)
-        assert isinstance(dictObj, BilingualDictionary)
-        self.assertEqual(dictObj.format.name, 'edict')
+        dict_obj = load_dictionary(self.je_edict)
+        assert isinstance(dict_obj, BilingualDictionary)
+        self.assertEqual(dict_obj.format.name, 'edict')
 
-        self._checkLookup(dictObj,
+        self._check_lookup(dict_obj,
                 u'齧歯目',
                 [u'げっしもく'],
                 [u'(adj-no) rat-like', u'rhodential'],
             )
 
-        self._checkLookup(dictObj,
+        self._check_lookup(dict_obj,
                 u'齲歯',
                 [u'うし']*4 + [u'むしば']*4,
                 ['(n) cavity', 'tooth decay', 'decayed tooth', 'caries']*2,
@@ -78,7 +78,7 @@ class AutoFormatTestCase(unittest.TestCase):
 
     #------------------------------------------------------------------------#
 
-    def _checkLookup(self, dictionary, key, readings, senses):
+    def _check_lookup(self, dictionary, key, readings, senses):
         entry = dictionary[key]
         self.assertEqual(entry.readings, readings)
         self.assertEqual(entry.senses, senses)

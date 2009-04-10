@@ -18,7 +18,7 @@ from itertools import izip, chain
 
 #----------------------------------------------------------------------------#
 
-def zipWith(method, listA, listB):
+def zip_with(method, listA, listB):
     """
     Applies a two-argument method to successive pairs of items taken from
     the two input lists. Returns the list of resulting items.
@@ -29,13 +29,13 @@ def zipWith(method, listA, listB):
     @param listB: The first providing the second tuple element for each
         pair.
     """
-    return list(izipWith(method, listA, listB))
+    return list(izip_with(method, listA, listB))
 
 #----------------------------------------------------------------------------#
 
-def izipWith(method, listA, listB):
+def izip_with(method, listA, listB):
     """
-    As with zipWith(), but provides an iterator. 
+    As with zip_with(), but provides an iterator. 
     """
     for itemA, itemB in izip(listA, listB):
         yield method(itemA, itemB)
@@ -44,7 +44,7 @@ def izipWith(method, listA, listB):
 
 #----------------------------------------------------------------------------#
 
-def flatten(objectSeq):
+def flatten(object_seq):
     """
     Flattens all levels of lists from the input, preserving original order
     of items.
@@ -56,38 +56,38 @@ def flatten(objectSeq):
     >>> flatten([1, set([u'a'])])
     [1, u'a']
     """
-    return list(iflatten(objectSeq))
+    return list(iflatten(object_seq))
 
 #----------------------------------------------------------------------------#
 
-def iflatten(objectSeq):
+def iflatten(object_seq):
     """
     Returns an iterator over all the objects in the flattened sequence. The
     original order is preserved.
 
-    @param objectSeq: A sequence of objects which themselves may be sequences
+    @param object_seq: A sequence of objects which themselves may be sequences
     (and their children, etc.).
-    @type objectSeq: sequence
+    @type object_seq: sequence
     @return: An iterator over all items in all subsequences.
     """
-    objectSeq = iter(objectSeq)
+    object_seq = iter(object_seq)
 
     while True:
         try:
-            item = objectSeq.next()
+            item = object_seq.next()
 
             if type(item) in (unicode, str):
                 yield item
                 continue
             try:
                 # Try to coerce this item into a sequence.
-                subSeq = iter(item)
+                sub_seq = iter(item)
             except TypeError:
                 # Failed, it's not a sequence of objects.
                 yield item
             else:
                 # Succeeded, it's a subsequence, so iterate into it.
-                objectSeq = chain(iter(item), objectSeq)
+                object_seq = chain(iter(item), object_seq)
 
         except StopIteration:
             break
@@ -96,7 +96,7 @@ def iflatten(objectSeq):
 
 #----------------------------------------------------------------------------#
 
-def unzip(pairList):
+def unzip(pair_list):
     """
     The reverse of the zip() method. Given a sequence of tuples of the
     same size, extracts two or more lists.
@@ -104,26 +104,26 @@ def unzip(pairList):
         >>> unzip([(1,2), (3,4), (5,6)])
         ([1, 3, 5], [2, 4, 6])
 
-    @param pairList: The sequence of tuples to draw the input from.
+    @param pair_list: The sequence of tuples to draw the input from.
     """
-    if not pairList:
+    if not pair_list:
         raise ValueError, "need a non-empty input list"
 
-    numLists = len(pairList[0])
+    num_lists = len(pair_list[0])
 
-    newLists = []
-    for i in range(numLists):
-        newLists.append([])
+    new_lists = []
+    for i in range(num_lists):
+        new_lists.append([])
 
-    for pair in pairList:
-        for i in range(numLists):
-            newLists[i].append(pair[i])
+    for pair in pair_list:
+        for i in range(num_lists):
+            new_lists[i].append(pair[i])
     
-    return tuple(newLists)
+    return tuple(new_lists)
 
 #----------------------------------------------------------------------------#
 
-def thread(inputList, tupleSize=2):
+def thread(input_list, tuple_size=2):
     """
     Turns a list of items into a list of tuples by simply placing
     sequential items into tuples:
@@ -134,25 +134,25 @@ def thread(inputList, tupleSize=2):
     Notice that the last element might be discarded, in a similar manner
     as when using zip.
     """
-    return list(ithread(inputList, tupleSize))
+    return list(ithread(input_list, tuple_size))
 
 #----------------------------------------------------------------------------#
 
-def ithread(inputSeq, tupleSize=2):
+def ithread(input_seq, tuple_size=2):
     """
     Identical to thread() but returns an interator over pairs.
 
         >>> list(ithread([1, 2, 3, 4, 5]))
         [(1, 2), (3, 4)]
     """
-    inputSeq = iter(inputSeq)
+    input_seq = iter(input_seq)
 
-    listRange = range(tupleSize)
+    list_range = range(tuple_size)
     while True:
         output = []
         try:
-            for i in range(tupleSize):
-                output.append(inputSeq.next())
+            for i in range(tuple_size):
+                output.append(input_seq.next())
         except StopIteration:
             break
 
@@ -163,37 +163,37 @@ def ithread(inputSeq, tupleSize=2):
 
 #----------------------------------------------------------------------------#
 
-def iunthread(inputTuples):
+def iunthread(input_tuples):
     """
     Turns a list of tuples into a flat list:
 
         >>> list(iunthread([(1, 2), (3, 4)]))
         [1, 2, 3, 4]
 
-    @param inputTuples: A list of tuples
-    @type inputTuples: list(tuple)
+    @param input_tuples: A list of tuples
+    @type input_tuples: list(tuple)
     @return: A flat list
     """
-    for itemTuple in inputTuples:
-        for item in itemTuple:
+    for item_tuple in input_tuples:
+        for item in item_tuple:
             yield item
 
     return
 
 #----------------------------------------------------------------------------#
 
-def unthread(inputTuples):
+def unthread(input_tuples):
     """
     Turns a list of tuples into a flat list:
 
         >>> unthread([(1, 2), (3, 4)])
         [1, 2, 3, 4]
 
-    @param inputTuples: A list of tuples
-    @type inputTuples: list(tuple)
+    @param input_tuples: A list of tuples
+    @type input_tuples: list(tuple)
     @return: A flat list
     """
-    return list(iunthread(inputTuples))
+    return list(iunthread(input_tuples))
 
 #----------------------------------------------------------------------------#
 
@@ -216,7 +216,7 @@ def repeat(n, item):
 
 #----------------------------------------------------------------------------#
 
-def repeateIndef(item):
+def repeate_indef(item):
     """Returns an iterator which repeats the item indefinitely."""
     while 1:
         yield item
@@ -225,21 +225,21 @@ def repeateIndef(item):
 
 #----------------------------------------------------------------------------#
 
-def succession(itemList):
+def succession(item_list):
     """
     Returns an iterator which builds up the item list point by point.
         
         >>> list(succession([1, 2, 3]))
         [[1], [1, 2], [1, 2, 3]]
     """
-    for i in xrange(1, len(itemList)+1):
-        yield itemList[:i]
+    for i in xrange(1, len(item_list)+1):
+        yield item_list[:i]
     
     return
 
 #----------------------------------------------------------------------------#
 
-def iwindow(itemList, windowSize=2, preBlanks=False):
+def iwindow(item_list, window_size=2, pre_blanks=False):
     """
     Returns a sliding window iterator over the given list.
 
@@ -247,69 +247,69 @@ def iwindow(itemList, windowSize=2, preBlanks=False):
         [(1, 2), (2, 3), (3, 4), (4, 5)]
         >>> window([1, 2, 3, 4], 3)
         [(1, 2, 3), (2, 3, 4)]
-        >>> window([1, 2, 3, 4], 3, preBlanks=True)
+        >>> window([1, 2, 3, 4], 3, pre_blanks=True)
         [(None, None, 1), (None, 1, 2), (1, 2, 3), (2, 3, 4)]
 
-    @param itemList: The list to iterate over.
-    @param windowSize: The number of elements in each window frame.
+    @param item_list: The list to iterate over.
+    @param window_size: The number of elements in each window frame.
     """
-    if preBlanks:
-        if windowSize < 2:
+    if pre_blanks:
+        if window_size < 2:
             raise ValueError, "Need a window size >= 2 to use pre-blanks"
-        itemList = [None]*(windowSize-1) + itemList
+        item_list = [None]*(window_size-1) + item_list
 
-    for endWindow in range(windowSize, len(itemList)+1):
-        yield tuple(itemList[endWindow-windowSize:endWindow])
+    for end_window in range(window_size, len(item_list)+1):
+        yield tuple(item_list[end_window-window_size:end_window])
 
     return 
 
-def window(itemList, windowSize=2, preBlanks=False):
+def window(item_list, window_size=2, pre_blanks=False):
     """Identical to iwindow(), but returns a list."""
-    return list(iwindow(itemList, windowSize, preBlanks))
+    return list(iwindow(item_list, window_size, pre_blanks))
 
 #----------------------------------------------------------------------------#
 
-def groupByLambda(func, items):
+def group_by_lambda(func, items):
     """Performs a grouping of the items by lambda value."""
     import warn
-    warn.warn(u'groupByLambda() is deprecated')
+    warn.warn(u'group_by_lambda() is deprecated')
     groups = {}
     for item in items:
-        keyValue = func(item)
+        key_value = func(item)
 
-        itemList = groups.get(keyValue, [])
-        itemList.append(item)
-        groups[keyValue] = itemList
+        item_list = groups.get(key_value, [])
+        item_list.append(item)
+        groups[key_value] = item_list
     
     return groups
 
 #----------------------------------------------------------------------------#
 
-def multiDict(inputPairs):
+def multi_dict(input_pairs):
     """
     Similar to casting pairs to a dictionary, except that repeated pairs
     are allowed.
     
         >>> dict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': 3, 'b': 2}
-        >>> multiDict( [('a', 1), ('b', 2), ('a', 3)] )
+        >>> multi_dict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': [1, 3], 'b': [2]}
 
-    @param inputPairs: A list of (key, value) pairs.
+    @param input_pairs: A list of (key, value) pairs.
     @return: A dictionary mapping keys to lists of values.
     """
-    outputDict = {}
+    output_dict = {}
 
-    for key, value in inputPairs:
-        existingValues = outputDict.get(key, [])
-        existingValues.append(value)
-        outputDict[key] = existingValues
+    for key, value in input_pairs:
+        existing_values = output_dict.get(key, [])
+        existing_values.append(value)
+        output_dict[key] = existing_values
     
-    return outputDict
+    return output_dict
 
 #----------------------------------------------------------------------------#
 
-def procmap(procedure, itemList):
+def procmap(procedure, item_list):
     """
     Like map(), but where the method being applied has no return value. In
     other words, the procedure is called on every item in the list
@@ -317,17 +317,17 @@ def procmap(procedure, itemList):
     procmap() also has no return value.
 
     @param procedure: The procedure to call each time.
-    @param itemList: The list of items to apply the procedure to.
+    @param item_list: The list of items to apply the procedure to.
     @return: None
     """
-    for item in itemList:
+    for item in item_list:
         method(item)
     
     return
 
 #----------------------------------------------------------------------------#
 
-def tailEnumerate(sequence):
+def tail_enumerate(sequence):
     """
     Same as enumerate(), but yields tuples of (item, index), so that you can
     sort and otherwise use them nicely.
@@ -351,22 +351,22 @@ def separate(method, seq):
     @type method: function
     @param seq: A sequence of objects.
     @type seq: sequence 
-    @return: A (trueList, falseList) tuple.
+    @return: A (true_list, false_list) tuple.
     """
-    trueList = []
-    falseList = []
+    true_list = []
+    false_list = []
 
     for item in seq:
         if method(item):
-            trueList.append(item)
+            true_list.append(item)
         else:
-            falseList.append(item)
+            false_list.append(item)
 
-    return (trueList, falseList)
+    return (true_list, false_list)
 
 #----------------------------------------------------------------------------#
 
-def separateByClass(method, seq):
+def separate_by_class(method, seq):
     """
     Distributes a sequence into a dictionary of classes, using the given
     method's return value as the class label. This is a generalization of 
@@ -429,23 +429,23 @@ def head(n, seq):
 
 #----------------------------------------------------------------------------#
 
-def groupsOfN(n, seq):
+def groups_of_n(n, seq):
     """
     Returns an iterator which groups elements of the sequence n at a time.
 
-    >>> x = groupsOfN(3, range(10))
+    >>> x = groups_of_n(3, range(10))
     >>> list(x) == [[0, 1, 2], [3, 4, 5], [6, 7 ,8], [9]]
     True
     """
     if hasattr(seq, '__getslice__'):
-        return groupsOfNSliced(n, seq)
+        return groups_of_n_sliced(n, seq)
     else:
-        return groupsOfNIter(n, seq)
+        return groups_of_n_iter(n, seq)
 
 #----------------------------------------------------------------------------#
 
-def groupsOfNIter(n, seq):
-    """A version of groupsOfN which always uses iterators."""
+def groups_of_n_iter(n, seq):
+    """A version of groups_of_n which always uses iterators."""
     seq = iter(seq)
     result = head(n, seq)
     while result:
@@ -456,8 +456,8 @@ def groupsOfNIter(n, seq):
 
 #----------------------------------------------------------------------------#
 
-def groupsOfNSliced(n, seq):
-    """A version of groupsOfN which always uses slices."""
+def groups_of_n_sliced(n, seq):
+    """A version of groups_of_n which always uses slices."""
     i = 0
     result = seq[i:i+n]
     while result:

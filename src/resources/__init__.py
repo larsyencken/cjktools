@@ -15,17 +15,17 @@ of the appropriate data files.
 #----------------------------------------------------------------------------#
 
 __all__ = [
-        'autoFormat',
-        'bilingualDict',
+        'auto_format',
+        'bilingual_dict',
         'format',
         'kanjidic',
-        'kanjiList',
+        'kanji_list',
         'languages',
-        'pinyinTable',
+        'pinyin_table',
         'place',
         'radkdict',
         'settings',
-        'splitByCodes',
+        'split_by_codes',
         'tree',
-        'zhuyinTable',
+        'zhuyin_table',
     ]

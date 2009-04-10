@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# splitByCodes.py
+# split_by_codes.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Wed Jun 13 10:10:23 EST 2007
 #
@@ -11,107 +11,107 @@ import os, sys, optparse
 import re
 from cjktools.common import sopen
 
-from autoFormat import iterEntries
+from auto_format import iter_entries
 
 #----------------------------------------------------------------------------#
 # PUBLIC
 #----------------------------------------------------------------------------#
 
-def loadCodedDictionary(filename):
+def load_coded_dictionary(filename):
     """
     Load a dictionary which is split by the codes within it.
     """
-    wordToEntry = {} 
-    codedDict = {}
-    for entry in iterEntries(filename):
+    word_to_entry = {} 
+    coded_dict = {}
+    for entry in iter_entries(filename):
         word = entry.word
 
         # Merge any word entries with the same graphical form.
-        if word in wordToEntry:
-            firstEntry = wordToEntry[word]
-            firstEntry.update(entry)
-            entry = firstEntry
+        if word in word_to_entry:
+            first_entry = word_to_entry[word]
+            first_entry.update(entry)
+            entry = first_entry
         else:
-            wordToEntry[word] = entry
+            word_to_entry[word] = entry
 
-        codes = getCodes('/'.join(entry.senses))
+        codes = get_codes('/'.join(entry.senses))
 
         # Create a subset of the dictionary for each code.
         for code in codes:
-            subDict = codedDict.setdefault(code, {})
+            sub_dict = coded_dict.setdefault(code, {})
 
             # Note that overwriting is ok, since we already merged any
             # coincidental forms.
-            subDict[word] = entry
+            sub_dict[word] = entry
 
-    return codedDict
+    return coded_dict
 
 #----------------------------------------------------------------------------#
 
-def iterCodedEntries(filename):
+def iter_coded_entries(filename):
     """
     Returns an iterator over dictionary entries in the filename, with their
-    parsed codes, in (entry, codeList) pairs.
+    parsed codes, in (entry, code_list) pairs.
     """
-    for entry in iterEntries(filename):
-        codes = getCodes('/'.join(entry.senses))
+    for entry in iter_entries(filename):
+        codes = get_codes('/'.join(entry.senses))
         yield entry, codes
 
     return
 
 #----------------------------------------------------------------------------#
 
-_codePattern = re.compile(u'\(([a-z,]+)\)', re.UNICODE)
+_code_pattern = re.compile(u'\(([a-z,]+)\)', re.UNICODE)
 
-def getCodes(line, filterSet=[]):
+def get_codes(line, filter_set=[]):
     """
     Returns the dictionary codes found in the given line. 
     """
-    matches = _codePattern.findall(line)
+    matches = _code_pattern.findall(line)
     codes = []
     for match in matches:
         if ' ' not in match:
-            codes.extend([c for c in match.split(',') if c not in filterSet])
+            codes.extend([c for c in match.split(',') if c not in filter_set])
 
     return codes
  
 #----------------------------------------------------------------------------#
 
-_englishWords = '/usr/share/dict/words'
+_english_words = '/usr/share/dict/words'
 
-def splitByCodes(inputFile, outputFile, ignores=[]):
+def split_by_codes(input_file, output_file, ignores=[]):
     """
     Splits the dictionary into separate files based on the codes present.
     """
-    iStream = sopen(inputFile, 'r')
-    oStream = sopen(outputFile, 'w')
+    i_stream = sopen(input_file, 'r')
+    o_stream = sopen(output_file, 'w')
 
-    knownWords = set([l.rstrip().lower() for l in open(_englishWords)])
-    knownWords = set([w for w in knownWords if len(w) > 3])
+    known_words = set([l.rstrip().lower() for l in open(_english_words)])
+    known_words = set([w for w in known_words if len(w) > 3])
 
-    codeStreams = {}
+    code_streams = {}
 
-    lines = iter(iStream)
-    header = iStream.next()
+    lines = iter(i_stream)
+    header = i_stream.next()
 
-    for line in iStream:
-        codes = getCodes(line, knownWords)
+    for line in i_stream:
+        codes = get_codes(line, known_words)
 
         for code in codes:
-            oStream = codeStreams.get(code)
-            if oStream is None:
+            o_stream = code_streams.get(code)
+            if o_stream is None:
                 print 'Found new code: %s' % code
-                oStream = codeStreams.setdefault(
+                o_stream = code_streams.setdefault(
                         code, 
-                        sopen('%s.%s' % (outputFile, code), 'w')
+                        sopen('%s.%s' % (output_file, code), 'w')
                     )
-                oStream.write(header)
-            oStream.write(line)
+                o_stream.write(header)
+            o_stream.write(line)
 
-    iStream.close()
+    i_stream.close()
 
-    for oStream in codeStreams.values():
-        oStream.close()
+    for o_stream in code_streams.values():
+        o_stream.close()
 
     return
 
@@ -123,12 +123,12 @@ def splitByCodes(inputFile, outputFile, ignores=[]):
 # MODULE EPILOGUE
 #----------------------------------------------------------------------------#
 
-def _createOptionParser():
+def _create_option_parser():
     """
     Creates an option parser instance to handle command-line options.
     """
     usage = \
-"""%prog [options] inputFile outputFile
+"""%prog [options] input_file output_file
 
 Splits an edict format dictionary into multiple files by the codes used."""
 
@@ -148,11 +148,11 @@ def main(argv):
     """
     The main method for this module.
     """
-    parser = _createOptionParser()
+    parser = _create_option_parser()
     (options, args) = parser.parse_args(argv)
 
     try:
-        [inputFile, outputFile] = args
+        [input_file, output_file] = args
     except:
         parser.print_help()
         sys.exit(1)
@@ -165,7 +165,7 @@ def main(argv):
         except:
             pass
 
-    splitByCodes(inputFile, outputFile, ignores=options.ignore.split(','))
+    split_by_codes(input_file, output_file, ignores=options.ignore.split(','))
     
     return
 

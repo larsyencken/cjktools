@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# testDecorators.py
+# test_decorators.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Tue Mar 27 13:58:57 2007
 #
@@ -13,15 +13,15 @@ from decorators import *
 #----------------------------------------------------------------------------#
 
 def suite():
-    testSuite = unittest.TestSuite((
+    test_suite = unittest.TestSuite((
             unittest.makeSuite(DecoratorsTestCase),
         ))
-    return testSuite
+    return test_suite
 
 #----------------------------------------------------------------------------#
 
 @memoized
-def getExample():
+def get_example():
     return Example()
 
 class Example(object):
@@ -33,12 +33,12 @@ class DecoratorsTestCase(unittest.TestCase):
     def setUp(self):
         pass
 
-    def testMemoized(self):
+    def test_memoized(self):
         """Tests for proper caching behaviour with a simple class."""
-        x = getExample()
+        x = get_example()
         self.assertEqual(x.value, 3)
 
-        y = getExample()
+        y = get_example()
         assert x is y
 
         x.value = 5
@@ -46,10 +46,10 @@ class DecoratorsTestCase(unittest.TestCase):
 
         return
 
-    def testOneShot(self):
+    def test_one_shot(self):
         x = [1]
 
-        @oneShot
+        @one_shot
         def f():
             return x.pop()
 

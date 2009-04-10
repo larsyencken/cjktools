@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# kanaTable.py
+# kana_table.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Mon Jun 25 16:05:55 2007
 #
@@ -19,8 +19,8 @@ import copy
 # CONSTANTS
 #----------------------------------------------------------------------------#
 
-smallKana = u'ぁぃぅぇぉっょゅゃ'
-nKana = u'ん'
+small_kana = u'ぁぃぅぇぉっょゅゃ'
+n_kana = u'ん'
 
 #----------------------------------------------------------------------------#
 
@@ -29,7 +29,7 @@ class KanaTable(object):
     An interface to the regular structure of the hiragana syllabary.
 
         >>> t = KanaTable()
-        >>> t.toVowelLine(unicode('す', 'utf8')) == unicode('う', 'utf8')
+        >>> t.to_vowel_line(unicode('す', 'utf8')) == unicode('う', 'utf8')
         True
     """
     #------------------------------------------------------------------------#
@@ -43,7 +43,7 @@ class KanaTable(object):
         """
         self.vowels = u'あいうえお'
         self.consonants = u'かがさざただまはばぱなら'
-        self.voicedConsonants = set(u'がだざびぴじばぱ')
+        self.voiced_consonants = set(u'がだざびぴじばぱ')
         self._table = {
             u'あ': u'あいうえお',
             u'か': u'かきくけこ',
@@ -60,34 +60,34 @@ class KanaTable(object):
             u'ら': u'らりるれろ'
         }
 
-        toConsonantLine = {}
-        for cLine, elems in self._table.iteritems():
-            toConsonantLine.update([(e, cLine) for e in elems])
-        self._toConsonantLine = toConsonantLine
+        to_consonant_line = {}
+        for c_line, elems in self._table.iteritems():
+            to_consonant_line.update([(e, c_line) for e in elems])
+        self._to_consonant_line = to_consonant_line
 
-        toVowelLine = {}
-        for vowelLine in apply(zip, self._table.values()):
-            vowelLine = list(sorted(vowelLine))
-            vowel = vowelLine[0]
-            toVowelLine.update([(k, vowel) for k in vowelLine])
-        self._toVowelLine = toVowelLine
+        to_vowel_line = {}
+        for vowel_line in apply(zip, self._table.values()):
+            vowel_line = list(sorted(vowel_line))
+            vowel = vowel_line[0]
+            to_vowel_line.update([(k, vowel) for k in vowel_line])
+        self._to_vowel_line = to_vowel_line
         return
 
     #------------------------------------------------------------------------#
 
-    def getCoords(self, kana):
+    def get_coords(self, kana):
         """
         Returns the pair (consonant line, vowel line) for the given kana
         character.
         """
-        if not self._toConsonantLine or not self._toVowelLine:
-            self._buildDicts()
+        if not self._to_consonant_line or not self._to_vowel_line:
+            self._build_dicts()
 
-        return (self._toConsonantLine[kana], self._toVowelLine[kana])
+        return (self._to_consonant_line[kana], self._to_vowel_line[kana])
 
     #------------------------------------------------------------------------#
 
-    def fromCoords(self, consonant, vowel):
+    def from_coords(self, consonant, vowel):
         """
         Converts a consonant and vowel pair to a single kana, provided they
         generate a member of the table. 
@@ -96,35 +96,35 @@ class KanaTable(object):
 
     #------------------------------------------------------------------------#
 
-    def toVowelLine(self, kana):
+    def to_vowel_line(self, kana):
         """Returns the vowel line of the given kana."""
         if kana == u'わ':
             return u'あ'
         else:
-            return self._toVowelLine.get(kana)
+            return self._to_vowel_line.get(kana)
 
     #------------------------------------------------------------------------#
 
-    def toConsonantLine(self, kana):
+    def to_consonant_line(self, kana):
         """Returns the consonant line of the given kana."""
-        return self._toConsonantLine.get(kana)
+        return self._to_consonant_line.get(kana)
 
     #------------------------------------------------------------------------#
 
-    def isVoiced(self, kana):
+    def is_voiced(self, kana):
         """Returns True if the kana is voiced, False otherwise."""
-        return self.toConsonantLine(kana) in self.voicedConsonants
+        return self.to_consonant_line(kana) in self.voiced_consonants
 
     #------------------------------------------------------------------------#
 
-    def getTable(self):
+    def get_table(self):
         """Return the kana table itself."""
         return copy.deepcopy(self._table)
 
     #------------------------------------------------------------------------#
 
     @classmethod
-    def getCached(cls):
+    def get_cached(cls):
         """Fetch a memory-cached copy of this class."""
         if not hasattr(cls, u'_cached'):
             cls._cached = KanaTable()

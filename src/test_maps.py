@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# testMaps.py
+# test_maps.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Mon Jun 25 15:46:00 2007
 #
@@ -13,17 +13,17 @@ import maps
 #----------------------------------------------------------------------------#
 
 def suite():
-    testSuite = unittest.TestSuite((
+    test_suite = unittest.TestSuite((
             unittest.makeSuite(MapTestCases),
             unittest.makeSuite(PartialMapTestCase),
             unittest.makeSuite(MultiDictTestCase),
         ))
-    return testSuite
+    return test_suite
 
 #----------------------------------------------------------------------------#
 
 class MapTestCases(unittest.TestCase):
-    def testChainDicts(self):
+    def test_chain_dicts(self):
         """
         Tests chaining together dictionaries.
         """
@@ -31,41 +31,41 @@ class MapTestCases(unittest.TestCase):
         dataB = {'a': 1.5, 'b': 3.5, 'c': 1.5}
 
         self.assertEqual(
-                maps.chainMapping(dataA, dataB),
+                maps.chain_mapping(dataA, dataB),
                 {1:1.5, 2:3.5, 3:1.5}
             )
 
         return
 
-    def testInvertDict(self):
+    def test_invert_dict(self):
         """
         Tests inverting a dictionary.
         """
         data = {1: [1,2,3], 2: [1,3]}
-        newDict = maps.invertMapping(data)
-        self.assertEqual(newDict, {1:[1,2], 2:[1], 3:[1,2]})
+        new_dict = maps.invert_mapping(data)
+        self.assertEqual(new_dict, {1:[1,2], 2:[1], 3:[1,2]})
 
         data2 = {1: 'a', 2: 'b', 3: 'c'}
-        newDict2 = maps.invertInjectiveMapping(data2)
-        self.assertEqual(newDict2, {'a': 1, 'b': 2, 'c': 3})
+        new_dict2 = maps.invert_injective_mapping(data2)
+        self.assertEqual(new_dict2, {'a': 1, 'b': 2, 'c': 3})
 
         return
 
-    def testMapDict(self):
+    def test_map_dict(self):
         """
         Tests map as applied to dictionaries.
         """
         data = {'a': 1, 'b': 2, 'c': 3}
         method = lambda x: x*x
-        newData = maps.mapDict(method, data)
+        new_data = maps.map_dict(method, data)
 
-        self.assertEqual(newData, {'a': 1, 'b': 4, 'c': 9})
-        maps.mapDict(method, data, inPlace=True)
-        self.assertEqual(data, newData)
+        self.assertEqual(new_data, {'a': 1, 'b': 4, 'c': 9})
+        maps.map_dict(method, data, in_place=True)
+        self.assertEqual(data, new_data)
 
         return
 
-    def testMergeDicts(self):
+    def test_merge_dicts(self):
         """
         Tests merging multiple dictionaries.
         """
@@ -78,76 +78,76 @@ class MapTestCases(unittest.TestCase):
                     3: 'bird',
                 }
 
-        result = maps.mergeDicts(dictA, dictB)
+        result = maps.merge_dicts(dictA, dictB)
 
         self.assertEqual(result[1], set('catine'))
         self.assertEqual(result[2], set('dog'))
         self.assertEqual(result[3], set('bird'))
 
-        self.assertEqual(dictA, maps.mergeDicts(dictA, dictA, dictA))
+        self.assertEqual(dictA, maps.merge_dicts(dictA, dictA, dictA))
 
         return
 
 #----------------------------------------------------------------------------#
 
 class PartialMapTestCase(unittest.TestCase):
-    def testToNone(self):
+    def test_to_none(self):
         """
         Everything maps to None
         """
-        def toNone(a): return None
+        def to_none(a): return None
 
-        initList = range(10)
-        okList, badList = maps.partialMap(toNone, initList)
+        init_list = range(10)
+        ok_list, bad_list = maps.partial_map(to_none, init_list)
 
-        assert okList == []
-        assert badList == range(10)
+        assert ok_list == []
+        assert bad_list == range(10)
 
         return
     
-    def testAllOk(self):
+    def test_all_ok(self):
         """
         Everthing maps to a true value
         """
         def id(a): return a
 
-        initList = range(1,11)
-        okList, badList = maps.partialMap(id, initList)
+        init_list = range(1,11)
+        ok_list, bad_list = maps.partial_map(id, init_list)
 
-        assert okList == initList, "Expected: %s, got: %s" % \
-                (`initList`, `okList`)
-        assert badList == []
+        assert ok_list == init_list, "Expected: %s, got: %s" % \
+                (`init_list`, `ok_list`)
+        assert bad_list == []
 
         return
 
-    def testPartial(self):
+    def test_partial(self):
         """
         Realistic case, part goes either way
         """
-        def killEven(x):
+        def kill_even(x):
             if x % 2 == 0:
                 return None
             else:
                 return x*10
 
-        initList = range(10, 20)
-        okList, badList = maps.partialMap(killEven, initList)
+        init_list = range(10, 20)
+        ok_list, bad_list = maps.partial_map(kill_even, init_list)
         
-        assert okList == [110, 130, 150, 170, 190]
-        assert badList == [10, 12, 14, 16, 18]
+        assert ok_list == [110, 130, 150, 170, 190]
+        assert bad_list == [10, 12, 14, 16, 18]
 
         return
 
 #----------------------------------------------------------------------------#
 
 class MultiDictTestCase(unittest.TestCase):
-    def testMultiDict(self):
+    def test_multi_dict(self):
         """
-        A simple maps.multiDict test case.
+        A simple maps.multi_dict test case.
         """
-        inputPairs = [('a', 2), ('b', 3), ('a', 4)]
-        self.assertEqual(maps.multiDict(inputPairs), {'a': [2,4], 'b': [3]})
-        self.assertEqual(maps.multiDict([]), {})
+        input_pairs = [('a', 2), ('b', 3), ('a', 4)]
+        self.assertEqual(maps.multi_dict(input_pairs), {'a': [2,4], 'b': [3]})
+        self.assertEqual(maps.multi_dict([]), {})
 
         return
 

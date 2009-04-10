@@ -18,12 +18,12 @@ import bz2, gzip
 
 #----------------------------------------------------------------------------#
 
-def filterComments(fileStream):
+def filter_comments(file_stream):
     """
     Filter a filestream, removing comment lines marked with an initial
     hash.
     """
-    for line in fileStream:
+    for line in file_stream:
         if line.startswith('#'):
             continue
 
@@ -44,8 +44,8 @@ def sopen(filename, mode='rb', encoding='utf8'):
     @param encoding: The encoding to use. Can be set to None to avoid
         using unicode at all.
     """
-    readMode = 'r' in mode
-    if readMode and 'w' in mode:
+    read_mode = 'r' in mode
+    if read_mode and 'w' in mode:
         raise Exception, "Must be either read mode or write, but not both"
 
     if filename.endswith('.bz2'):
@@ -53,7 +53,7 @@ def sopen(filename, mode='rb', encoding='utf8'):
     elif filename.endswith('.gz'):
         stream = gzip.GzipFile(filename, mode)
     elif filename == '-':
-        if readMode:
+        if read_mode:
             stream = sys.stdin
         else:
             stream = sys.stdout
@@ -61,7 +61,7 @@ def sopen(filename, mode='rb', encoding='utf8'):
         stream = open(filename, mode)
     
     if encoding not in (None, 'byte'):
-        if readMode:
+        if read_mode:
             return codecs.getreader(encoding)(stream)
         else:
             return codecs.getwriter(encoding)(stream)

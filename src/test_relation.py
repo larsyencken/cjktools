@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #----------------------------------------------------------------------------#
-# testRelation.py
+# test_relation.py
 # vim: ts=4 sw=4 sts=4 et tw=78:
 # Thu Mar  8 20:40:23 2007
 #
@@ -14,10 +14,10 @@ from relation import *
 
 def suite():
     import relation
-    testSuite = unittest.TestSuite((
+    test_suite = unittest.TestSuite((
             unittest.makeSuite(RelationTestCase),
         ))
-    return testSuite
+    return test_suite
 
 #----------------------------------------------------------------------------#
 
@@ -26,24 +26,24 @@ class RelationTestCase(unittest.TestCase):
     This class tests the Relation class. 
     """
     def setUp(self):
-        self.baseSequence = [(1, 'a'), (2, 'b'), (2, 'c'), (3, 'b')]
+        self.base_sequence = [(1, 'a'), (2, 'b'), (2, 'c'), (3, 'b')]
         pass
 
-    def testBasicOps(self):
+    def test_basic_ops(self):
         """
         Tests some basic construction and operations.
         """
-        reln = Relation().fromSequence(self.baseSequence)
-        for pair in self.baseSequence:
+        reln = Relation().from_sequence(self.base_sequence)
+        for pair in self.base_sequence:
             assert pair in reln
 
-        self.assertEqual(reln.forwardGet(1), set(['a']))
-        self.assertEqual(reln.forwardGet(2), set(['b', 'c']))
-        self.assertEqual(reln.forwardGet(3), set(['b']))
+        self.assertEqual(reln.forward_get(1), set(['a']))
+        self.assertEqual(reln.forward_get(2), set(['b', 'c']))
+        self.assertEqual(reln.forward_get(3), set(['b']))
 
-        self.assertEqual(reln.reverseGet('a'), set([1]))
-        self.assertEqual(reln.reverseGet('b'), set([2, 3]))
-        self.assertEqual(reln.reverseGet('c'), set([2]))
+        self.assertEqual(reln.reverse_get('a'), set([1]))
+        self.assertEqual(reln.reverse_get('b'), set([2, 3]))
+        self.assertEqual(reln.reverse_get('c'), set([2]))
 
         return
 

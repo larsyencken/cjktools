@@ -17,39 +17,39 @@ from itertools import izip, chain
 
 #----------------------------------------------------------------------------#
 
-def chainMapping(*dictionaries):
+def chain_mapping(*dictionaries):
     """
     Say you have more than one dictionary, and the range of the first is
     the domain of the second. You can create a new dictionary with the
     domain of the first but range of the second using this method.
 
-        >>> chainMapping({1: 'dog'}, {'dog': 3.0})
+        >>> chain_mapping({1: 'dog'}, {'dog': 3.0})
         {1: 3.0}
     """
-    baseDict = dictionaries[0].copy()
+    base_dict = dictionaries[0].copy()
 
     for dictionary in dictionaries[1:]:
-        mapDict(dictionary.__getitem__, baseDict, inPlace=True)
+        map_dict(dictionary.__getitem__, base_dict, in_place=True)
 
-    return baseDict
+    return base_dict
 
 #----------------------------------------------------------------------------#
 
-def invertMapping(dictionary):
+def invert_mapping(dictionary):
     """
     Inverts a dictionary with a one-to-many mapping from key to value to a
     new dictionary with a one-to-many mapping from value to key.
     """
-    invertedDict = {}
+    inverted_dict = {}
     for key, values in dictionary.iteritems():
         for value in values:
-            invertedDict.setdefault(value, []).append(key)
+            inverted_dict.setdefault(value, []).append(key)
 
-    return invertedDict
+    return inverted_dict
 
 #----------------------------------------------------------------------------#
 
-def isInjective(dictionary):
+def is_injective(dictionary):
     """
     Returns True if the mapping is one-to-one, False otherwise.
 
@@ -66,30 +66,30 @@ def isInjective(dictionary):
 
 #----------------------------------------------------------------------------#
 
-def invertInjectiveMapping(dictionary):
+def invert_injective_mapping(dictionary):
     """
     Inverts a dictionary with a one-to-one mapping from key to value, into a
     new dictionary with a one-to-one mapping from value to key.
     """
-    invertedDict = {}
+    inverted_dict = {}
     for key, value in dictionary.iteritems():
-        assert not invertedDict.has_key(value), "Mapping is not 1-1"
-        invertedDict[value] = key
+        assert not inverted_dict.has_key(value), "Mapping is not 1-1"
+        inverted_dict[value] = key
 
-    return invertedDict
+    return inverted_dict
 
 #----------------------------------------------------------------------------#
 
-def mapDict(method, dictionary, inPlace=False):
+def map_dict(method, dictionary, in_place=False):
     """
     Applies the method to every value in the dictionary, ignoring keys. If the
-    inPlace keyword is True, the existing dictionary is modified and returned.
+    in_place keyword is True, the existing dictionary is modified and returned.
 
     @param method: The method to apply.
     @param dictionary: The dictionary whose values to apply the method to.
     @return: A dictionary with the updated values.
     """
-    if inPlace:
+    if in_place:
         # Modify the dictionary in-place.
         for key, value in dictionary.iteritems():
             dictionary[key] = method(value)
@@ -100,7 +100,7 @@ def mapDict(method, dictionary, inPlace=False):
 
 #----------------------------------------------------------------------------#
 
-def multiDict(inputPairs):
+def multi_dict(input_pairs):
     """
     Similar to casting pairs to a dictionary, except that repeated pairs
     are allowed. To show the difference:
@@ -108,24 +108,24 @@ def multiDict(inputPairs):
         >>> dict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': 3, 'b': 2}
 
-        >>> multiDict( [('a', 1), ('b', 2), ('a', 3)] )
+        >>> multi_dict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': [1, 3], 'b': [2]}
 
-    @param inputPairs: A list of (key, value) pairs.
+    @param input_pairs: A list of (key, value) pairs.
     @return: A dictionary mapping keys to lists of values.
     """
-    outputDict = {}
+    output_dict = {}
 
-    for key, value in inputPairs:
-        existingValues = outputDict.get(key, [])
-        existingValues.append(value)
-        outputDict[key] = existingValues
+    for key, value in input_pairs:
+        existing_values = output_dict.get(key, [])
+        existing_values.append(value)
+        output_dict[key] = existing_values
     
-    return outputDict
+    return output_dict
 
 #----------------------------------------------------------------------------#
 
-def procmap(procedure, itemList):
+def procmap(procedure, item_list):
     """
     Like map(), but where the method being applied has no return value. In
     other words, the procedure is called on every item in the list
@@ -133,34 +133,34 @@ def procmap(procedure, itemList):
     procmap() also has no return value.
 
     @param procedure: The procedure to call each time.
-    @param itemList: The list of items to apply the procedure to.
+    @param item_list: The list of items to apply the procedure to.
     @return: None
     """
-    for item in itemList:
+    for item in item_list:
         method(item)
     
     return
 
 #----------------------------------------------------------------------------#
 
-def mergeDicts(*args):
+def merge_dicts(*args):
     """
     Merges a number of dictionaries together into one. Assumes the dictionary
     maps to a set of hashable items. The result for each key is the union of
     all the values in the provided dictionaries.
     """
-    unifiedDict = {}
+    unified_dict = {}
     for key, items in apply(chain, [d.iteritems() for d in args]):
-        if unifiedDict.has_key(key):
-            unifiedDict[key].update(items)
+        if unified_dict.has_key(key):
+            unified_dict[key].update(items)
         else:
-            unifiedDict[key] = set(items)
+            unified_dict[key] = set(items)
 
-    return unifiedDict
+    return unified_dict
 
 #----------------------------------------------------------------------------#
 
-def partialMap(method, objectSeq):
+def partial_map(method, object_seq):
     """
     Like map, but filters out all objects with an non-true result, and
     returns them in a separate items list. I.e. any item for which the map
@@ -168,14 +168,14 @@ def partialMap(method, objectSeq):
 
     @param method: The method to perform on each item.
     @type method: function
-    @param objectSeq: The sequence of items to apply the method to.
-    @type objectSeq: sequence
-    @return: The tuple of lists (mappedItems, rejectedItems).
+    @param object_seq: The sequence of items to apply the method to.
+    @type object_seq: sequence
+    @return: The tuple of lists (mapped_items, rejected_items).
     """
     mapped = []
     rejected = []
 
-    for item in objectSeq:
+    for item in object_seq:
         result = apply(method, (item,))
         if result:
             mapped.append(result)
@@ -186,12 +186,12 @@ def partialMap(method, objectSeq):
 
 #----------------------------------------------------------------------------#
 
-def filteredMap(method, objectList):
+def filtered_map(method, object_list):
     """
     Performs a map then a filter on the object list. The final filter strips
     out objects which evaluate to False.
     """
-    return filter(None, map(method, objectList))
+    return filter(None, map(method, object_list))
 
 #----------------------------------------------------------------------------#
 
