@@ -39,6 +39,8 @@ setup(
         author_email="lljy@csse.unimelb.edu.au",
         license="BSD",
 
+        install_requires=['simplestats'],
+
         package_dir={'cjktools': 'src'},
         packages=['cjktools', 'cjktools.resources'],
         scripts=['src/dyntest'],

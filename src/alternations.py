@@ -13,10 +13,11 @@ recovering from them.
 
 #----------------------------------------------------------------------------#
 
+from simplestats.comb import combinations
+
 import kana_table
 import scripts
 import maps
-import stats
 
 #----------------------------------------------------------------------------#
 
@@ -47,7 +48,7 @@ def canonical_forms(kana_segments):
 
         candidate_sets.append(variants)
 
-    return stats.combinations(candidate_sets)
+    return combinations(*candidate_sets)
 
 #----------------------------------------------------------------------------#
 
@@ -83,7 +84,7 @@ def surface_forms(reading_segments):
             map(rendaku_variants, reading_segments[1:])
         )
 
-    return stats.combinations(candidate_sets)
+    return combinations(*candidate_sets)
 
 #----------------------------------------------------------------------------#
 

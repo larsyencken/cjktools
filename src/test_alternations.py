@@ -9,13 +9,15 @@
 import unittest
 import doctest
 import alternations
-import stats
+
+from simplestats.comb import combinations
 
 #----------------------------------------------------------------------------#
 
 def suite():
     test_suite = unittest.TestSuite((
             unittest.makeSuite(AlternationsTestCase),
+            doctest.DocTestSuite(alternations),
         ))
     return test_suite
 
@@ -32,7 +34,7 @@ class AlternationsTestCase(unittest.TestCase):
         base = (u'ゆっ', u'ぐり')
         seg1Cases = [u'ゆ' + c for c in u'いちりきつくっ']
         seg2Cases = [u'くり', u'ぐり']
-        expected = set(stats.combinations([seg1Cases, seg2Cases]))
+        expected = set(combinations(seg1Cases, seg2Cases))
 
         self.assertEqual(set(alternations.canonical_forms(base)), expected)
 
