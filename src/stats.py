@@ -16,6 +16,12 @@ particular determining possible combinations of input.
 from itertools import izip, ifilter
 from math import sqrt
 
+import warnings
+warnings.warn(
+        'please use simplestats package instead',
+        DeprecationWarning,
+    )
+
 #----------------------------------------------------------------------------#
 
 _eps = 1e-8
