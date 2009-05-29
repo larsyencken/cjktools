@@ -61,7 +61,8 @@ def dynamic_suite(file_or_directory, excludes=[], base_import_path=[]):
         for filename in filenames:
             # Import the module.
             module_name = filename[:-len('.py')]
-            full_import_path = import_path + module_name.split('/')
+            full_import_path = import_path + module_name.lstrip('./'
+                    ).split('/')
             try:
                 module = __import__('.'.join(full_import_path))
             except ImportError, e:
@@ -72,7 +73,7 @@ def dynamic_suite(file_or_directory, excludes=[], base_import_path=[]):
 
             # If the one we care about is embedded deep within packages,
             # fetch it out.
-            if import_path:
+            if len(full_import_path) > 1:
                 for sub_module in full_import_path[1:]:
                     module = getattr(module, sub_module)
 
