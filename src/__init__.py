@@ -24,11 +24,9 @@ __all__ = [
     'maps',
     'relation',
     'scripts',
-    'sequences',
     'shell_color',
     'shell',
     'smart_cache',
-    'stats',
     'table',
     'resources',
 ]
