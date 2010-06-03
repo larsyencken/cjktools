@@ -13,7 +13,6 @@ A nice interface to the Kanjidic dictionary.
 #----------------------------------------------------------------------------#
 
 import re
-from os import path
 from itertools import chain
 
 from cjktools import scripts
@@ -217,7 +216,7 @@ class Kanjidic(dict):
                 except:
                     pass
 
-                kanji_info.setdefault(remappings[code], []).append(
+                kanji_info.setdefault(remappings.get(code, code), []).append(
                     remainder)
 
         kanji_info['stroke_count'] = kanji_info['stroke_count'][0]
