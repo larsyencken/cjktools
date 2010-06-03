@@ -13,12 +13,9 @@ file.
 
 #----------------------------------------------------------------------------#
 
-import os
-
 from cjktools.common import sopen
 
-from format import RegexFormat
-import languages
+from format import RegexFormat, UnknownFormatError
 
 #----------------------------------------------------------------------------#
 

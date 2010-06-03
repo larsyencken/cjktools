@@ -13,7 +13,7 @@ contains high-level interfaces for dealing with these mappings.
 
 #----------------------------------------------------------------------------#
 
-from itertools import izip, chain
+from itertools import chain
 
 #----------------------------------------------------------------------------#
 
@@ -125,14 +125,14 @@ def multi_dict(input_pairs):
 
 #----------------------------------------------------------------------------#
 
-def procmap(procedure, item_list):
+def procmap(method, item_list):
     """
     Like map(), but where the method being applied has no return value. In
     other words, the procedure is called on every item in the list
     sequentially, but since each call has no return value, the call to
     procmap() also has no return value.
 
-    @param procedure: The procedure to call each time.
+    @param method: The procedure to call each time.
     @param item_list: The list of items to apply the procedure to.
     @return: None
     """

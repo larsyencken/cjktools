@@ -14,10 +14,9 @@ This module implements a smart caching function, with dependencies.
 
 import common
 import cPickle as pickle
-import time
 import types
-from os import path, environ
-import sys, os
+import os
+from os import path
 
 #----------------------------------------------------------------------------#
 
