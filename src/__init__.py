@@ -22,12 +22,10 @@ __all__ = [
     'exceptions',
     'kana_table',
     'maps',
-    'relation',
     'scripts',
     'shell_color',
     'shell',
     'smart_cache',
-    'table',
     'resources',
 ]
 
