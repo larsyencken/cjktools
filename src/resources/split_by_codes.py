@@ -62,7 +62,7 @@ def iter_coded_entries(filename):
 #----------------------------------------------------------------------------#
 
 _code_pattern = re.compile(
-        u'^\(([a-zA-Z][A-Z0-9]*(,[a-zA-Z][A-Z0-9]*)*)\)',
+        r'\(([a-zA-Z0-9,-]+)\)',
         re.UNICODE,
     )
 
@@ -82,10 +82,12 @@ _known_codes = set(['Buddh', 'MA', 'X', 'abbr', 'adj', 'adj-f', 'adj-i',
 
 def get_codes(sense):
     "Returns the dictionary codes found in the given line."
-    match = _code_pattern.match(sense)
-    if match:
-        return [c for c in match.group(1).split(',') for c in _known_codes]
-    else:
-        return []
+    matches = _code_pattern.findall(sense)
+    codes = set()
+    for match in matches:
+        for code in match.split(','):
+            if code in _known_codes:
+                codes.add(code)
+    return codes
   
 # vim: ts=4 sw=4 sts=4 et tw=78:
