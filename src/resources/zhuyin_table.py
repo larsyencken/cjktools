@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# zhuyin_table.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Fri Dec 22 16:05:44 2006
-#
-#----------------------------------------------------------------------------#
+# 
+#  zhuyin_table.py
+#  foks
+#  
+#  Created by Lars Yencken on 2006-12-22.
+#  Copyright 2006-2010 Lars Yencken. All rights reserved.
+# 
 
 """
 An interface to the zhuyin <-> pinyin table.
@@ -14,8 +15,6 @@ An interface to the zhuyin <-> pinyin table.
 
 import codecs
 import pkg_resources
-
-from cjktools.table import parse_lines 
 
 #----------------------------------------------------------------------------#
 
@@ -30,6 +29,11 @@ def get_zhuyin_to_pinyin_table():
         table[zhuyin] = pinyin
 
     return table
+    
+def parse_lines(stream):
+    for line in stream:
+        if not line.startswith('#'):
+            yield line.rstrip().split()
 
 #----------------------------------------------------------------------------#
 
