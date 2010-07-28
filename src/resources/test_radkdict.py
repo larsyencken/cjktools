@@ -45,9 +45,8 @@ class RadkdictTestCase(unittest.TestCase):
         key = u'偏'
         rkd = RadkDict()
         radicals = set(rkd[key])
-        expected_radicals = set([u'一', u'｜', u'化', u'冂', u'戸', u'冊'])
+        expected_radicals = set([u'一', u'｜', u'化', u'冂', u'尸', u'戸', u'冊'])
         self.assertEqual(radicals, expected_radicals)
-        return
 
     def tearDown(self):
         pass

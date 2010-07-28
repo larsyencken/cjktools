@@ -37,7 +37,6 @@ class RadkDict(dict):
             line_stream = sopen(dict_file)
             
         self._parse_radkfile(line_stream)
-        return
 
     #------------------------------------------------------------------------#
     # PRIVATE METHODS
@@ -56,13 +55,18 @@ class RadkDict(dict):
         stroke_count = None
 
         for line in line_stream:
+            line = line.rstrip()
             if line.startswith('#'):
                 # found a comment line
                 continue
 
             if line.startswith('$'):
                 # found a line with a new radical
-                dollar, current_radical, stroke_count = line.split()
+                parts = line.split()
+                if len(parts) not in (3, 4):
+                    raise Exception('format error parsing radkfile')
+                
+                dollar, current_radical, stroke_count = parts[:3]
                 radical_to_stroke_count[current_radical] = int(stroke_count)
                 continue
 
@@ -75,8 +79,6 @@ class RadkDict(dict):
 
         self.radical_to_stroke_count = radical_to_stroke_count
         self.radical_to_kanji = radical_to_kanji
-
-        return
 
     #------------------------------------------------------------------------#
 
@@ -99,10 +101,7 @@ def print_radicals(kanji_list):
 
         print '%s: ' % kanji, ' '.join(sorted(radicals))
 
-    return
-
 #----------------------------------------------------------------------------#
 
 if __name__ == '__main__':
     print_radicals(sys.argv[1:])
-
