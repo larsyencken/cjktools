@@ -1,15 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# split_by_codes.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Wed Jun 13 10:10:23 EST 2007
-#
-#----------------------------------------------------------------------------#
+# 
+#  split_by_codes.py
+#  cjktools
+#  
+#  Created by Lars Yencken on 2007-06-13.
+#  Copyright 2007-2010 Lars Yencken. All rights reserved.
+# 
 
-import os, sys, optparse
 import re
-from cjktools.common import sopen
 
 from auto_format import iter_entries
 
@@ -34,7 +32,9 @@ def load_coded_dictionary(filename):
         else:
             word_to_entry[word] = entry
 
-        codes = get_codes('/'.join(entry.senses))
+        codes = set()
+        for sense in entry.senses:
+            codes.update(get_codes(sense))
 
         # Create a subset of the dictionary for each code.
         for code in codes:
@@ -54,127 +54,37 @@ def iter_coded_entries(filename):
     parsed codes, in (entry, code_list) pairs.
     """
     for entry in iter_entries(filename):
-        codes = get_codes('/'.join(entry.senses))
+        codes = set()
+        for sense in entry.senses:
+            codes.update(get_codes(sense))
         yield entry, codes
 
-    return
-
 #----------------------------------------------------------------------------#
 
-_code_pattern = re.compile(u'\(([a-z,]+)\)', re.UNICODE)
+_code_pattern = re.compile(
+        u'^\(([a-zA-Z][A-Z0-9]*(,[a-zA-Z][A-Z0-9]*)*)\)',
+        re.UNICODE,
+    )
 
-def get_codes(line, filter_set=[]):
-    """
-    Returns the dictionary codes found in the given line. 
-    """
-    matches = _code_pattern.findall(line)
-    codes = []
-    for match in matches:
-        if ' ' not in match:
-            codes.extend([c for c in match.split(',') if c not in filter_set])
+# taken from http://www.csse.monash.edu.au/~jwb/edict_doc.html (2010-07-28)
+_known_codes = set(['Buddh', 'MA', 'X', 'abbr', 'adj', 'adj-f', 'adj-i',
+    'adj-na', 'adj-no', 'adj-pn', 'adj-t', 'adv', 'adv-n', 'adv-to', 'arch',
+    'ateji', 'aux', 'aux-adj', 'aux-v', 'chn', 'col', 'comp', 'conj', 'ctr',
+    'derog', 'eK', 'ek', 'exp', 'fam', 'fem', 'food', 'geom', 'gikun', 'gram',
+    'hon', 'hum', 'iK', 'id', 'int', 'io', 'iv', 'ling', 'm-sl', 'male',
+    'male-sl', 'math', 'mil', 'n', 'n-adv', 'n-pref', 'n-suf', 'n-t', 'ng',
+    'num', 'oK', 'obs', 'obsc', 'ok', 'on-mim', 'physics', 'pn', 'poet',
+    'pol', 'pref', 'prt', 'rare', 'sens', 'sl', 'suf', 'uK', 'uk', 'v1', 'v5',
+    'v5aru', 'v5b', 'v5g', 'v5k', 'v5k-s', 'v5m', 'v5n', 'v5r', 'v5r-i',
+    'v5s', 'v5t', 'v5u', 'v5u-s', 'v5uru', 'v5z', 'vi', 'vk', 'vn', 'vs',
+    'vs-i', 'vs-s', 'vt', 'vulg', 'vz'])
 
-    return codes
- 
-#----------------------------------------------------------------------------#
-
-_english_words = '/usr/share/dict/words'
-
-def split_by_codes(input_file, output_file, ignores=[]):
-    """
-    Splits the dictionary into separate files based on the codes present.
-    """
-    i_stream = sopen(input_file, 'r')
-    o_stream = sopen(output_file, 'w')
-
-    known_words = set([l.rstrip().lower() for l in open(_english_words)])
-    known_words = set([w for w in known_words if len(w) > 3])
-
-    code_streams = {}
-
-    lines = iter(i_stream)
-    header = i_stream.next()
-
-    for line in i_stream:
-        codes = get_codes(line, known_words)
-
-        for code in codes:
-            o_stream = code_streams.get(code)
-            if o_stream is None:
-                print 'Found new code: %s' % code
-                o_stream = code_streams.setdefault(
-                        code, 
-                        sopen('%s.%s' % (output_file, code), 'w')
-                    )
-                o_stream.write(header)
-            o_stream.write(line)
-
-    i_stream.close()
-
-    for o_stream in code_streams.values():
-        o_stream.close()
-
-    return
-
-#----------------------------------------------------------------------------#
-# PRIVATE
-#----------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#
-# MODULE EPILOGUE
-#----------------------------------------------------------------------------#
-
-def _create_option_parser():
-    """
-    Creates an option parser instance to handle command-line options.
-    """
-    usage = \
-"""%prog [options] input_file output_file
-
-Splits an edict format dictionary into multiple files by the codes used."""
-
-    parser = optparse.OptionParser(usage)
-
-    parser.add_option('--debug', action='store_true', dest='debug',
-            default=False, help='Enables debugging mode [False]')
-
-    parser.add_option('--ignore', '-i', action='store', dest='ignore',
-            default='', help='A comma separated list of tags to ignore.')
-
-    return parser
-
-#----------------------------------------------------------------------------#
-
-def main(argv):
-    """
-    The main method for this module.
-    """
-    parser = _create_option_parser()
-    (options, args) = parser.parse_args(argv)
-
-    try:
-        [input_file, output_file] = args
-    except:
-        parser.print_help()
-        sys.exit(1)
-
-    # Avoid psyco in debugging mode, since it merges stack frames.
-    if not options.debug:
-        try:
-            import psyco
-            psyco.profile()
-        except:
-            pass
-
-    split_by_codes(input_file, output_file, ignores=options.ignore.split(','))
-    
-    return
-
-#----------------------------------------------------------------------------#
-
-if __name__ == '__main__':
-    main(sys.argv[1:])
-
-#----------------------------------------------------------------------------#
+def get_codes(sense):
+    "Returns the dictionary codes found in the given line."
+    match = _code_pattern.match(sense)
+    if match:
+        return [c for c in match.group(1).split(',') for c in _known_codes]
+    else:
+        return []
   
 # vim: ts=4 sw=4 sts=4 et tw=78:
-
