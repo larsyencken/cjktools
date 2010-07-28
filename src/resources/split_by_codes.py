@@ -77,7 +77,8 @@ _known_codes = set(['Buddh', 'MA', 'X', 'abbr', 'adj', 'adj-f', 'adj-i',
     'pol', 'pref', 'prt', 'rare', 'sens', 'sl', 'suf', 'uK', 'uk', 'v1', 'v5',
     'v5aru', 'v5b', 'v5g', 'v5k', 'v5k-s', 'v5m', 'v5n', 'v5r', 'v5r-i',
     'v5s', 'v5t', 'v5u', 'v5u-s', 'v5uru', 'v5z', 'vi', 'vk', 'vn', 'vs',
-    'vs-i', 'vs-s', 'vt', 'vulg', 'vz'])
+    'vs-i', 'vs-s', 'vt', 'vulg', 'vz', 's', 'p', 'u', 'g', 'f', 'm', 'h',
+    'pr', 'co', 'st'])
 
 def get_codes(sense):
     "Returns the dictionary codes found in the given line."
