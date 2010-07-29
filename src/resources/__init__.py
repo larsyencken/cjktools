@@ -24,7 +24,6 @@ __all__ = [
         'pinyin_table',
         'place',
         'radkdict',
-        'settings',
         'split_by_codes',
         'tree',
         'zhuyin_table',

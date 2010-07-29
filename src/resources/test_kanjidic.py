@@ -25,12 +25,9 @@ class KanjidicTestCase(unittest.TestCase):
     """
     def setUp(self):
         self.kd = Kanjidic()
-        pass
 
     def test_lookup(self):
-        """
-        Tests lookup of some kanji using kanjidic.
-        """
+        "Tests lookup of some kanji using kanjidic."
         key = u'冊'
         result = self.kd[key]
         self.assertEqual(result.stroke_count, 5)
@@ -38,15 +35,12 @@ class KanjidicTestCase(unittest.TestCase):
 
         key = u'悪'
         result = self.kd[key]
-        self.assertEqual(result.frequency, 469)
-
-        return
+        self.assertEqual(result.frequency, 530)
 
     def test_error_case(self):
         key = u'粉'
         assert u'こ'in self.kd[key].all_readings
-        return
-    
+
     def tearDown(self):
         pass
 

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# test_pinyin_table.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Tue Dec 12 10:32:43 2006
-#
-#----------------------------------------------------------------------------# 
+# 
+#  test_pinyin_table.py
+#  cjktools
+#  
+#  Created by Lars Yencken on 2006-12-12.
+#  Copyright 2006-2010 Lars Yencken. All rights reserved.
+# 
 
 import unittest
 from pinyin_table import *
-import settings
 
 #----------------------------------------------------------------------------#
 
@@ -21,24 +21,17 @@ def suite():
 #----------------------------------------------------------------------------#
 
 class PinyinTableTestCase(unittest.TestCase):
-    """
-    This class tests the PinyinTable class. 
-    """
     def setUp(self):
         pass
 
     def test_pinyin_table(self):
-        """
-        Tests simple conversion from hanzi to unicode pinyin.
-        """
+        "Tests simple conversion from hanzi to unicode pinyin."
         table = get_pinyin_table()
         self.assertEqual(table.from_hanzi(u'一代风流'), u'yīdàifēnglíu')
         return
 
     def test_ascii_pinyin(self):
-        """
-        Test simple conversion from ascii to unicode pinyin.
-        """
+        "Test simple conversion from ascii to unicode pinyin."
         s = get_pinyin_table()
         self.assertEqual(u'bāolíqǔan', s.from_ascii('bao1li2 quan3'))
         self.assertEqual(u'chéngzhewéiwáng',
@@ -47,10 +40,7 @@ class PinyinTableTestCase(unittest.TestCase):
         return
     
     def test_pinyin_segmenter(self):
-        """
-        Tests that the segmenter works correctly, and detects tones
-        correctly.
-        """
+        "Tests for correct segmentation and tones detection."
         segmenter = get_pinyin_segmenter()
         self.assertEqual(
                 segmenter.segment_pinyin('woshangdaxue'),
@@ -81,33 +71,6 @@ class PinyinTableTestCase(unittest.TestCase):
                 segmenter.segment_pinyin(u'shangqi3bu4'),
                 (('shang', 0), (u'qi', 3), (u'bu', 4))
             )
-        return
-
-#    def test_unknown_wildcard(self):
-#        """ Tests segmenting with the unknown character wildcard.
-#        """
-#        segmenter = get_pinyin_segmenter()
-#        c = settings.UNKNOWN_WILDCARD
-#        self.assertEqual(
-#                segmenter.segment_pinyin('gou' + c),
-#                (('gou', 0), (c, 0)),
-#            )
-#        
-#        self.assertEqual(
-#                segmenter.segment_pinyin(c + 'qi'),
-#                ((c, 0), ('qi', 0)),
-#            )
-#
-#        self.assertEqual(
-#                segmenter.segment_pinyin(3*c),
-#                ((c, 0), (c, 0), (c, 0)),
-#            )
-#        
-#        self.assertEqual(
-#                segmenter.segment_pinyin('shang%smen' % c),
-#                (('shang', 0), (c, 0), ('men', 0)),
-#            )
-#        return
 
     def test_should_fail(self):
         """
@@ -119,12 +82,8 @@ class PinyinTableTestCase(unittest.TestCase):
                 segmenter.segment_pinyin('deniu2'),
                 (('de', 0), ('niu', 2))
             )
-        return
 
     def test_strip_tones(self):
-        """
-        Tests the strip_tones method.
-        """
         table = get_pinyin_table()
 
         # Standard cases
@@ -136,8 +95,6 @@ class PinyinTableTestCase(unittest.TestCase):
 
         # Presence of v
         self.assertEqual(table.strip_tones(u'yi1lü4'), u'yilü')
-
-        return
 
     def tearDown(self):
         pass
