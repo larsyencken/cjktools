@@ -33,10 +33,10 @@ setup(
         Provides basic script detection, manipulation of kana and interfaces
         for the popular EDICT and KANJIDIC families of dictionaries.
         """,
-        url="http://bitbucket.org/lars512/cjktools/",
+        url="http://bitbucket.org/larsyencken/cjktools/",
         version=VERSION,
         author="Lars Yencken",
-        author_email="lljy@csse.unimelb.edu.au",
+        author_email="lars@yencken.org",
         license="BSD",
 
         install_requires=['simplestats'],
