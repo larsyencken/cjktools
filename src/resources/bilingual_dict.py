@@ -1,25 +1,18 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# bilingual_dict.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Tue Dec 26 13:57:31 2006
 #
-#----------------------------------------------------------------------------#
+#  bilingual_dict.py
+#  cjktools
+#
 
 """
 A generic bilingual dictionary class.
 """
 
-#----------------------------------------------------------------------------#
-
 from cjktools.enum import Enum
 from cjktools.exceptions import NotYetImplementedError
 
-#----------------------------------------------------------------------------#
-
 ClashPolicy = Enum('Overwrite', 'Merge')
 
-#----------------------------------------------------------------------------#
 
 class BilingualDictionary(dict):
     """
@@ -27,9 +20,6 @@ class BilingualDictionary(dict):
     language and translated senses in another language. Homographs are
     stored as senses of the same lexeme, rather than being separate.
     """
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
 
     def __init__(self, format, source_language, target_language):
         """
@@ -48,24 +38,19 @@ class BilingualDictionary(dict):
         self.target_language = target_language
         return
 
-    #------------------------------------------------------------------------#
-
     def update(self, rhs_dictionary, clash_policy=ClashPolicy.Overwrite):
         """
         Merges another dictionary into this one, in-place. Entries are
         """
         if self.source_language != rhs_dictionary.source_language or \
                 self.target_language != rhs_dictionary.target_language:
-            raise Exception, "Source and target languages must be identical"
+            raise Exception("Source and target languages must be identical")
 
         if clash_policy == ClashPolicy.Merge:
             raise NotYetImplementedError
 
         return dict.update(self, rhs_dictionary)
 
-    #------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#
 
 class DictionaryEntry(object):
     """
@@ -73,10 +58,6 @@ class DictionaryEntry(object):
     and its translation into senses.
     """
     __slots__ = ('word', 'readings', 'senses')
-
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
 
     def __init__(self, word, readings, senses):
         """
@@ -88,18 +69,16 @@ class DictionaryEntry(object):
         self.senses = senses
         return
 
-    #------------------------------------------------------------------------#
-
     def update(self, rhs_entry):
         """
         Update this entry with readings and senses from another homograph.
         The additional readings and senses are added to this entry.
-        
+
         @param rhs_entry: Another entry to update details from.
         @type rhs_entry: DictionaryEntry
         """
         if not self.word == rhs_entry.word:
-            raise Exception, "Can only merge homographs"
+            raise Exception("Can only merge homographs")
 
         #print 'Merging entries for %s' % self.word
         # If we have only one reading, pad to the number of senses so that
@@ -117,8 +96,6 @@ class DictionaryEntry(object):
 
         return
 
-    #------------------------------------------------------------------------#
-
     def senses_by_reading(self):
         """Returns a dictionary mapping reading to senses."""
         result = {}
@@ -133,26 +110,15 @@ class DictionaryEntry(object):
 
         return result
 
-    #------------------------------------------------------------------------#
-
     def __repr__(self):
         return unicode(self)
 
-    #------------------------------------------------------------------------#
-
     def __unicode__(self):
         return u'<DictionaryEntry: %s (%s readings, %s senses)>' % (
-                self.word,
-                len(set(self.readings)),
-                len(self.senses),
-            )
-
-    #------------------------------------------------------------------------#
+            self.word,
+            len(set(self.readings)),
+            len(self.senses),
+        )
 
     def __hash__(self):
         return hash(self.name, tuple(self.readings), tuple(self.senses))
-
-    #------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#
-

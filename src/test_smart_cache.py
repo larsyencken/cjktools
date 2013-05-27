@@ -1,30 +1,24 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# test_smart_cache.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Wed Feb  1 17:21:24 EST 2006
 #
-#----------------------------------------------------------------------------#
+#  test_smart_cache.py
+#  cjktools
+#
 
 """
 Tests for the smart_cache module.
 """
 
-#----------------------------------------------------------------------------#
-
-import os, sys, unittest
+import os
+import unittest
 import smart_cache
-import doctest
 
-#----------------------------------------------------------------------------#
 
 def suite():
     test_suite = unittest.TestSuite((
-            unittest.makeSuite(CacheTestCase),
-        ))
+        unittest.makeSuite(CacheTestCase),
+    ))
     return test_suite
 
-#----------------------------------------------------------------------------#
 
 class CacheTestCase(unittest.TestCase):
     def setUp(self):
@@ -38,21 +32,20 @@ class CacheTestCase(unittest.TestCase):
         print >> o_stream, 'Started file here!!!'
         o_stream.close()
 
-        return
-
     def factory_method1(self, x):
         """
         A simple factory method for testing.
         """
         self.num_calls += 1
-        return x*3
+        return x * 3
 
     def test_paired_cache(self):
         """
         Tests the combination of using try_cache() and store_cache_object().
         """
         # we shouldn't be returning an object when none have been cached
-        obj = smart_cache.try_cache(self.cache_file, dependencies=[self.dep_file])
+        obj = smart_cache.try_cache(self.cache_file, dependencies=[
+            self.dep_file])
         self.assertEqual(obj, None)
 
         # create an object, and cache it
@@ -60,8 +53,8 @@ class CacheTestCase(unittest.TestCase):
         smart_cache.store_cache_object(obj, self.cache_file)
 
         # load from cache; it should be the same as the old object
-        new_obj = smart_cache.try_cache(self.cache_file, 
-                dependencies=[self.dep_file])
+        new_obj = smart_cache.try_cache(self.cache_file,
+                                        dependencies=[self.dep_file])
         self.assertEqual(new_obj, obj)
 
         # now touch the dependency, after a significant delay
@@ -74,8 +67,6 @@ class CacheTestCase(unittest.TestCase):
         new_obj = smart_cache.try_cache(self.cache_file, [self.dep_file])
         self.assertEqual(new_obj, None)
 
-        return
-
     def test_proxy_method(self):
         """
         Simple tests for the proxy() method.
@@ -84,10 +75,10 @@ class CacheTestCase(unittest.TestCase):
 
         # first fetch should trigger the actual call
         proxy_method = smart_cache.disk_proxy_direct(
-                self.factory_method1,
-                self.cache_file,
-                [self.dep_file]
-            )
+            self.factory_method1,
+            self.cache_file,
+            [self.dep_file]
+        )
 
         self.assertEqual(proxy_method(2), 6)
         self.assertEqual(self.num_calls, 1)
@@ -104,8 +95,6 @@ class CacheTestCase(unittest.TestCase):
         self.assertEqual(proxy_method(2), 6)
         self.assertEqual(self.num_calls, 2)
 
-        return
-
     def tearDown(self):
         """
         Delete the files used if they are still around.
@@ -115,11 +104,7 @@ class CacheTestCase(unittest.TestCase):
 
         if os.path.exists(self.dep_file):
             os.remove(self.dep_file)
-            
-        return
 
-#----------------------------------------------------------------------------#
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# smart_cache.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Fri Sep  9 15:17:56 EST 2005
 #
-#----------------------------------------------------------------------------#
+#  smart_cache.py
+#  cjktools
+#
 
 """
 This module implements a smart caching function, with dependencies.
 """
-
-#----------------------------------------------------------------------------#
 
 import common
 import cPickle as pickle
@@ -18,11 +14,10 @@ import types
 import os
 from os import path
 
-#----------------------------------------------------------------------------#
 
 def disk_proxy_direct(method, cache_file, dependencies=[]):
     """
-    Creates a proxy for an expensive method which is cached in a single 
+    Creates a proxy for an expensive method which is cached in a single
     file.
 
     @param method: The method whose return values to cache.
@@ -52,7 +47,6 @@ def disk_proxy_direct(method, cache_file, dependencies=[]):
 
     return proxy_method
 
-#----------------------------------------------------------------------------#
 
 def disk_proxy(cache_file, dependencies):
     """
@@ -60,7 +54,6 @@ def disk_proxy(cache_file, dependencies):
     """
     return lambda method: disk_proxy_direct(method, cache_file, dependencies)
 
-#----------------------------------------------------------------------------#
 
 def memory_proxy(method):
     """
@@ -76,7 +69,7 @@ def memory_proxy(method):
 
     def proxy_method(*args, **params):
         key = (args, tuple(params.items()))
-        if method_dict.has_key(key):
+        if key in method_dict:
             # cache hit
             return method_dict[key]
         else:
@@ -89,17 +82,16 @@ def memory_proxy(method):
 
     return proxy_method
 
-#----------------------------------------------------------------------------#
 
 def try_cache(filename, method_args=[], method_params={}, dependencies=[]):
     """
     Determines whether the cached object is still fresh (if one exists),
     and if so returns that object. Otherwise returns None.
-    
+
     @param filename: The filename to look for a cached entry in.
     @param method_args: The arguments passed to the method we're trying to
         cache.
-    @param method_params: As for method_args, but dictionary arguments. 
+    @param method_params: As for method_args, but dictionary arguments.
     @return: None or a stored value
     """
     if needs_update(filename, dependencies):
@@ -124,28 +116,26 @@ def try_cache(filename, method_args=[], method_params={}, dependencies=[]):
         # - filesystem permissions or problems
         return None
 
-#----------------------------------------------------------------------------#
 
 def store_cache_object(obj, filename, method_args=[], method_params={}):
     """
     Creates a smart cache object in the file.
-    
+
     @param obj: The object to cache.
     @param filename: The location of the cache file.
     @param method_args: Any arguments which were passed to the cached
         method.
     @param method_params: Any keyword parameters passed to the cached
-        method. 
+        method.
     """
     o_stream = common.sopen(filename, 'w', encoding=None)
     pickle.dump(method_args, o_stream, pickle.HIGHEST_PROTOCOL)
     pickle.dump(method_params, o_stream, pickle.HIGHEST_PROTOCOL)
     pickle.dump(obj, o_stream, pickle.HIGHEST_PROTOCOL)
     o_stream.close()
-    
+
     return
 
-#----------------------------------------------------------------------------#
 
 def needs_update(target, dependencies):
     """
@@ -163,11 +153,11 @@ def needs_update(target, dependencies):
         if type(dependency) in (str, unicode):
             filenames = [dependency]
 
-        elif type(dependency) == types.ModuleType:
+        elif isinstance(dependency, types.ModuleType):
             filenames = _get_module_dependencies(dependency)
 
         else:
-            raise TypeError, "Unknown dependency type %s" % (type(dependency))
+            raise TypeError("Unknown dependency type %s" % (type(dependency)))
 
         for filename in filenames:
             if path.getmtime(filename) > target_time:
@@ -175,9 +165,6 @@ def needs_update(target, dependencies):
     else:
         return False
 
-#----------------------------------------------------------------------------#
-# PRIVATE
-#----------------------------------------------------------------------------#
 
 def _get_module_dependencies(module):
     """
@@ -188,9 +175,7 @@ def _get_module_dependencies(module):
     dependency_set.add(module.__file__)
 
     for item in module.__dict__.values():
-        if type(item) == types.ModuleType and hasattr(item, '__file__'):
+        if isinstance(item, types.ModuleType) and hasattr(item, '__file__'):
             dependency_set.add(item.__file__)
 
     return dependency_set
-
-#----------------------------------------------------------------------------#

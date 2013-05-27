@@ -1,25 +1,21 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# test_scripts.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Tue Jun 26 10:33:54 2007
 #
-#----------------------------------------------------------------------------# 
+#  test_scripts.py
+#  cjktools
+#
 
 import unittest
-import doctest
+
 import scripts
 from scripts import Script
 
-#----------------------------------------------------------------------------#
 
 def suite():
     test_suite = unittest.TestSuite((
-            unittest.makeSuite(ScriptsTestCase),
-        ))
+        unittest.makeSuite(ScriptsTestCase),
+    ))
     return test_suite
 
-#----------------------------------------------------------------------------#
 
 class ScriptsTestCase(unittest.TestCase):
     """This class tests script detection and invariance."""
@@ -31,9 +27,9 @@ class ScriptsTestCase(unittest.TestCase):
         """
         Test fetching of hiragana and katakana, and converting between them.
         """
-        hiragana = u'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ'
+        hiragana = u'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ'  # nopep8
         self.assertEqual(scripts.get_script(Script.Hiragana), hiragana)
-        katakana = u'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ'
+        katakana = u'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ'  # nopep8
         self.assertEqual(scripts.get_script(Script.Katakana), katakana)
 
         self.assertEqual(scripts.to_hiragana(katakana), hiragana)
@@ -74,7 +70,6 @@ class ScriptsTestCase(unittest.TestCase):
         """
         assert scripts.compare_kana(u'Aあア亜', u'Aアあ亜') == 0
         assert scripts.compare_kana(u'あAア亜', u'アあ亜A') != 0
-        return
 
     def test_normalize_ascii(self):
         """
@@ -89,17 +84,6 @@ class ScriptsTestCase(unittest.TestCase):
         for full_char, half_char in zip(full_width_string, half_width_string):
             self.assertEqual(scripts.normalize_ascii(full_char), half_char)
 
-        return
-
-    def tearDown(self):
-        pass
-
-#----------------------------------------------------------------------------#
 
 if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=1).run(suite())
-
-#----------------------------------------------------------------------------#
-
-# vim: ts=4 sw=4 sts=4 et tw=78:
-

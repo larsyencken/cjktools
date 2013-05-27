@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# maps.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Mon Jun 25 14:49:38 2007
 #
-#----------------------------------------------------------------------------#
+#  maps.py
+#  cjktools
+#
 
 """
 This module considers dictionaries as discrete functional mappings, and
-contains high-level interfaces for dealing with these mappings. 
+contains high-level interfaces for dealing with these mappings.
 """
-
-#----------------------------------------------------------------------------#
 
 from itertools import chain
 
-#----------------------------------------------------------------------------#
 
 def chain_mapping(*dictionaries):
     """
@@ -33,7 +28,6 @@ def chain_mapping(*dictionaries):
 
     return base_dict
 
-#----------------------------------------------------------------------------#
 
 def invert_mapping(dictionary):
     """
@@ -47,7 +41,6 @@ def invert_mapping(dictionary):
 
     return inverted_dict
 
-#----------------------------------------------------------------------------#
 
 def is_injective(dictionary):
     """
@@ -64,7 +57,6 @@ def is_injective(dictionary):
     else:
         return True
 
-#----------------------------------------------------------------------------#
 
 def invert_injective_mapping(dictionary):
     """
@@ -73,12 +65,11 @@ def invert_injective_mapping(dictionary):
     """
     inverted_dict = {}
     for key, value in dictionary.iteritems():
-        assert not inverted_dict.has_key(value), "Mapping is not 1-1"
+        assert value not in inverted_dict, "Mapping is not 1-1"
         inverted_dict[value] = key
 
     return inverted_dict
 
-#----------------------------------------------------------------------------#
 
 def map_dict(method, dictionary, in_place=False):
     """
@@ -98,13 +89,12 @@ def map_dict(method, dictionary, in_place=False):
         # Return the modified dictionary.
         return dict((k, method(v)) for (k, v) in dictionary.iteritems())
 
-#----------------------------------------------------------------------------#
 
 def multi_dict(input_pairs):
     """
     Similar to casting pairs to a dictionary, except that repeated pairs
     are allowed. To show the difference:
-    
+
         >>> dict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': 3, 'b': 2}
 
@@ -120,10 +110,9 @@ def multi_dict(input_pairs):
         existing_values = output_dict.get(key, [])
         existing_values.append(value)
         output_dict[key] = existing_values
-    
+
     return output_dict
 
-#----------------------------------------------------------------------------#
 
 def procmap(method, item_list):
     """
@@ -138,10 +127,9 @@ def procmap(method, item_list):
     """
     for item in item_list:
         method(item)
-    
+
     return
 
-#----------------------------------------------------------------------------#
 
 def merge_dicts(*args):
     """
@@ -151,14 +139,13 @@ def merge_dicts(*args):
     """
     unified_dict = {}
     for key, items in apply(chain, [d.iteritems() for d in args]):
-        if unified_dict.has_key(key):
+        if key in unified_dict:
             unified_dict[key].update(items)
         else:
             unified_dict[key] = set(items)
 
     return unified_dict
 
-#----------------------------------------------------------------------------#
 
 def partial_map(method, object_seq):
     """
@@ -181,10 +168,9 @@ def partial_map(method, object_seq):
             mapped.append(result)
         else:
             rejected.append(item)
-    
+
     return mapped, rejected
 
-#----------------------------------------------------------------------------#
 
 def filtered_map(method, object_list):
     """
@@ -192,6 +178,3 @@ def filtered_map(method, object_list):
     out objects which evaluate to False.
     """
     return filter(None, map(method, object_list))
-
-#----------------------------------------------------------------------------#
-

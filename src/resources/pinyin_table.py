@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# pinyin_table.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Tue Dec 12 12:00:21 2006
-#----------------------------------------------------------------------------#
+#
+#  pinyin_table.py
+#  cjktools
+#
 
 """
 A table for conversion of hanzi to pinyin.
 """
-
-#----------------------------------------------------------------------------#
 
 import re
 import codecs
@@ -17,47 +14,39 @@ import pkg_resources
 
 import zhuyin_table
 
-#----------------------------------------------------------------------------#
-# PUBLIC
-#----------------------------------------------------------------------------#
-
 vowels = u'aeiouü'
 consonants = u'bcdfghjklmnpqrstvwxyz'
 tone_to_vowels = {
-            0: u'aeiouü',
-            1: u'āēīōūǖ',
-            2: u'áéíóúǘ',
-            3: u'ǎěǐǒǔǚ',
-            4: u'àèìòùǜ',
-        }
+    0: u'aeiouü',
+    1: u'āēīōūǖ',
+    2: u'áéíóúǘ',
+    3: u'ǎěǐǒǔǚ',
+    4: u'àèìòùǜ',
+}
 
 _cached_pinyin_table = None
 _cached_pinyin_segmenter = None
 
-#----------------------------------------------------------------------------#
 
 class PinyinFormatError(Exception):
     pass
 
-#----------------------------------------------------------------------------#
 
 class PinyinTable(dict):
     """
     A reader which converts Chinese hanzi to pinyin.
     """
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
-
     def __init__(self):
         """Constructor."""
         self._segmenter = get_pinyin_segmenter()
 
         # Load the table mapping hanzi to pinyin.
         i_stream = codecs.getreader('utf8')(
-                pkg_resources.resource_stream('cjktools_data',
-                'tables/gbk_pinyin_table')
+            pkg_resources.resource_stream(
+                'cjktools_data',
+                'tables/gbk_pinyin_table'
             )
+        )
         for line in i_stream:
             if line.startswith('#'):
                 continue
@@ -68,8 +57,6 @@ class PinyinTable(dict):
         i_stream.close()
 
         return
-
-    #------------------------------------------------------------------------#
 
     def from_hanzi(self, hanzi_string, inline=True, use_tones=True):
         """Convert all the hanzi in the given string to pinyin readings."""
@@ -101,7 +88,7 @@ class PinyinTable(dict):
 
         chunks = [self._apply_tone(p, t) for (p, t) in chunks]
         return ''.join(chunks)
-    
+
     #------------------------------------------------------------------------#
 
     def strip_tones(self, ascii_pinyin):
@@ -115,7 +102,7 @@ class PinyinTable(dict):
     #------------------------------------------------------------------------#
     # PRIVATE METHODS
     #------------------------------------------------------------------------#
-    
+
     def _apply_tone(self, syllable, tone):
         """
         Apply a tone to a syllable.
@@ -124,7 +111,7 @@ class PinyinTable(dict):
             tone = 0
         results = []
         results.append(syllable[0])
-        
+
         used_tone = False
         for char in syllable[1:]:
             if not used_tone and char in vowels:
@@ -135,18 +122,11 @@ class PinyinTable(dict):
 
         return ''.join(results)
 
-    #------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#
 
 class PinyinSegmenter(object):
     """
     Create an object which can segment pinyin.
     """
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
-
     def __init__(self):
         """
         Constructor.
@@ -155,20 +135,17 @@ class PinyinSegmenter(object):
         self.replacement = '#'
 
         base_pattern = '(%s|%s)' % (
-                zhuyin_table.pinyin_regex_pattern(),
-                self.replacement,
-            )
+            zhuyin_table.pinyin_regex_pattern(),
+            self.replacement,
+        )
         self.single_pattern = re.compile(base_pattern, re.UNICODE)
         self.string_pattern = re.compile('(%s)+' % base_pattern, re.UNICODE)
         return
-
-    #------------------------------------------------------------------------#
 
     def segment_pinyin(self, pinyin_string):
         """
         Segment the given pinyin string.
         """
-        #pinyin_string = pinyin_string.replace(self.wild_card, self.replacement)
         pinyin_string = normalize(pinyin_string)
         result = self.single_pattern.findall(pinyin_string)
         corrected = []
@@ -200,29 +177,17 @@ class PinyinSegmenter(object):
         """
         return bool(self.string_pattern.match(normalize(symbol_string)))
 
-    #------------------------------------------------------------------------#
-    # PRIVATE METHODS
-    #------------------------------------------------------------------------#
-    
-    #------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#
 
 def normalize(ascii_pinyin):
-    """
-    Normalises a pinyin string.
-    """
+    "Normalises common pinyin variants to canonical form."
     normal_version = ascii_pinyin.lower().replace(' ', '')
     normal_version = normal_version.replace(u'v', u'ü')
 
     return normal_version
 
-#----------------------------------------------------------------------------#
 
 def get_pinyin_table():
-    """
-    Constructs a pinyin table object, or fetches a cached one.
-    """
+    "Get or construct a cached pinyin table."
     global _cached_pinyin_table
 
     if _cached_pinyin_table is None:
@@ -230,12 +195,9 @@ def get_pinyin_table():
 
     return _cached_pinyin_table
 
-#----------------------------------------------------------------------------#
 
 def get_pinyin_segmenter():
-    """
-    Fetches a cached pinyin segmenter.
-    """
+    "Get or construct a cached pinyin segmenter."
     global _cached_pinyin_segmenter
 
     if _cached_pinyin_segmenter is None:
@@ -243,5 +205,3 @@ def get_pinyin_segmenter():
         _cached_pinyin_segmenter = PinyinSegmenter()
 
     return _cached_pinyin_segmenter
-
-#----------------------------------------------------------------------------#

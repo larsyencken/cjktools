@@ -1,28 +1,20 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# test_kanjidic.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Tue Dec  5 17:04:51 2006
 #
-#----------------------------------------------------------------------------# 
+#  test_kanjidic.py
+#
 
 import unittest
-from kanjidic import *
+from kanjidic import Kanjidic
 
-#----------------------------------------------------------------------------#
 
 def suite():
     test_suite = unittest.TestSuite((
-            unittest.makeSuite(KanjidicTestCase)
-        ))
+        unittest.makeSuite(KanjidicTestCase)
+    ))
     return test_suite
 
-#----------------------------------------------------------------------------#
 
 class KanjidicTestCase(unittest.TestCase):
-    """
-    This class tests the Kanjidic class. 
-    """
     def setUp(self):
         self.kd = Kanjidic()
 
@@ -44,12 +36,6 @@ class KanjidicTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-#----------------------------------------------------------------------------#
 
 if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=1).run(suite())
-
-#----------------------------------------------------------------------------#
-
-# vim: ts=4 sw=4 sts=4 et tw=78:
-

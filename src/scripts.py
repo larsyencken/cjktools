@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# __init__.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Sun May 15 23:12:04 EST 2005
 #
-#----------------------------------------------------------------------------#
+#  scripts.py
+#  cjktools
+#
 
 """
 This module is responsible for Japanese script/encoding specific methods,
@@ -12,29 +10,22 @@ especially determining the script type of an entry. It is thus the only
 module which requires a utf8 encoding for the additional Japanese characters.
 """
 
-#----------------------------------------------------------------------------#
-
 import enum
 
-#----------------------------------------------------------------------------#
-# CONSTANTS
-#----------------------------------------------------------------------------#
-
 Script = enum.Enum(u'Hiragana', u'Katakana', u'Kanji', u'Ascii',
-        u'FullAscii', u'HalfKatakana', u'Unknown')
+                   u'FullAscii', u'HalfKatakana', u'Unknown')
 
 _known_bands = {
-        Script.Ascii:           (u'\u0021', u'\u00ff'),
-        Script.Hiragana:	    (u'\u3041', u'\u3096'),
-        Script.Katakana:	    (u'\u30a1', u'\u30f6'),
-        Script.Kanji:	        (u'\u4e00', u'\u9fa5'),
-        Script.FullAscii:	    (u'\uff01', u'\uff5f'),
-        Script.HalfKatakana:    (u'\uff61', u'\uff9f'),
-    }
+    Script.Ascii:           (u'\u0021', u'\u00ff'),
+    Script.Hiragana:	    (u'\u3041', u'\u3096'),
+    Script.Katakana:	    (u'\u30a1', u'\u30f6'),
+    Script.Kanji:	        (u'\u4e00', u'\u9fa5'),
+    Script.FullAscii:	    (u'\uff01', u'\uff5f'),
+    Script.HalfKatakana:    (u'\uff61', u'\uff9f'),
+}
 
 _inter_kana_distance = 96
 
-#----------------------------------------------------------------------------#
 
 class ScriptMapping:
     """
@@ -45,7 +36,7 @@ class ScriptMapping:
     def __init__(self, from_script, to_script):
         """
         Constructor, initializes script conversion.
-        
+
         @param from_script: The script to convert from.
         @type from_script: Script
         @param to_script: The script to convert to.
@@ -54,8 +45,8 @@ class ScriptMapping:
         self.from_start, self.from_end = _known_bands[from_script]
         self.to_start, self.to_end = _known_bands[to_script]
         self.ord_diff = ord(self.to_start) - ord(self.from_start)
-        assert (ord(self.from_end) - ord(self.from_start)) <= \
-                (ord(self.to_end) - ord(self.to_start))
+        assert ((ord(self.from_end) - ord(self.from_start))
+                <= (ord(self.to_end) - ord(self.to_start)))
         return
 
     def __call__(self, j_string):
@@ -76,15 +67,15 @@ class ScriptMapping:
 to_hiragana = ScriptMapping(Script.Katakana, Script.Hiragana)
 to_katakana = ScriptMapping(Script.Hiragana, Script.Katakana)
 
-#----------------------------------------------------------------------------#
 
 _mapped_chars = {
-            u'\u3000':  u'\u0020',
-            u'\u3001':  u'\u002c',
-            u'\u3002':  u'\u002e',
-        }
+    u'\u3000':  u'\u0020',
+    u'\u3001':  u'\u002c',
+    u'\u3002':  u'\u002e',
+}
 
 _to_ascii = ScriptMapping(Script.FullAscii, Script.Ascii)
+
 
 def normalize_ascii(j_string):
     """
@@ -101,9 +92,9 @@ def normalize_ascii(j_string):
 
     return _to_ascii(u''.join(result))
 
-#----------------------------------------------------------------------------#
 
-_full_width_kana = u"。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜"
+_full_width_kana = u"。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜"  # nopep8
+
 
 def normalize_kana(j_string):
     """
@@ -111,7 +102,7 @@ def normalize_kana(j_string):
     all other characters unchanged.
 
         >>> x = normalize_kana(unicode('ｶｷｸｹｺ', 'utf8'))
-        >>> x == unicode('カキクケコ', 'utf8') 
+        >>> x == unicode('カキクケコ', 'utf8')
         True
 
     @param j_string: The string to convert.
@@ -128,7 +119,6 @@ def normalize_kana(j_string):
 
     return u''.join(result)
 
-#----------------------------------------------------------------------------#
 
 def normalize(j_string):
     """
@@ -145,7 +135,6 @@ def normalize(j_string):
     """
     return normalize_ascii(normalize_kana(j_string))
 
-#----------------------------------------------------------------------------#
 
 def get_script(script):
     """
@@ -160,7 +149,6 @@ def get_script(script):
 
     return ''.join(output)
 
-#----------------------------------------------------------------------------#
 
 def compare_kana(j_string_a, j_string_b):
     """
@@ -177,13 +165,12 @@ def compare_kana(j_string_a, j_string_b):
     """
     return cmp(to_katakana(j_string_a), to_katakana(j_string_b))
 
-#----------------------------------------------------------------------------#
 
 def contains_script(script, j_string):
     """
     Returns True if the given script is within the string, False
     otherwise.
-    
+
         >>> woof = u'woof'
         >>> contains_script(Script.Ascii, woof)
         True
@@ -197,7 +184,6 @@ def contains_script(script, j_string):
     """
     return script in script_types(j_string)
 
-#----------------------------------------------------------------------------#
 
 def script_type(char):
     """
@@ -218,10 +204,10 @@ def script_type(char):
 
     @param char: The character to examine.
     @type char: unicode
-    @return: The script type.   
+    @return: The script type.
     """
     # Normalize/typecheck our input.
-    char = unicode(char)[0] 
+    char = unicode(char)[0]
 
     for script, (start_band, end_band) in _known_bands.iteritems():
         if start_band <= char <= end_band:
@@ -229,12 +215,11 @@ def script_type(char):
     else:
         return Script.Unknown
 
-#----------------------------------------------------------------------------#
 
 def script_boundaries(j_string):
     """
     Determines where the script boundaries are in the given string.
-        
+
         >>> taberu = unicode('食べる', 'utf8')
         >>> script_boundaries(taberu) == (taberu[0], taberu[1:])
         True
@@ -258,10 +243,9 @@ def script_boundaries(j_string):
     else:
         if current_seg:
             segments += current_seg,
-    
+
     return segments
 
-#----------------------------------------------------------------------------#
 
 def script_types(j_string):
     """
@@ -281,7 +265,6 @@ def script_types(j_string):
     """
     return set(map(script_type, j_string))
 
-#----------------------------------------------------------------------------#
 
 def unique_kanji(j_string):
     """
@@ -297,5 +280,3 @@ def unique_kanji(j_string):
             kanji_set.remove(char)
 
     return kanji_set
-
-#----------------------------------------------------------------------------#

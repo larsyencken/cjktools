@@ -1,22 +1,17 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# place.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Sat Jun  9 14:29:29 2007
 #
-#----------------------------------------------------------------------------#
+#  place.py
+#  cjktools
+#
 
 """
 A data form for storing and manipulating place data.
 """
 
-#----------------------------------------------------------------------------#
-
 import random
 
 from cjktools.common import sopen
 
-#----------------------------------------------------------------------------#
 
 class Place(dict):
     """
@@ -24,75 +19,51 @@ class Place(dict):
     locations or regions within it.
     """
 
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
-
     def __init__(self, label, reading=None, aliases=None):
-        """
-        Constructor.
-        """
         # Add restrictions imposed by our storage format.
-        if ' ' in label or \
-                (reading and ' ' in reading) or \
-                (aliases and ' ' in ''.join(aliases)):
-            raise ValueError, "No spaces allowed in place details"
+        if (' ' in label
+                or (reading and ' ' in reading)
+                or (aliases and ' ' in ''.join(aliases))):
+            raise ValueError("no spaces allowed in place details")
 
-        assert type(label) in (str, unicode), \
-                "Expected string, not %s" % `label`
+        if type(label) not in (str, unicode):
+            raise TypeError("expected string, not %s" % repr(label))
 
         dict.__init__(self)
         self.label = label
         self.reading = reading
         self.aliases = aliases
-        return
-
-    #------------------------------------------------------------------------#
 
     def get_children(self):
         return self.values()
 
     children = property(get_children)
 
-    #------------------------------------------------------------------------#
-
-    def __repr__(self): 
+    def __repr__(self):
         return unicode(self)
-
-    #------------------------------------------------------------------------#
 
     def __unicode__(self):
         return '<Place: %s%s %d children>' % (
-                self.label,
-                (self.reading and ' /%s/' % self.reading or ''),
-                len(self),
-            )
-
-    #------------------------------------------------------------------------#
+            self.label,
+            (self.reading and ' /%s/' % self.reading or ''),
+            len(self),
+        )
 
     def dump(self, filename):
-        """
-        Dump this place hierarchy to the given filename.
-        """
         o_stream = sopen(filename, 'w')
         for depth, place in self.walk():
             print >> o_stream, place._to_line(depth)
         o_stream.close()
-        return
-
-    #------------------------------------------------------------------------#
 
     @classmethod
     def from_file(cls, filename):
-        """
-        Construct a new place hierarchy from the given filename.
-        """
         i_stream = sopen(filename)
         lines = iter(enumerate(i_stream))
 
         depth, root_node = cls._from_line(lines.next()[1])
         if depth != 0:
-            raise Exception, "File %s should start with a root node" % filename
+            raise Exception("file %s should start with a root node"
+                            % filename)
 
         path = [root_node]
         last_depth = depth
@@ -114,9 +85,9 @@ class Place(dict):
 
             else:
                 raise Exception, "Strange depth found %s (line %d)" % (
-                        filename,
-                        line_no + 1
-                    )
+                    filename,
+                    line_no + 1
+                )
 
             path[-1].append(node)
             last_node = node
@@ -126,16 +97,9 @@ class Place(dict):
 
         return root_node
 
-    #------------------------------------------------------------------------#
-
     def append(self, node):
-        """
-        Simulate a list appending.
-        """
+        "Simulate a list appending."
         self[node.label] = node
-        return
-
-    #------------------------------------------------------------------------#
 
     def find_node(self, label):
         """
@@ -159,16 +123,14 @@ class Place(dict):
                 else:
                     for new_label, new_node in next_node.iteritems():
                         next_frontier.append(
-                                (current_path + [new_label], new_node)
-                            )
+                            (current_path + [new_label], new_node)
+                        )
             else:
                 frontier = next_frontier
                 next_frontier = []
                 random.shuffle(frontier)
 
-        raise KeyError, 'No such node %s' % label
-
-    #------------------------------------------------------------------------#
+        raise KeyError('no such node %s' % label)
 
     def find_all(self, label):
         """
@@ -178,11 +140,9 @@ class Place(dict):
 
         for path, node in self.walk_with_path():
             if node.label == label:
-                results.append( (path, node) )
+                results.append((path, node))
 
         return results
-
-    #------------------------------------------------------------------------#
 
     def walk(self):
         """
@@ -199,10 +159,6 @@ class Place(dict):
             children = [(depth+1, p) for p in place.values()]
             children.reverse()
             output_stack.extend(children)
-        
-        return
-
-    #------------------------------------------------------------------------#
 
     def walk_with_path(self):
         """
@@ -227,10 +183,7 @@ class Place(dict):
                 path = path[:-depth_diff]
 
             else:
-                raise Exception, "Strange depth found %s (line %d)" % (
-                        filename,
-                        line_no + 1
-                    )
+                raise Exception("strange depth found")
 
             yield '/'.join(path), node
 
@@ -239,21 +192,15 @@ class Place(dict):
 
         return
 
-    #------------------------------------------------------------------------#
-    # PRIVATE METHODS
-    #------------------------------------------------------------------------#
-
     def _to_line(self, depth):
         """
         Given a depth, returns an output line as a string.
         """
         if self.aliases:
             return '%d %s %s %s' % (depth, self.label, self.reading,
-                    self.aliases)
+                                    self.aliases)
         else:
             return '%d %s %s' % (depth, self.label, self.reading)
-    
-    #------------------------------------------------------------------------#
 
     @staticmethod
     def _from_line(line):
@@ -277,8 +224,4 @@ class Place(dict):
             return depth, Place(label, reading, aliases)
 
         else:
-            raise ValueError, "Can't parse line %s" % line
-
-    #------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#
+            raise ValueError("Can't parse line %s" % line)

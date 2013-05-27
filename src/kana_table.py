@@ -1,28 +1,19 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# kana_table.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Mon Jun 25 16:05:55 2007
 #
-#----------------------------------------------------------------------------#
+#  kana_table.py
+#  cjktools
+#
 
-""" 
+"""
 This module provides an interface to the consonant/vowel structure of the
 Japanese hiragana and katakana syllabaries.
 """
 
-#----------------------------------------------------------------------------#
-
 import copy
-
-#----------------------------------------------------------------------------#
-# CONSTANTS
-#----------------------------------------------------------------------------#
 
 small_kana = u'ぁぃぅぇぉっょゅゃ'
 n_kana = u'ん'
 
-#----------------------------------------------------------------------------#
 
 class KanaTable(object):
     """
@@ -32,14 +23,11 @@ class KanaTable(object):
         >>> t.to_vowel_line(unicode('す', 'utf8')) == unicode('う', 'utf8')
         True
     """
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
 
     def __init__(self):
         """
         Constructor. Initializes internal dictionaries to make later lookup
-        faster. 
+        faster.
         """
         self.vowels = u'あいうえお'
         self.consonants = u'かがさざただまはばぱなら'
@@ -73,8 +61,6 @@ class KanaTable(object):
         self._to_vowel_line = to_vowel_line
         return
 
-    #------------------------------------------------------------------------#
-
     def get_coords(self, kana):
         """
         Returns the pair (consonant line, vowel line) for the given kana
@@ -85,16 +71,12 @@ class KanaTable(object):
 
         return (self._to_consonant_line[kana], self._to_vowel_line[kana])
 
-    #------------------------------------------------------------------------#
-
     def from_coords(self, consonant, vowel):
         """
         Converts a consonant and vowel pair to a single kana, provided they
-        generate a member of the table. 
+        generate a member of the table.
         """
         return self._table[consonant][self.vowels.index(vowel)]
-
-    #------------------------------------------------------------------------#
 
     def to_vowel_line(self, kana):
         """Returns the vowel line of the given kana."""
@@ -103,25 +85,17 @@ class KanaTable(object):
         else:
             return self._to_vowel_line.get(kana)
 
-    #------------------------------------------------------------------------#
-
     def to_consonant_line(self, kana):
         """Returns the consonant line of the given kana."""
         return self._to_consonant_line.get(kana)
-
-    #------------------------------------------------------------------------#
 
     def is_voiced(self, kana):
         """Returns True if the kana is voiced, False otherwise."""
         return self.to_consonant_line(kana) in self.voiced_consonants
 
-    #------------------------------------------------------------------------#
-
     def get_table(self):
         """Return the kana table itself."""
         return copy.deepcopy(self._table)
-
-    #------------------------------------------------------------------------#
 
     @classmethod
     def get_cached(cls):
@@ -131,18 +105,8 @@ class KanaTable(object):
 
         return cls._cached
 
-    #------------------------------------------------------------------------#
-
     def __unicode__(self):
         return u'<KanaTable object %s>' % hash(self)
 
     def __repr__(self):
         return unicode(self).encode(u'utf8')
-
-    #------------------------------------------------------------------------#
-    # PRIVATE METHODS
-    #------------------------------------------------------------------------#
-
-    #------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#

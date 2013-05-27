@@ -1,33 +1,24 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# test_kana_table.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Mon Jun 25 16:14:08 2007
 #
-#----------------------------------------------------------------------------# 
+#  test_kana_table.py
+#  cjktools
+#
 
 import unittest
-import doctest
 import kana_table
 
-#----------------------------------------------------------------------------#
 
 def suite():
     test_suite = unittest.TestSuite((
-            unittest.makeSuite(KanaTableTestCase),
-        ))
+        unittest.makeSuite(KanaTableTestCase),
+    ))
     return test_suite
 
-#----------------------------------------------------------------------------#
 
 class KanaTableTestCase(unittest.TestCase):
-    """
-    This class tests the Kana class. 
-    """
     def setUp(self):
         self.table = kana_table.KanaTable.get_cached()
         self.test_script = u'AＡあア亜'
-        pass
 
     def test_vowel_line(self):
         """
@@ -40,7 +31,6 @@ class KanaTableTestCase(unittest.TestCase):
         self.assertEqual(self.table.to_vowel_line(u'ぎ'), u'い')
 
         self.assertEqual(self.table.to_vowel_line(u'わ'), u'あ')
-        return
 
     def test_consonant_line(self):
         self.assertEqual(self.table.to_consonant_line(u'わ'), None)
@@ -58,15 +48,6 @@ class KanaTableTestCase(unittest.TestCase):
         assert self.table.is_voiced(u'だ')
         assert self.table.is_voiced(u'ざ')
 
-    def tearDown(self):
-        pass
-
-#----------------------------------------------------------------------------#
 
 if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=1).run(suite())
-
-#----------------------------------------------------------------------------#
-
-# vim: ts=4 sw=4 sts=4 et tw=78:
-

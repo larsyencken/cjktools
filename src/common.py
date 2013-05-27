@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# common.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Mon Feb 26 15:22:24 2007
 #
-#----------------------------------------------------------------------------#
+#  common.py
+#  cjktools
+#
 
 """
-High-frequency, common tools. 
+High-frequency, common tools.
 """
-
-#----------------------------------------------------------------------------#
 
 import sys
 import codecs
-import bz2, gzip
+import bz2
+import gzip
 
-#----------------------------------------------------------------------------#
 
 def filter_comments(file_stream):
     """
@@ -31,7 +27,6 @@ def filter_comments(file_stream):
 
     return
 
-#----------------------------------------------------------------------------#
 
 def sopen(filename, mode='rb', encoding='utf8'):
     """
@@ -46,7 +41,7 @@ def sopen(filename, mode='rb', encoding='utf8'):
     """
     read_mode = 'r' in mode
     if read_mode and 'w' in mode:
-        raise Exception, "Must be either read mode or write, but not both"
+        raise Exception("Must be either read mode or write, but not both")
 
     if filename.endswith('.bz2'):
         stream = bz2.BZ2File(filename, mode)
@@ -59,14 +54,11 @@ def sopen(filename, mode='rb', encoding='utf8'):
             stream = sys.stdout
     else:
         stream = open(filename, mode)
-    
+
     if encoding not in (None, 'byte'):
         if read_mode:
             return codecs.getreader(encoding)(stream)
         else:
             return codecs.getwriter(encoding)(stream)
-    
+
     return stream
-
-#----------------------------------------------------------------------------#
-

@@ -1,14 +1,11 @@
 #!/usr/bin/env python
-#----------------------------------------------------------------------------#
-# radkdict.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Tue May  2 15:44:24 2006
+# -*- coding: utf-8 -*-
 #
-#----------------------------------------------------------------------------#
+#  radkdict.py
+#  cjktools
+#
 
 "Based on the radkfile, a dictionary mapping character to bag of radicals."
-
-#----------------------------------------------------------------------------#
 
 import codecs
 import sys
@@ -17,13 +14,9 @@ import pkg_resources
 from cjktools import maps
 from cjktools.common import sopen
 
-#----------------------------------------------------------------------------#
 
 class RadkDict(dict):
     "Determines which radicals a character contains."
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
 
     def __init__(self, dict_file=None):
         """
@@ -31,21 +24,17 @@ class RadkDict(dict):
         """
         if dict_file is None:
             line_stream = codecs.getreader('utf8')(
-                    pkg_resources.resource_stream('cjktools_data', 'radkfile')
-                )
+                pkg_resources.resource_stream('cjktools_data', 'radkfile')
+            )
         else:
             line_stream = sopen(dict_file)
-            
-        self._parse_radkfile(line_stream)
 
-    #------------------------------------------------------------------------#
-    # PRIVATE METHODS
-    #------------------------------------------------------------------------#
+        self._parse_radkfile(line_stream)
 
     def _parse_radkfile(self, line_stream):
         """
         Parses the radkfile and populates the current dictionary.
-        
+
         @param filename: The radkfile to parse.
         """
         radical_to_kanji = {}
@@ -65,7 +54,7 @@ class RadkDict(dict):
                 parts = line.split()
                 if len(parts) not in (3, 4):
                     raise Exception('format error parsing radkfile')
-                
+
                 dollar, current_radical, stroke_count = parts[:3]
                 radical_to_stroke_count[current_radical] = int(stroke_count)
                 continue
@@ -80,8 +69,6 @@ class RadkDict(dict):
         self.radical_to_stroke_count = radical_to_stroke_count
         self.radical_to_kanji = radical_to_kanji
 
-    #------------------------------------------------------------------------#
-
     @classmethod
     def get_cached(cls):
         "Returns a memory-cached class instance."
@@ -90,7 +77,6 @@ class RadkDict(dict):
 
         return cls._cached
 
-#----------------------------------------------------------------------------#
 
 def print_radicals(kanji_list):
     "Print out each kanji and the radicals it contains."
@@ -101,7 +87,6 @@ def print_radicals(kanji_list):
 
         print '%s: ' % kanji, ' '.join(sorted(radicals))
 
-#----------------------------------------------------------------------------#
 
 if __name__ == '__main__':
     print_radicals(sys.argv[1:])

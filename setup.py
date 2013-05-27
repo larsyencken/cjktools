@@ -2,22 +2,13 @@
 #
 #  setup.py
 #  cjktools
-# 
-#  Created by Lars Yencken on 10-04-2009.
-#  Copyright 2009 Lars Yencken. All rights reserved.
 #
 
 """
 Package setup file for the cjktools package.
 """
 
-#----------------------------------------------------------------------------#
-
 from setuptools import setup
-import os
-import re
-
-#----------------------------------------------------------------------------#
 
 VERSION = '1.5.0'
 
@@ -27,21 +18,21 @@ f.write('version = "%s"\n' % VERSION)
 f.close()
 
 setup(
-        name='cjktools',
-        description="A library for basic CJK processing and lexicography.",
-        long_description = """
-        Provides basic script detection, manipulation of kana and interfaces
-        for the popular EDICT and KANJIDIC families of dictionaries.
-        """,
-        url="http://bitbucket.org/larsyencken/cjktools/",
-        version=VERSION,
-        author="Lars Yencken",
-        author_email="lars@yencken.org",
-        license="BSD",
+    name='cjktools',
+    description="A library for basic CJK processing and lexicography.",
+    long_description="""
+    Provides basic script detection, manipulation of kana and interfaces
+    for the popular EDICT and KANJIDIC families of dictionaries.
+    """,
+    url="http://bitbucket.org/larsyencken/cjktools/",
+    version=VERSION,
+    author="Lars Yencken",
+    author_email="lars@yencken.org",
+    license="BSD",
 
-        install_requires=['simplestats'],
+    install_requires=['simplestats'],
 
-        package_dir={'cjktools': 'src'},
-        packages=['cjktools', 'cjktools.resources'],
-        scripts=['src/dyntest'],
-    )
+    package_dir={'cjktools': 'src'},
+    packages=['cjktools', 'cjktools.resources'],
+    scripts=['src/dyntest'],
+)

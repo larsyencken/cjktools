@@ -1,23 +1,18 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# auto_format.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Tue Dec 26 13:55:56 2006
 #
-#----------------------------------------------------------------------------#
+#  auto_format.py
+#  cjktools
+#
 
 """
 A module of methods to automatically detect the format given a dictionary
 file.
 """
 
-#----------------------------------------------------------------------------#
-
 from cjktools.common import sopen
 
 from format import RegexFormat, UnknownFormatError
 
-#----------------------------------------------------------------------------#
 
 def detect_format(filename):
     """
@@ -36,10 +31,9 @@ def detect_format(filename):
     for format in known_formats:
         if format.match_header(header):
             return format
-    else:
-        raise UnknownFormatError, filename
 
-#----------------------------------------------------------------------------#
+    raise UnknownFormatError(filename)
+
 
 def load_dictionary(filename):
     """
@@ -48,7 +42,6 @@ def load_dictionary(filename):
     """
     return detect_format(filename).parse_dictionary(filename)
 
-#----------------------------------------------------------------------------#
 
 def iter_entries(filename):
     """
@@ -62,27 +55,28 @@ def iter_entries(filename):
 #----------------------------------------------------------------------------#
 
 known_formats = [
-        RegexFormat('edict',
-                u'^？？？？.*$',
-                u'^(?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\] )?(?P<senses>.*)$',
-                u'/(?P<sense>[^/]+)',
-            ),
-        RegexFormat('jc_kdic',
-                u'^FORMAT jc_kdic$',
-                u'^(?P<word>[^ ]+) \[(?P<reading>[^\]]+)\]\t(?P<senses>.*)$',
-                u'(?P<sense>[^，]+)[，]?',
-            ),
-        RegexFormat('cj_kdic',
-                u'^FORMAT cj_kdic$',
-                u'^(?P<word>[^\t]+)\t(?P<reading>[^\\\\]+)\\\\n(?P<senses>.*)$',
-                u'([１２３４５７８９０]+．)?(?P<sense>[^\\\\]+)(\\\\n)?',
-            ),
-        RegexFormat('cedict',
-                u'^# CEDICT.*$',
-                u'^[^ ]+ (?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\])?(?P<senses>.*)',
-                u'/(?P<sense>[^/]+)',
-            ),
-    ]
-
-#----------------------------------------------------------------------------#
-
+    RegexFormat(
+        'edict',
+        u'^？？？？.*$',
+        u'^(?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\] )?(?P<senses>.*)$',
+        u'/(?P<sense>[^/]+)',
+    ),
+    RegexFormat(
+        'jc_kdic',
+        u'^FORMAT jc_kdic$',
+        u'^(?P<word>[^ ]+) \[(?P<reading>[^\]]+)\]\t(?P<senses>.*)$',
+        u'(?P<sense>[^，]+)[，]?',
+    ),
+    RegexFormat(
+        'cj_kdic',
+        u'^FORMAT cj_kdic$',
+        u'^(?P<word>[^\t]+)\t(?P<reading>[^\\\\]+)\\\\n(?P<senses>.*)$',
+        u'([１２３４５７８９０]+．)?(?P<sense>[^\\\\]+)(\\\\n)?',
+    ),
+    RegexFormat(
+        'cedict',
+        u'^# CEDICT.*$',
+        u'^[^ ]+ (?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\])?(?P<senses>.*)',
+        u'/(?P<sense>[^/]+)',
+    ),
+]

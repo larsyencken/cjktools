@@ -1,29 +1,24 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# dictionary_format.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Fri Dec 22 15:18:13 2006
 #
-#----------------------------------------------------------------------------#
+#  dictionary_format.py
+#  cjktools
+#
 
 """
 An abstract dictionary interface. Quickly provides an interface to any
 dictionary which is line-based, and whose entries are flat text, and thus
 amenable to being parsed with regular expressions. The list of known
-formats is provided in the known_formats object. 
+formats is provided in the known_formats object.
 """
 
-#----------------------------------------------------------------------------#
-
 import re
-import os, sys
+import os
 
 from cjktools.common import sopen
 from cjktools.exceptions import NotYetImplementedError
 from bilingual_dict import BilingualDictionary, DictionaryEntry
 import languages
 
-#----------------------------------------------------------------------------#
 
 class UnknownFormatError(Exception):
     """
@@ -32,7 +27,6 @@ class UnknownFormatError(Exception):
     """
     pass
 
-#----------------------------------------------------------------------------#
 
 class FormatError(Exception):
     """
@@ -40,7 +34,6 @@ class FormatError(Exception):
     """
     pass
 
-#----------------------------------------------------------------------------#
 
 class DuplicateEntryError(Exception):
     """
@@ -49,16 +42,11 @@ class DuplicateEntryError(Exception):
     """
     pass
 
-#----------------------------------------------------------------------------#
 
 class DictionaryFormat(object):
     """
     An abstract dictionary format, providing the elements.
     """
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
-
     def match_header(self, header_line):
         """
         Returns True if the header pattern matches the line given,
@@ -66,15 +54,11 @@ class DictionaryFormat(object):
         """
         raise NotYetImplementedError
 
-    #------------------------------------------------------------------------#
-
     def parse_line(self, entry_line):
         """
         Parses a dictionary entry from the given line.
         """
         raise NotYetImplementedError
-
-    #------------------------------------------------------------------------#
 
     def parse_dictionary(self, filename):
         """
@@ -88,7 +72,7 @@ class DictionaryFormat(object):
         header = i_stream.readline()
 
         if not self.match_header(header):
-            raise UnknownFormatError, filename
+            raise UnknownFormatError(filename)
 
         dict_obj = BilingualDictionary(self, source_lang, target_lang)
         for line in i_stream:
@@ -106,8 +90,6 @@ class DictionaryFormat(object):
 
         return dict_obj
 
-    #------------------------------------------------------------------------#
-
     def iter_entries(self, filename):
         """
         Parses the given filename using this format, returning a
@@ -120,21 +102,13 @@ class DictionaryFormat(object):
         header = i_stream.readline()
 
         if not self.match_header(header):
-            raise UnknownFormatError, filename
+            raise UnknownFormatError(filename)
 
-        dict_obj = BilingualDictionary(self, source_lang, target_lang)
         for line in i_stream:
             yield self.parse_line(line)
 
         i_stream.close()
 
-        return
-
-    #------------------------------------------------------------------------#
-    # PRIVATE
-    #------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#
 
 class RegexFormat(DictionaryFormat):
     """
@@ -143,10 +117,6 @@ class RegexFormat(DictionaryFormat):
     entry line pattern should have named values called 'word', 'reading',
     and 'senses'.
     """
-
-    #------------------------------------------------------------------------#
-    # PUBLIC METHODS
-    #------------------------------------------------------------------------#
 
     def __init__(self, name, header_pattern, line_pattern, sense_pattern):
         """
@@ -158,24 +128,14 @@ class RegexFormat(DictionaryFormat):
         self.sense_pattern = re.compile(sense_pattern, re.UNICODE)
         return
 
-    #------------------------------------------------------------------------#
-
     def match_header(self, header_line):
-        """
-        See parent class.
-        """
         return bool(self.header_pattern.match(header_line))
 
-    #------------------------------------------------------------------------#
-
     def parse_line(self, entry_line):
-        """
-        See parent class.
-        """
         match = self.line_pattern.match(entry_line)
         if not match:
-            raise FormatError, u"Bad line: %s" % entry_line
-        
+            raise FormatError(u"Bad line: %s" % entry_line)
+
         match_dict = match.groupdict()
 
         word = match_dict['word'].replace(' ', '')
@@ -188,13 +148,10 @@ class RegexFormat(DictionaryFormat):
             senses.append(match.groupdict()['sense'])
 
         if not senses:
-            raise FormatError, u"No senses for word: %s" % word
+            raise FormatError(u"No senses for word: %s" % word)
 
         return DictionaryEntry(word, readings, senses)
 
-    #------------------------------------------------------------------------#
-
-#----------------------------------------------------------------------------#
 
 def detect_language(filename):
     """
@@ -215,6 +172,3 @@ def detect_language(filename):
             pass
 
     return 'Unknown', 'Unknown'
-
-#----------------------------------------------------------------------------#
-

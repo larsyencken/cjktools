@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# enum.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Wed Jul  6 16:39:53 EST 2005
 #
-#----------------------------------------------------------------------------#
+#  enum.py
+#  cjktools
+#
 
 """
 C style enums, with nice error checking such as only allowing comparisons
 between elements of the same enum class.
 """
 
-#----------------------------------------------------------------------------#
 
-class Enum:
+class Enum(object):
     def __init__(self, *names):
         constants = []
         for i, name in enumerate(names):
@@ -33,7 +30,7 @@ class Enum:
             if constant._name == name:
                 return constant
         else:
-            raise Exception, 'No such item in this enum'
+            raise Exception('No such item in this enum')
 
     def __getitem__(self, i):
         return self._constants[i]
@@ -44,18 +41,16 @@ class Enum:
     def __str__(self):
         return 'enum' + str(self._constants)
 
-#----------------------------------------------------------------------------#
 
-class EnumValue:
+class EnumValue(object):
     def __init__(self, value, name, parent):
         self._value = value
         self._parent = parent
         self._name = name
-        return
-    
+
     def __cmp__(self, other):
         assert type(other) == type(self), \
-                "Only values from the same enum are comparable"
+            "Only values from the same enum are comparable"
         return cmp(self._value, other._value)
 
     def __hash__(self):
@@ -66,5 +61,3 @@ class EnumValue:
 
     def __repr__(self):
         return str(self._name)
-
-#----------------------------------------------------------------------------#

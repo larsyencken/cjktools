@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# alternations.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Tue Jun 26 12:47:52 2007
 #
-#----------------------------------------------------------------------------#
+#  alternations.py
+#  cjktools
+#
 
 """
 This module deals with sound and reading alternations, both predicting and
-recovering from them. 
+recovering from them.
 """
-
-#----------------------------------------------------------------------------#
 
 from simplestats.comb import combinations
 
@@ -19,7 +15,6 @@ import kana_table
 import scripts
 import maps
 
-#----------------------------------------------------------------------------#
 
 def canonical_forms(kana_segments):
     """
@@ -37,8 +32,8 @@ def canonical_forms(kana_segments):
     for i, segment in enumerate(kana_segments):
         variants = [segment]
 
-        if i < num_segments - 1 and len(segment) > 1 and \
-                    segment.endswith(u'っ'):
+        if (i < num_segments - 1 and len(segment) > 1 and
+                segment.endswith(u'っ')):
             # Can restore onbin cases.
             variants.extend([segment[:-1] + c for c in u'いちりきつく'])
 
@@ -50,7 +45,6 @@ def canonical_forms(kana_segments):
 
     return combinations(*candidate_sets)
 
-#----------------------------------------------------------------------------#
 
 def canonical_segment_forms(segment, left_context=True, right_context=True):
     """
@@ -70,7 +64,6 @@ def canonical_segment_forms(segment, left_context=True, right_context=True):
 
     return variants
 
-#----------------------------------------------------------------------------#
 
 def surface_forms(reading_segments):
     """
@@ -81,12 +74,11 @@ def surface_forms(reading_segments):
     candidate_sets = []
     candidate_sets.append(onbin_variants(reading_segments[0]))
     candidate_sets.extend(
-            map(rendaku_variants, reading_segments[1:])
-        )
+        map(rendaku_variants, reading_segments[1:])
+    )
 
     return combinations(*candidate_sets)
 
-#----------------------------------------------------------------------------#
 
 def rendaku_variants(kana_segment):
     """
@@ -97,7 +89,6 @@ def rendaku_variants(kana_segment):
         variants.add(kana + kana_segment[1:])
     return variants
 
-#----------------------------------------------------------------------------#
 
 def onbin_variants(kana_segment):
     """
@@ -109,7 +100,6 @@ def onbin_variants(kana_segment):
 
     return variants
 
-#----------------------------------------------------------------------------#
 
 def _create_voicing_map():
     """
@@ -136,7 +126,6 @@ to_voiced = _create_voicing_map()
 from_voiced = maps.invert_mapping(to_voiced)
 from_voiced = dict((k, v[0]) for (k, v) in from_voiced.iteritems())
 
-#----------------------------------------------------------------------------#
 
 def insert_duplicate_kanji(kanji_string):
     """
@@ -155,7 +144,6 @@ def insert_duplicate_kanji(kanji_string):
 
     return kanji_string
 
-#----------------------------------------------------------------------------#
 
 def expand_long_vowels(kana_string):
     """

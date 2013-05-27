@@ -1,20 +1,15 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# tree.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Thu Jul 26 16:52:28 2007
 #
-#----------------------------------------------------------------------------#
+#  tree.py
+#  cjktools
+#
 
 """
 An abstract tree datatype.
 """
 
-#----------------------------------------------------------------------------#
-
 from random import shuffle
 
-#----------------------------------------------------------------------------#
 
 class TreeNode(object):
     """
@@ -41,7 +36,7 @@ class TreeNode(object):
 
     ancestors = property(get_ancestors)
 
-    def get_path(self):
+    def path_from_root(self):
         """
         Returns the path from the root node to this node as a list of
         nodes.
@@ -55,8 +50,8 @@ class TreeNode(object):
 
         path.reverse()
         return path
-    
-    path = property(get_path)
+
+    path = property(path_from_root)
 
     def walk_preorder(self):
         """
@@ -128,21 +123,21 @@ class TreeNode(object):
         Returns a copy of the tree structure (but not the node values).
         """
         if self.parent:
-            raise Exception, "Cannot copy from a non-root node"
+            raise Exception("Cannot copy from a non-root node")
 
         new_root = TreeNode(self.label, self.children.copy(),
-                self.attrib.copy())
+                            self.attrib.copy())
 
         stack = [new_root]
         while stack:
             node = stack.pop()
             for child_label, child_node in node.children.items():
                 copied_child = TreeNode(
-                        child_label,
-                        child_node.children.copy(),
-                        child_node.attrib.copy(),
-                        node,
-                    )
+                    child_label,
+                    child_node.children.copy(),
+                    child_node.attrib.copy(),
+                    node,
+                )
                 node.children[child_label] = copied_child
                 stack.append(copied_child)
 
@@ -213,19 +208,19 @@ class TreeNode(object):
         for node in self.walk_breadth_first():
             if node.label == label:
                 return node
-        else:
-            raise KeyError, label
+
+        raise KeyError(label)
 
     def __getitem__(self, key):
         """Returns the attribute matching the given key."""
         return self.attrib.__getitem__(key)
-    
+
     def __setitem__(self, key, value):
         """Saves the attribute value for the given key."""
         return self.attrib.__setitem__(key, value)
 
     def __contains__(self, key):
-        return self.attrib.has_key(key)
+        return key in self.attrib
 
     def __delitem__(self, key):
         """Deletes the given attribute."""
@@ -233,9 +228,9 @@ class TreeNode(object):
         return
 
     def __eq__(self, rhs):
-        return self.label == rhs.label and \
-                self.attrib == rhs.attrib and \
-                self.children == rhs.children
+        return (self.label == rhs.label
+                and self.attrib == rhs.attrib
+                and self.children == rhs.children)
 
     def build_index(self):
         """
@@ -264,11 +259,6 @@ class TreeNode(object):
         self._layout_children(self, '', method)
         return
 
-
-    #------------------------------------------------------------------------#
-    # PRIVATE
-    #------------------------------------------------------------------------#
-
     def _layout_children(self, node, prefix, method):
         children = node.children.values()
         if not children:
@@ -277,14 +267,13 @@ class TreeNode(object):
         for child in children[:-1]:
             print '%s├─ %s' % (prefix, method(child))
             self._layout_children(child, prefix + '│  ', method)
-        
+
         child = children[-1]
         print '%s└─ %s' % (prefix, method(child))
         self._layout_children(child, prefix + '   ', method)
 
         return
 
-#----------------------------------------------------------------------------#
 
 class TreeDist(object):
     """
@@ -307,8 +296,10 @@ class TreeDist(object):
         # First pass, accumulate counts.
         for node in self.root.walk_postorder():
             node['count'] = count_method(node)
-            node['cum_count'] = node['count'] + \
-                    sum([c['count'] for c in node.children.values()])
+            node['cum_count'] = (
+                node['count']
+                + sum([c['count'] for c in node.children.values()])
+            )
 
         # Second pass, convert to MLE probabilities, with the assumption that
         # counts propagate upwards.
@@ -329,8 +320,8 @@ class TreeDist(object):
     def layout(self):
         """Prints a graphical representation of the tree to stdout."""
         return self.root.layout(
-                method=lambda n: '%s %.04f' % (n.label, n['freq'])
-            )
+            method=lambda n: '%s %.04f' % (n.label, n['freq'])
+        )
 
     #------------------------------------------------------------------------#
 
@@ -345,19 +336,21 @@ class TreeDist(object):
         stack = []
         for key in set(self.tree.keys()).union(rhs.tree.keys()):
             stack.append(
-                    (self.tree.get(key), rhs.tree.get(key), new_tree),
-                )
+                (self.tree.get(key), rhs.tree.get(key), new_tree),
+            )
 
         while stack:
             lhs_node, rhs_node, parent = stack.pop()
             if lhs_node is None:
                 new_child = rhs_node.copy()
-                for old_node, new_node in zip(rhs_node.walk(), new_child.walk()):
+                pairs = zip(rhs_node.walk(), new_child.walk())
+                for old_node, new_node in pairs:
                     new_node.freq = f(0.0, old_node.freq)
 
             elif rhs_node is None:
                 new_child = lhs_node.copy()
-                for old_node, new_node in zip(lhs_node.walk(), new_child.walk()):
+                pairs = zip(lhs_node.walk(), new_child.walk())
+                for old_node, new_node in pairs:
                     new_node.freq = f(old_node.freq, 0.0)
 
             else:
@@ -365,8 +358,8 @@ class TreeDist(object):
                 new_child.freq = f(lhs_node.freq, rhs_node.freq)
                 for key in set(lhs_node.keys()).union(rhs_node.keys()):
                     stack.append(
-                            (lhs_node.get(key), rhs_node.get(key), new_child),
-                        )
+                        (lhs_node.get(key), rhs_node.get(key), new_child),
+                    )
 
             parent.append_child(new_child)
 
@@ -379,5 +372,3 @@ class TreeDist(object):
 
     def diff(self, rhs):
         return self.union(rhs, f=lambda x, y: x - y, label='diff')
-
-#----------------------------------------------------------------------------#

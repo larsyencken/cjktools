@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# exceptions.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Tue Dec 26 13:18:46 2006
 #
-#----------------------------------------------------------------------------#
+#  exceptions.py
+#  cjktools
+#
 
 """
 A series of useful, common exceptions.
 """
 
-#----------------------------------------------------------------------------#
 
 class AbstractMethodError(Exception):
     """
@@ -18,7 +15,6 @@ class AbstractMethodError(Exception):
     """
     pass
 
-#----------------------------------------------------------------------------#
 
 class NotYetImplementedError(Exception):
     """
@@ -27,7 +23,6 @@ class NotYetImplementedError(Exception):
     """
     pass
 
-#----------------------------------------------------------------------------#
 
 class NotEnoughDataError(Exception):
     """
@@ -36,10 +31,7 @@ class NotEnoughDataError(Exception):
     """
     pass
 
-#----------------------------------------------------------------------------#
 
 class DomainError(Exception):
     """Raised when the function is called outside its domain."""
     pass
-
-#----------------------------------------------------------------------------#

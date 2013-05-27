@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------#
-# test_alternations.py
-# vim: ts=4 sw=4 sts=4 et tw=78:
-# Thu Jun 28 15:59:34 2007
 #
-#----------------------------------------------------------------------------# 
+#  test_alternations.py
+#  cjktools
+#
 
 import unittest
 import doctest
@@ -12,24 +10,16 @@ import alternations
 
 from simplestats.comb import combinations
 
-#----------------------------------------------------------------------------#
 
 def suite():
     test_suite = unittest.TestSuite((
-            unittest.makeSuite(AlternationsTestCase),
-            doctest.DocTestSuite(alternations),
-        ))
+        unittest.makeSuite(AlternationsTestCase),
+        doctest.DocTestSuite(alternations),
+    ))
     return test_suite
 
-#----------------------------------------------------------------------------#
 
 class AlternationsTestCase(unittest.TestCase):
-    """
-    This class tests the Alternations class. 
-    """
-    def setUp(self):
-        pass
-
     def test_canonical_forms(self):
         base = (u'ゆっ', u'ぐり')
         seg1Cases = [u'ゆ' + c for c in u'いちりきつくっ']
@@ -45,16 +35,8 @@ class AlternationsTestCase(unittest.TestCase):
         self.assertEqual(result, expected)
 
         self.assertEqual(alternations.canonical_segment_forms(u'わ'),
-                set([u'わ']))
+                         set([u'わ']))
 
-    def tearDown(self):
-        pass
-
-#----------------------------------------------------------------------------#
 
 if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=1).run(suite())
-
-#----------------------------------------------------------------------------#
-
-# vim: ts=4 sw=4 sts=4 et tw=78:
