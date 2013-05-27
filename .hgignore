@@ -25,3 +25,4 @@ data
 cjktools.egg-info/*
 __version__.py
 *.bak
+env
