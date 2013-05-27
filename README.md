@@ -21,13 +21,13 @@ For an alternative library for CJK support in Python, or a command-line dictiona
 The easiest way to install `cjktools` is to to simply run:
 
 ```
-easy_install cjktools
+pip install cjktools
 ```
 
 The most recent package will then be downloaded and installed for you. If you also wish to make use of dictionary interfaces, you should also install the larger (~15Mb) `cjktools-data` package.
 
 ```
-easy_install cjktools-data
+pip install cjktools-data
 ```
 
 You will then have easy access to dictionary resources for Japanese, and the tools to manipulate them.
