@@ -16,7 +16,7 @@ import os
 from contextlib import closing
 
 from cjktools.common import sopen
-from cjktools.exceptions import NotYetImplementedError
+from cjktools.errors import NotYetImplementedError
 from bilingual_dict import BilingualDictionary, DictionaryEntry
 import languages
 

@@ -4,15 +4,11 @@
 #  cjktools
 #
 
-"""
-A series of useful, common exceptions.
-"""
+"A series of useful, common exceptions."
 
 
 class AbstractMethodError(Exception):
-    """
-    Indicates that a base class has had its abstract method called.
-    """
+    "Indicates that a base class has had its abstract method called."
     pass
 
 
@@ -33,5 +29,5 @@ class NotEnoughDataError(Exception):
 
 
 class DomainError(Exception):
-    """Raised when the function is called outside its domain."""
+    "Raised when the function is called outside its domain."
     pass

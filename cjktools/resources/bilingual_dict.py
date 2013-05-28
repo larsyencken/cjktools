@@ -9,7 +9,7 @@ A generic bilingual dictionary class.
 """
 
 from cjktools.enum import Enum
-from cjktools.exceptions import NotYetImplementedError
+from cjktools.errors import NotYetImplementedError
 
 ClashPolicy = Enum('Overwrite', 'Merge')
 
@@ -23,8 +23,6 @@ class BilingualDictionary(dict):
 
     def __init__(self, format, source_language, target_language):
         """
-        Constructor.
-
         @param format: The format object for this dictionary.
         @type format: DictionaryFormat
         @param source_langauge: The source language used for headwords.
@@ -36,12 +34,9 @@ class BilingualDictionary(dict):
         self.format = format
         self.source_language = source_language
         self.target_language = target_language
-        return
 
     def update(self, rhs_dictionary, clash_policy=ClashPolicy.Overwrite):
-        """
-        Merges another dictionary into this one, in-place. Entries are
-        """
+        "Merges another dictionary into this one, in-place."
         if self.source_language != rhs_dictionary.source_language or \
                 self.target_language != rhs_dictionary.target_language:
             raise Exception("Source and target languages must be identical")
@@ -60,14 +55,11 @@ class DictionaryEntry(object):
     __slots__ = ('word', 'readings', 'senses')
 
     def __init__(self, word, readings, senses):
-        """
-        Constructor. There should be either one reading, or one per sense.
-        """
+        "There should be either one reading, or one per sense."
         assert len(readings) == 1 or len(readings) == len(senses)
         self.word = word
         self.readings = readings
         self.senses = senses
-        return
 
     def update(self, rhs_entry):
         """
@@ -94,10 +86,8 @@ class DictionaryEntry(object):
         self.readings += rhs_entry.readings
         self.senses += rhs_entry.senses
 
-        return
-
     def senses_by_reading(self):
-        """Returns a dictionary mapping reading to senses."""
+        "Returns a dictionary mapping reading to senses."
         result = {}
         if len(self.readings) > 1:
             assert len(self.senses) == len(self.readings)
