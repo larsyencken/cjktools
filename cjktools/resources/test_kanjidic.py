@@ -33,9 +33,6 @@ class KanjidicTestCase(unittest.TestCase):
         key = u'粉'
         assert u'こ'in self.kd[key].all_readings
 
-    def tearDown(self):
-        pass
-
 
 if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=1).run(suite())

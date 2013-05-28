@@ -15,17 +15,12 @@ import gzip
 
 
 def filter_comments(file_stream):
-    """
-    Filter a filestream, removing comment lines marked with an initial
-    hash.
-    """
+    "Filter a filestream, removing comment lines marked with an initial hash."
     for line in file_stream:
         if line.startswith('#'):
             continue
 
         yield line
-
-    return
 
 
 def sopen(filename, mode='rb', encoding='utf8'):

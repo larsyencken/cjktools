@@ -9,9 +9,11 @@ A module of methods to automatically detect the format given a dictionary
 file.
 """
 
+from contextlib import closing
+
 from cjktools.common import sopen
 
-from format import RegexFormat, UnknownFormatError
+from dict_format import RegexFormat, UnknownFormatError
 
 
 def detect_format(filename):
@@ -24,13 +26,12 @@ def detect_format(filename):
     """
     global known_formats
 
-    i_stream = sopen(filename, 'r')
-    header = i_stream.readline()
-    i_stream.close()
+    with closing(sopen(filename)) as istream:
+        header = istream.readline()
 
-    for format in known_formats:
-        if format.match_header(header):
-            return format
+    for f in known_formats:
+        if f.match_header(header):
+            return f
 
     raise UnknownFormatError(filename)
 
@@ -57,7 +58,7 @@ def iter_entries(filename):
 known_formats = [
     RegexFormat(
         'edict',
-        u'^？？？？.*$',
+        u'^.？？？.*$',
         u'^(?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\] )?(?P<senses>.*)$',
         u'/(?P<sense>[^/]+)',
     ),

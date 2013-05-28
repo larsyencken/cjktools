@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  dictionary_format.py
+#  dict_format.py
 #  cjktools
 #
 
@@ -13,6 +13,7 @@ formats is provided in the known_formats object.
 
 import re
 import os
+from contextlib import closing
 
 from cjktools.common import sopen
 from cjktools.exceptions import NotYetImplementedError
@@ -29,24 +30,17 @@ class UnknownFormatError(Exception):
 
 
 class FormatError(Exception):
-    """
-    Used when a dictionary's data is malformed.
-    """
+    "Used when a dictionary's data is malformed."
     pass
 
 
 class DuplicateEntryError(Exception):
-    """
-    Used when a dictionary entry has been duplicated. We can safely skip
-    it.
-    """
+    "Used when a dictionary entry has been duplicated. We can safely skip it."
     pass
 
 
 class DictionaryFormat(object):
-    """
-    An abstract dictionary format, providing the elements.
-    """
+    "An abstract dictionary format, providing the elements."
     def match_header(self, header_line):
         """
         Returns True if the header pattern matches the line given,
@@ -55,9 +49,7 @@ class DictionaryFormat(object):
         raise NotYetImplementedError
 
     def parse_line(self, entry_line):
-        """
-        Parses a dictionary entry from the given line.
-        """
+        "Parses a dictionary entry from the given line."
         raise NotYetImplementedError
 
     def parse_dictionary(self, filename):
@@ -68,25 +60,23 @@ class DictionaryFormat(object):
         # Determine the source and target language.
         source_lang, target_lang = detect_language(filename)
 
-        i_stream = sopen(filename, 'r')
-        header = i_stream.readline()
+        with closing(sopen(filename)) as istream:
+            header = istream.readline()
 
-        if not self.match_header(header):
-            raise UnknownFormatError(filename)
+            if not self.match_header(header):
+                raise UnknownFormatError(filename)
 
-        dict_obj = BilingualDictionary(self, source_lang, target_lang)
-        for line in i_stream:
-            entry = self.parse_line(line)
+            dict_obj = BilingualDictionary(self, source_lang, target_lang)
+            for line in istream:
+                entry = self.parse_line(line)
 
-            if entry.word in dict_obj:
-                # Already an entry here, so update it with new readings and
-                # senses.
-                old_entry = dict_obj[entry.word]
-                old_entry.update(entry)
-            else:
-                dict_obj[entry.word] = entry
-
-        i_stream.close()
+                if entry.word in dict_obj:
+                    # Already an entry here, so update it with new readings and
+                    # senses.
+                    old_entry = dict_obj[entry.word]
+                    old_entry.update(entry)
+                else:
+                    dict_obj[entry.word] = entry
 
         return dict_obj
 
@@ -98,16 +88,14 @@ class DictionaryFormat(object):
         # Determine the source and target language.
         source_lang, target_lang = detect_language(filename)
 
-        i_stream = sopen(filename, 'r')
-        header = i_stream.readline()
+        with closing(sopen(filename)) as istream:
+            header = istream.readline()
 
-        if not self.match_header(header):
-            raise UnknownFormatError(filename)
+            if not self.match_header(header):
+                raise UnknownFormatError(filename)
 
-        for line in i_stream:
-            yield self.parse_line(line)
-
-        i_stream.close()
+            for line in istream:
+                yield self.parse_line(line)
 
 
 class RegexFormat(DictionaryFormat):
@@ -119,14 +107,10 @@ class RegexFormat(DictionaryFormat):
     """
 
     def __init__(self, name, header_pattern, line_pattern, sense_pattern):
-        """
-        Constructor.
-        """
         self.name = name
         self.header_pattern = re.compile(header_pattern, re.UNICODE)
         self.line_pattern = re.compile(line_pattern, re.UNICODE)
         self.sense_pattern = re.compile(sense_pattern, re.UNICODE)
-        return
 
     def match_header(self, header_line):
         return bool(self.header_pattern.match(header_line))

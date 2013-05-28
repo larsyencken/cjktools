@@ -38,7 +38,7 @@ class AutoFormatTestCase(unittest.TestCase):
             dict_obj,
             u'齧歯目',
             [u'げっしもく'],
-            [u'(adj-no) (1) rat-like', u'rhodential', '(n) (2) Rodentia'],
+            [u'(n) (1) Rodentia', u'(adj-no) (2) rat-like', u'rodential'],
         )
 
         self._check_lookup(

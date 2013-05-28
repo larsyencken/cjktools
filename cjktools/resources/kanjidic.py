@@ -56,15 +56,13 @@ remappings = {
 class KanjidicEntry(object):
     "A single entry in the kanjidic file."
 
-    def __init__(self, entry_details):
+    def __init__(self, **entry_details):
         assert ('on_readings' in entry_details
                 and 'kun_readings' in entry_details)
         self.__dict__.update(entry_details)
 
     def get_all_readings(self):
-        """
-        Construct a reading pool for this entry.
-        """
+        "Construct a reading pool for this entry."
         reading_set = set()
         for reading in (self.kun_readings +
                         map(scripts.to_hiragana, self.on_readings)):
@@ -124,48 +122,67 @@ class Kanjidic(dict):
                 continue
 
             entry = self._parse_line(line)
-            self.__setitem__(entry.kanji, entry)
+            self[entry.kanji] = entry
 
     def _parse_line(self, line):
-        """
-        Parses a single line in the kanjdic file, returning an entry.
-        """
+        "Parses a single line in the kanjdic file, returning an entry."
         segment_pattern = re.compile('[^ {]+|{.*?}', re.UNICODE)
         segments = segment_pattern.findall(line.strip())
+        segments.reverse()
 
-        kanji = segments[0]
-        jis_code = int(segments[1], 16)
-        kanji_info = {
+        kanji = segments.pop()
+        jis_code = int(segments.pop(), 16)
+        info = {
             'kanji':        kanji,
             'gloss':        [],
-            'on_readings':   [],
-            'kun_readings':  [],
-            'jis_code':      jis_code
+            'on_readings':  [],
+            'kun_readings': [],
+            'jis_code':     jis_code
         }
 
-        i = 2
-        num_segments = len(segments)
-        while i < num_segments:
-            this_segment = segments[i]
-            i += 1
+        while segments:
+            s = segments.pop()
 
-            if this_segment.startswith('{'):
-                # It's a gloss.
-                kanji_info['gloss'].append(this_segment[1:-1])
+            if s.startswith('{'):
+                info['gloss'].append(s[1:-1])
 
-            elif (scripts.script_type(this_segment) != scripts.Script.Ascii
-                    or this_segment.startswith('-')):
+            elif (scripts.script_type(s) != scripts.Script.Ascii
+                    or s.startswith('-')):
                 # It must be a reading.
-                char = this_segment[0]
+                char = s[0]
                 if char == '-':
-                    char = this_segment[1]
+                    char = s[1]
 
                 if scripts.script_type(char) == scripts.Script.Katakana:
-                    kanji_info['on_readings'].append(this_segment)
+                    info['on_readings'].append(s)
                 elif scripts.script_type(char) == scripts.Script.Hiragana:
-                    kanji_info['kun_readings'].append(this_segment)
+                    info['kun_readings'].append(s)
                 else:
-                    raise Exception
+                    raise Exception("Unknown segment %s" % s)
+
+            elif s in ('T1', 'T2'):
+                continue
+
+            else:
+                # handle various codes
+                code = s[0]
+                remainder = s[1:]
+                try:
+                    remainder = int(remainder)
+                except:
+                    pass
+
+                info.setdefault(remappings.get(code, code), []).append(
+                    remainder)
+
+        info['stroke_count'] = info['stroke_count'][0]
+        if 'frequency' in info:
+            info['frequency'] = info['frequency'][0]
+
+        info['skip_code'] = tuple(int(i)
+                                  for i in info['skip_code'][0].split('-'))
+
+        return KanjidicEntry(**info)
 
 
 _cached_kanjidic = None
