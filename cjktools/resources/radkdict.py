@@ -7,12 +7,12 @@
 
 "Based on the radkfile, a dictionary mapping character to bag of radicals."
 
-import codecs
 import sys
-import pkg_resources
 
 from cjktools import maps
 from cjktools.common import sopen
+
+import cjkdata
 
 
 class RadkDict(dict):
@@ -23,12 +23,9 @@ class RadkDict(dict):
         @param dict_file: The radkfile to parse.
         """
         if dict_file is None:
-            line_stream = codecs.getreader('utf8')(
-                pkg_resources.resource_stream('cjktools_data', 'radkfile')
-            )
-        else:
-            line_stream = sopen(dict_file)
+            dict_file = cjkdata.get_resource('radkfile')
 
+        line_stream = sopen(dict_file)
         self._parse_radkfile(line_stream)
 
     def _parse_radkfile(self, line_stream):

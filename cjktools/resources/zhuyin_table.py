@@ -8,18 +8,19 @@
 An interface to the zhuyin <-> pinyin table.
 """
 
-
 import codecs
-import pkg_resources
+
+import cjkdata
 
 
 def _open_conversion_file():
-    return codecs.getreader('utf8')(pkg_resources.resource_stream(
-        'cjktools_data', 'tables/zhuyin_pinyin_conv_table'))
+    return codecs.open(
+        cjkdata.get_resource('tables/zhuyin_pinyin_conv_table'), 'r', 'utf8'
+    )
 
 
 def get_zhuyin_to_pinyin_table():
-    """Returns a dictionary mapping zhuyin to pinyin."""
+    "Returns a dictionary mapping zhuyin to pinyin."
     table = {}
     for zhuyin, pinyin in parse_lines(_open_conversion_file()):
         table[zhuyin] = pinyin
@@ -34,7 +35,7 @@ def parse_lines(stream):
 
 
 def get_pinyin_to_zhuyin_table():
-    """Returns a dictionary mapping zhuyin to pinyin."""
+    "Returns a dictionary mapping zhuyin to pinyin."
     table = {}
     for zhuyin, pinyin in parse_lines(_open_conversion_file()):
         table[pinyin] = zhuyin
@@ -43,9 +44,7 @@ def get_pinyin_to_zhuyin_table():
 
 
 def pinyin_regex_pattern():
-    """
-    Returns a pinyin regex pattern, with optional tone number.
-    """
+    "Returns a pinyin regex pattern, with optional tone number."
     all_pinyin = ['r']
 
     for zhuyin, pinyin in parse_lines(_open_conversion_file()):
@@ -62,9 +61,7 @@ def pinyin_regex_pattern():
 
 
 def zhuyin_regex_pattern():
-    """
-    Returns a zhuyin regex pattern.
-    """
+    "Returns a zhuyin regex pattern."
     all_pinyin = []
 
     for zhuyin, pinyin in parse_lines(_open_conversion_file()):

@@ -5,9 +5,9 @@
 #
 
 import unittest
-import pkg_resources
 
 from split_by_codes import load_coded_dictionary
+import cjkdata
 
 
 def suite():
@@ -19,10 +19,8 @@ def suite():
 
 class SplitByCodesTestCase(unittest.TestCase):
     def setUp(self):
-        self.enamdict_file = pkg_resources.resource_filename(
-            'cjktools_data', 'dict/je_enamdict')
-        self.edict_file = pkg_resources.resource_filename(
-            'cjktools_data', 'dict/je_edict')
+        self.enamdict_file = cjkdata.get_resource('dict/je_enamdict')
+        self.edict_file = cjkdata.get_resource('dict/je_edict')
 
     def test_enamdict(self):
         "Checks code splitting for enamdict."

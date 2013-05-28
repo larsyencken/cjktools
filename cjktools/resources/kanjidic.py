@@ -14,6 +14,8 @@ from itertools import chain
 from cjktools import scripts
 from cjktools.common import sopen
 
+import cjkdata
+
 
 basic_features = set([
     'gloss',
@@ -52,15 +54,12 @@ remappings = {
 
 
 class KanjidicEntry(object):
-    """
-    A single entry in the kanjidic file.
-    """
+    "A single entry in the kanjidic file."
 
     def __init__(self, entry_details):
         assert ('on_readings' in entry_details
                 and 'kun_readings' in entry_details)
         self.__dict__.update(entry_details)
-        return
 
     def get_all_readings(self):
         """
@@ -96,17 +95,13 @@ class Kanjidic(dict):
         dict.__init__(self)
 
         if kanjidic_files is None:
-            import cjktools_data
-            line_stream = chain(
-                cjktools_data.open_file('kanjidic'),
-                cjktools_data.open_file('kanjd212'),
-            )
-        else:
-            line_stream = reduce(chain, [sopen(f) for f in kanjidic_files])
+            kanjidic_files = [
+                cjkdata.get_resource('kanjidic'),
+                cjkdata.get_resource('kanjd212'),
+            ]
 
+        line_stream = reduce(chain, [sopen(f) for f in kanjidic_files])
         self._parse_kanjidic(line_stream)
-
-        return
 
     @classmethod
     def get_cached(cls):
@@ -130,8 +125,6 @@ class Kanjidic(dict):
 
             entry = self._parse_line(line)
             self.__setitem__(entry.kanji, entry)
-
-        return
 
     def _parse_line(self, line):
         """

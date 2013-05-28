@@ -5,10 +5,10 @@
 #
 
 import unittest
-import pkg_resources
 
 from auto_format import detect_format, load_dictionary
 from bilingual_dict import BilingualDictionary
+import cjkdata
 
 
 def suite():
@@ -20,14 +20,8 @@ def suite():
 
 class AutoFormatTestCase(unittest.TestCase):
     def setUp(self):
-        self.je_edict = pkg_resources.resource_filename(
-            'cjktools_data',
-            'dict/je_edict',
-        )
-        self.je_jplaces = pkg_resources.resource_filename(
-            'cjktools_data',
-            'dict/je_jplaces',
-        )
+        self.je_edict = cjkdata.get_resource('dict/je_edict')
+        self.je_jplaces = cjkdata.get_resource('dict/je_jplaces')
 
     def test_formats(self):
         "Tests correct format detection for a variety of dictionaries."
@@ -54,9 +48,6 @@ class AutoFormatTestCase(unittest.TestCase):
             ['(n,adj-no) cavity', 'tooth decay', 'decayed tooth',
                 'caries']*2,
         )
-
-    def tearDown(self):
-        pass
 
     def _check_lookup(self, dictionary, key, readings, senses):
         entry = dictionary[key]
