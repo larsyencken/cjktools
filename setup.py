@@ -34,5 +34,4 @@ setup(
 
     package_dir={'cjktools': 'cjktools'},
     packages=['cjktools', 'cjktools.resources'],
-    scripts=['cjktools/dyntest'],
 )
