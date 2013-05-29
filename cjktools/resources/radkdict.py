@@ -9,8 +9,8 @@
 
 import sys
 
+import codecs
 from cjktools import maps
-from cjktools.common import sopen
 
 import cjkdata
 
@@ -18,15 +18,14 @@ import cjkdata
 class RadkDict(dict):
     "Determines which radicals a character contains."
 
-    def __init__(self, dict_file=None):
+    def __init__(self, istream=None):
         """
         @param dict_file: The radkfile to parse.
         """
-        if dict_file is None:
-            dict_file = cjkdata.get_resource('radkfile')
+        if istream is None:
+            istream = open(cjkdata.get_resource('radkfile'))
 
-        line_stream = sopen(dict_file)
-        self._parse_radkfile(line_stream)
+        self._parse_radkfile(codecs.getreader('utf8')(istream))
 
     def _parse_radkfile(self, line_stream):
         """

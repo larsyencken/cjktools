@@ -9,13 +9,14 @@ import re
 from auto_format import iter_entries
 
 
-def load_coded_dictionary(filename):
-    """
-    Load a dictionary which is split by the codes within it.
-    """
+def load_coded_dictionary(file_or_stream):
+    "Load a dictionary which is split by the codes within it."
+    if isinstance(file_or_stream, (str, unicode)):
+        file_or_stream = open(file_or_stream)
+
     word_to_entry = {}
     coded_dict = {}
-    for entry in iter_entries(filename):
+    for entry in iter_entries(file_or_stream):
         word = entry.word
 
         # Merge any word entries with the same graphical form.

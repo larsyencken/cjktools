@@ -9,14 +9,10 @@ A module of methods to automatically detect the format given a dictionary
 file.
 """
 
-from contextlib import closing
-
-from cjktools.common import sopen
-
 from dict_format import RegexFormat, UnknownFormatError
 
 
-def detect_format(filename):
+def detect_format(header):
     """
     Reads the first line of the filename, and attempts to determine the
     format of the dictionary. The matching format is returned, or an
@@ -24,32 +20,29 @@ def detect_format(filename):
 
     @param filename: The file to attempt to read.
     """
-    global known_formats
-
-    with closing(sopen(filename)) as istream:
-        header = istream.readline()
-
     for f in known_formats:
         if f.match_header(header):
             return f
 
-    raise UnknownFormatError(filename)
+    raise UnknownFormatError
 
 
-def load_dictionary(filename):
+def load_dictionary(istream):
     """
     Attempts to detect the format of and parse a dictionary, returning the
     dictionary object on success.
     """
-    return detect_format(filename).parse_dictionary(filename)
+    header = istream.next()
+    return detect_format(header).parse_dictionary(istream)
 
 
-def iter_entries(filename):
+def iter_entries(istream):
     """
     Iterates over dictionary entries, without storing them all in memory
     at once.
     """
-    return detect_format(filename).iter_entries(filename)
+    header = istream.next()
+    return detect_format(header).parse_dictionary(istream)
 
 #----------------------------------------------------------------------------#
 # DICTIONARY FORMATS
