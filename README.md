@@ -1,5 +1,7 @@
 # CJK tools for Python
 
+[![Build Status](https://travis-ci.org/larsyencken/cjktools.png)](https://travis-ci.org/larsyencken/cjktools)
+
 ## Overview
 
 The cjktools package provides useful tools for language processing in Japanese and Chinese, in particular working with dictionaries and other resources. It provides methods for checking the script type of a string. For example:
@@ -15,8 +17,6 @@ set([Kanji, Hiragana])
 Cjktools can also segment pinyin, convert it from ASCII form (like 'li4') to unicode tones (like u'lì'), as well as a range of other features. In keeping with the "batteries included" philosophy of Python, each of the free dictionaries cjktools supports is included in the cjktools-data package.
 
 For an alternative library for CJK support in Python, or a command-line dictionary lookup tool, see the related [cjklib](http://code.google.com/p/cjklib/) project.
-
-[![Build Status](https://travis-ci.org/larsyencken/cjktools.png)](https://travis-ci.org/larsyencken/cjktools)
 
 ## Installing
 
