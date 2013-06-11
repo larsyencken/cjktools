@@ -16,6 +16,8 @@ Cjktools can also segment pinyin, convert it from ASCII form (like 'li4') to uni
 
 For an alternative library for CJK support in Python, or a command-line dictionary lookup tool, see the related [cjklib](http://code.google.com/p/cjklib/) project.
 
+[![Build Status](https://travis-ci.org/larsyencken/cjktools.png)](https://travis-ci.org/larsyencken/cjktools)
+
 ## Installing
 
 The easiest way to install `cjktools` is to to simply run:
