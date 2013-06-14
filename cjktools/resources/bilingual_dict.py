@@ -21,26 +21,15 @@ class BilingualDictionary(dict):
     stored as senses of the same lexeme, rather than being separate.
     """
 
-    def __init__(self, format, source_language, target_language):
+    def __init__(self, format):
         """
         @param format: The format object for this dictionary.
         @type format: DictionaryFormat
-        @param source_langauge: The source language used for headwords.
-        @type source_langauge: str
-        @param target_language: The target language used for the translated
-            meanings.
-        @type target_language: str
         """
         self.format = format
-        self.source_language = source_language
-        self.target_language = target_language
 
     def update(self, rhs_dictionary, clash_policy=ClashPolicy.Overwrite):
         "Merges another dictionary into this one, in-place."
-        if self.source_language != rhs_dictionary.source_language or \
-                self.target_language != rhs_dictionary.target_language:
-            raise Exception("Source and target languages must be identical")
-
         if clash_policy == ClashPolicy.Merge:
             raise NotYetImplementedError
 

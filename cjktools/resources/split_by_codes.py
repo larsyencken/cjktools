@@ -5,6 +5,7 @@
 #
 
 import re
+from collections import defaultdict
 
 from auto_format import iter_entries
 
@@ -15,15 +16,15 @@ def load_coded_dictionary(file_or_stream):
         file_or_stream = open(file_or_stream)
 
     word_to_entry = {}
-    coded_dict = {}
+    coded_dict = defaultdict(dict)
     for entry in iter_entries(file_or_stream):
         word = entry.word
 
         # Merge any word entries with the same graphical form.
         if word in word_to_entry:
-            first_entry = word_to_entry[word]
-            first_entry.update(entry)
-            entry = first_entry
+            e = word_to_entry[word]
+            e.update(entry)
+            entry = e
         else:
             word_to_entry[word] = entry
 
@@ -33,11 +34,9 @@ def load_coded_dictionary(file_or_stream):
 
         # Create a subset of the dictionary for each code.
         for code in codes:
-            sub_dict = coded_dict.setdefault(code, {})
-
             # Note that overwriting is ok, since we already merged any
             # coincidental forms.
-            sub_dict[word] = entry
+            coded_dict[code][word] = entry
 
     return coded_dict
 

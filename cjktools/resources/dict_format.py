@@ -12,13 +12,9 @@ formats is provided in the known_formats object.
 """
 
 import re
-import os
-from contextlib import closing
 
-from cjktools.common import sopen
 from cjktools.errors import NotYetImplementedError
 from bilingual_dict import BilingualDictionary, DictionaryEntry
-import languages
 
 
 class UnknownFormatError(Exception):
@@ -52,50 +48,29 @@ class DictionaryFormat(object):
         "Parses a dictionary entry from the given line."
         raise NotYetImplementedError
 
-    def parse_dictionary(self, filename):
+    def parse_dictionary(self, lines):
         """
         Parses the given filename using this format, returning a
         dictionary object containing all the dictionary entries.
         """
-        # Determine the source and target language.
-        source_lang, target_lang = detect_language(filename)
+        b = BilingualDictionary(self)
+        for line in lines:
+            entry = self.parse_line(line)
 
-        with closing(sopen(filename)) as istream:
-            header = istream.readline()
+            if entry.word in b:
+                b[entry.word].update(entry)
+            else:
+                b[entry.word] = entry
 
-            if not self.match_header(header):
-                raise UnknownFormatError(filename)
+        return b
 
-            dict_obj = BilingualDictionary(self, source_lang, target_lang)
-            for line in istream:
-                entry = self.parse_line(line)
-
-                if entry.word in dict_obj:
-                    # Already an entry here, so update it with new readings and
-                    # senses.
-                    old_entry = dict_obj[entry.word]
-                    old_entry.update(entry)
-                else:
-                    dict_obj[entry.word] = entry
-
-        return dict_obj
-
-    def iter_entries(self, filename):
+    def iter_entries(self, lines):
         """
         Parses the given filename using this format, returning a
         dictionary object containing all the dictionary entries.
         """
-        # Determine the source and target language.
-        source_lang, target_lang = detect_language(filename)
-
-        with closing(sopen(filename)) as istream:
-            header = istream.readline()
-
-            if not self.match_header(header):
-                raise UnknownFormatError(filename)
-
-            for line in istream:
-                yield self.parse_line(line)
+        for line in lines:
+            yield self.parse_line(line)
 
 
 class RegexFormat(DictionaryFormat):
@@ -135,24 +110,3 @@ class RegexFormat(DictionaryFormat):
             raise FormatError(u"No senses for word: %s" % word)
 
         return DictionaryEntry(word, readings, senses)
-
-
-def detect_language(filename):
-    """
-    Tries to determine the source and target language of a given
-    dictionary from its filename. Defaults to 'Unknown', 'Unknown' if the
-    correct langauge cannot be worked out.
-    """
-    filename = os.path.basename(filename)
-    if len(filename) > 3 and filename[2] == '_':
-        from_code = filename[0]
-        to_code = filename[1]
-
-        try:
-            from_lang = languages.from_one_char_code[from_code]
-            to_lang = languages.from_one_char_code[to_code]
-            return from_lang, to_lang
-        except KeyError:
-            pass
-
-    return 'Unknown', 'Unknown'

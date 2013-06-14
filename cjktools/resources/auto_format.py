@@ -17,14 +17,12 @@ def detect_format(header):
     Reads the first line of the filename, and attempts to determine the
     format of the dictionary. The matching format is returned, or an
     UnknownFormatError is thrown.
-
-    @param filename: The file to attempt to read.
     """
     for f in known_formats:
         if f.match_header(header):
             return f
 
-    raise UnknownFormatError
+    raise UnknownFormatError('unknown header line: %s' % repr(header))
 
 
 def load_dictionary(istream):
@@ -32,8 +30,9 @@ def load_dictionary(istream):
     Attempts to detect the format of and parse a dictionary, returning the
     dictionary object on success.
     """
-    header = istream.next()
-    return detect_format(header).parse_dictionary(istream)
+    lines = iter(istream)
+    header = lines.next()
+    return detect_format(header).parse_dictionary(lines)
 
 
 def iter_entries(istream):
@@ -41,8 +40,9 @@ def iter_entries(istream):
     Iterates over dictionary entries, without storing them all in memory
     at once.
     """
-    header = istream.next()
-    return detect_format(header).parse_dictionary(istream)
+    lines = iter(istream)
+    header = lines.next()
+    return detect_format(header).iter_entries(lines)
 
 #----------------------------------------------------------------------------#
 # DICTIONARY FORMATS
