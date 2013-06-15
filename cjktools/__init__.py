@@ -14,7 +14,7 @@ __all__ = [
     'alternations',
     'common',
     'enum',
-    'exceptions',
+    'errors',
     'kana_table',
     'maps',
     'scripts',
