@@ -7,23 +7,23 @@
 from os import path, environ
 
 SEARCH_PATHS = [
-    '~/.cjktools',
-    '/usr/share/data/cjktools',
-    '/usr/local/share/data/cjktools',
+    '~/.cjkdata',
+    '/usr/share/data/cjkdata',
+    '/usr/local/share/data/cjkdata',
 ]
 
 
 def find_path():
-    if 'CJKTOOLS_DATA' in environ:
-        return environ['CJKTOOLS_DATA']
+    if 'CJKDATA' in environ:
+        return environ['CJKDATA']
 
     for p in SEARCH_PATHS:
         p = path.expanduser(p)
         if path.isdir(p):
             return p
 
-    raise Exception('Please install the cjktools data pack and set the '
-                    'CJKTOOLS_DATA environment variable')
+    raise Exception('Please install the cjk data pack and set the '
+                    'CJKDATA environment variable')
 
 
 def get_resource(name):

@@ -17,3 +17,5 @@ data
 __version__.py
 *.bak
 env
+cjkdata
+*.tgz

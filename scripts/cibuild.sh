@@ -1,10 +1,11 @@
 #!/bin/bash
 
-export CJKTOOLS_DATA=$PWD/cjktools-data-master/data
+tarball=cjkdata-2013-06-15-c54b33e.tgz
+export CJKDATA=$PWD/cjkdata
 
-if [ ! -d $CJKTOOLS_DATA ]; then
-  wget https://github.com/larsyencken/cjktools-data/archive/master.zip
-  unzip master.zip
+if [ ! -d $CJKDATA ]; then
+  wget http://files.gakusha.info/$tarball
+  tar xfz $tarball
 fi
 
 nosetests
