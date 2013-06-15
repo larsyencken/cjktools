@@ -94,3 +94,10 @@ above, up
 >>> print ', '.join(entry.kun_readings)[:10]
 うえ, -うえ, うわ-, かみ, あ.げる, -あ.げる, あ.がる, -あ.がる, あ.がり, -あ.がり
 ```
+
+## Changelog
+
+### 1.6.0
+
+- Major code linting and cleanup
+- Data is now managed outside of python packages, using tarballs from the [cjkdata](https://github.com/larsyencken/cjkdata) project
