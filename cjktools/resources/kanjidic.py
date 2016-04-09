@@ -7,12 +7,15 @@
 """
 A nice interface to the Kanjidic dictionary.
 """
+from __future__ import unicode_literals
 
 import re
 from itertools import chain
 
 from cjktools import scripts
 from cjktools.common import sopen
+
+from functools import reduce
 
 import cjkdata
 
