@@ -8,12 +8,16 @@
 This module deals with sound and reading alternations, both predicting and
 recovering from them.
 """
+from __future__ import unicode_literals
 
 from simplestats.comb import combinations
 
 import kana_table
 import scripts
 import maps
+
+from six import unichr as chr
+from six import iteritems
 
 
 def canonical_forms(kana_segments):
@@ -33,9 +37,9 @@ def canonical_forms(kana_segments):
         variants = [segment]
 
         if (i < num_segments - 1 and len(segment) > 1 and
-                segment.endswith(u'っ')):
+                segment.endswith('っ')):
             # Can restore onbin cases.
-            variants.extend([segment[:-1] + c for c in u'いちりきつく'])
+            variants.extend([segment[:-1] + c for c in 'いちりきつく'])
 
         if i > 0 and table.is_voiced(segment[0]):
             # Can devoice.
@@ -56,8 +60,8 @@ def canonical_segment_forms(segment, left_context=True, right_context=True):
     table = kana_table.KanaTable.get_cached()
     variants = set([segment])
 
-    if right_context and len(segment) > 1 and segment.endswith(u'っ'):
-        variants.update([segment[:-1] + c for c in u'いちりきつく'])
+    if right_context and len(segment) > 1 and segment.endswith('っ'):
+        variants.update([segment[:-1] + c for c in 'いちりきつく'])
 
     if left_context and table.is_voiced(segment[0]):
         variants.update([from_voiced[v[0]] + v[1:] for v in variants])
@@ -96,7 +100,7 @@ def onbin_variants(kana_segment):
     """
     variants = set([kana_segment])
     if len(kana_segment) > 1:
-        variants.add(kana_segment[:-1] + u'っ')
+        variants.add(kana_segment[:-1] + 'っ')
 
     return variants
 
@@ -106,17 +110,17 @@ def _create_voicing_map():
     Constructs map from kana to their voiced alternatives.
     """
     table = kana_table.KanaTable.get_cached().get_table()
-    voiced_line = table[u'か'] + table[u'さ'] + table[u'た']
-    double_voiced_line = table[u'は']
+    voiced_line = table['か'] + table['さ'] + table['た']
+    double_voiced_line = table['は']
 
     voicing_map = {}
     for kana in scripts.get_script(scripts.Script.Hiragana):
         ord_kana = ord(kana)
 
         if kana in voiced_line:
-            voicing_map[kana] = [unichr(ord_kana+1)]
+            voicing_map[kana] = [chr(ord_kana+1)]
         elif kana in double_voiced_line:
-            voicing_map[kana] = [unichr(ord_kana+1), unichr(ord_kana+2)]
+            voicing_map[kana] = [chr(ord_kana+1), chr(ord_kana+2)]
         else:
             voicing_map[kana] = []
 
@@ -124,7 +128,7 @@ def _create_voicing_map():
 
 to_voiced = _create_voicing_map()
 from_voiced = maps.invert_mapping(to_voiced)
-from_voiced = dict((k, v[0]) for (k, v) in from_voiced.iteritems())
+from_voiced = dict((k, v[0]) for (k, v) in iteritems(from_voiced))
 
 
 def insert_duplicate_kanji(kanji_string):
@@ -136,11 +140,11 @@ def insert_duplicate_kanji(kanji_string):
         >>> k == expected
         True
     """
-    loc = kanji_string.find(u'々')
+    loc = kanji_string.find('々')
     while loc > 0:
         dup = kanji_string[loc-1]
         kanji_string = kanji_string[:loc] + dup + kanji_string[loc+1:]
-        loc = kanji_string.find(u'々')
+        loc = kanji_string.find('々')
 
     return kanji_string
 
@@ -158,7 +162,7 @@ def expand_long_vowels(kana_string):
     kana_string = scripts.to_hiragana(kana_string)
     table = kana_table.KanaTable.get_cached()
 
-    i = kana_string.find(u'ー', 1)
+    i = kana_string.find('ー', 1)
     while i != not_found:
         previous_char = kana_string[i-1]
         previous_script = scripts.script_type(previous_char)
@@ -167,7 +171,7 @@ def expand_long_vowels(kana_string):
             vowel = table.to_vowel_line(previous_char)
             kana_string = kana_string[:i] + vowel + kana_string[i+1:]
 
-        i = kana_string.find(u'ー', i+1)
+        i = kana_string.find('ー', i+1)
 
     return kana_string
 
