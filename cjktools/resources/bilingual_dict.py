@@ -8,11 +8,14 @@
 A generic bilingual dictionary class.
 """
 
-from cjktools.enum import Enum
+import enum
 from cjktools.errors import NotYetImplementedError
 
-ClashPolicy = Enum('Overwrite', 'Merge')
+from six import text_type
 
+class ClashPolicy(Enum):
+    Overwrite = 1
+    Merge = 2
 
 class BilingualDictionary(dict):
     """
@@ -90,10 +93,10 @@ class DictionaryEntry(object):
         return result
 
     def __repr__(self):
-        return unicode(self)
+        return text_type(self)
 
     def __unicode__(self):
-        return u'<DictionaryEntry: %s (%s readings, %s senses)>' % (
+        return '<DictionaryEntry: %s (%s readings, %s senses)>' % (
             self.word,
             len(set(self.readings)),
             len(self.senses),
