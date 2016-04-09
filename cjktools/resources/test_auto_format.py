@@ -3,14 +3,17 @@
 #  test_auto_format.py
 #  cjktools
 #
-
 import unittest
 import codecs
-from cStringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from auto_format import detect_format, load_dictionary
 from bilingual_dict import BilingualDictionary
 
+from six import text_type, binary_type
 
 def suite():
     test_suite = unittest.TestSuite((
@@ -31,20 +34,28 @@ JPLACES_SAMPLE = \
 上野 [うえの] /Ueno (loc)/
 """  # nopep8
 
+def _to_unicode_stream(x):
+    o = StringIO(x)
+
+    if isinstance(x, binary_type):
+        o = codecs.getreader('utf8')(o)
+
+    return o
 
 class AutoFormatTestCase(unittest.TestCase):
     def setUp(self):
-        self.je_edict = codecs.getreader('utf8')(StringIO(EDICT_SAMPLE))
-        self.je_jplaces = codecs.getreader('utf8')(StringIO(JPLACES_SAMPLE))
+
+        self.je_edict = _to_unicode_stream(EDICT_SAMPLE)
+        self.je_jplaces = _to_unicode_stream(JPLACES_SAMPLE)
 
     def test_formats(self):
         "Tests correct format detection for a variety of dictionaries."
         self.assertEqual(
-            detect_format(self.je_edict.next()).name,
+            detect_format(next(self.je_edict)).name,
             'edict',
         )
         self.assertEqual(
-            detect_format(self.je_jplaces.next()).name,
+            detect_format(next(self.je_jplaces)).name,
             'edict',
         )
 

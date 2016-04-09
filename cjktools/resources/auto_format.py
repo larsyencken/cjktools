@@ -31,7 +31,7 @@ def load_dictionary(istream):
     dictionary object on success.
     """
     lines = iter(istream)
-    header = lines.next()
+    header = next(lines)
     return detect_format(header).parse_dictionary(lines)
 
 
@@ -41,7 +41,7 @@ def iter_entries(istream):
     at once.
     """
     lines = iter(istream)
-    header = lines.next()
+    header = next(lines)
     return detect_format(header).iter_entries(lines)
 
 #----------------------------------------------------------------------------#
