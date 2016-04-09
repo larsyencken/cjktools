@@ -9,10 +9,12 @@ This module implements a smart caching function, with dependencies.
 """
 
 import common
-import cPickle as pickle
 import types
 import os
 from os import path
+
+from six import string_types
+from six.moves import cPickle as pickle
 
 
 def disk_proxy_direct(method, cache_file, dependencies=[]):
@@ -30,16 +32,16 @@ def disk_proxy_direct(method, cache_file, dependencies=[]):
 
         if cached_val is None:
             if 'CACHE_DEBUG' in os.environ:
-                print '[cache miss: %s]' % os.path.basename(cache_file)
+                print('[cache miss: %s]' % os.path.basename(cache_file))
             # cache miss, expensive fetch and repopulate cache
-            result = apply(method, args, params)
+            result = method(*args, **params)
             if 'CACHE_DEBUG' in os.environ:
-                print '[storing: %s]' % os.path.basename(cache_file)
+                print('[storing: %s]' % os.path.basename(cache_file))
             store_cache_object(result, cache_file, args, params)
             return result
         else:
             if 'CACHE_DEBUG' in os.environ:
-                print '[cache hit: %s]' % os.path.basename(cache_file)
+                print('[cache hit: %s]' % os.path.basename(cache_file))
             # cache hit
             return cached_val
 
@@ -74,7 +76,7 @@ def memory_proxy(method):
             return method_dict[key]
         else:
             # cache miss, expensive call and insert
-            result = apply(method, args, params)
+            result = method(*args, **params)
             method_dict[key] = result
             return result
 
@@ -150,12 +152,10 @@ def needs_update(target, dependencies):
     target_time = path.getmtime(target)
 
     for dependency in dependencies:
-        if type(dependency) in (str, unicode):
+        if isinstance(dependency, string_types):
             filenames = [dependency]
-
         elif isinstance(dependency, types.ModuleType):
             filenames = _get_module_dependencies(dependency)
-
         else:
             raise TypeError("Unknown dependency type %s" % (type(dependency)))
 
