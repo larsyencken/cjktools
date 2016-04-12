@@ -16,7 +16,7 @@ try:
 except ImportError:
     from compat import Enum
 
-from six import unichr, text_type
+from six import unichr, text_type, iteritems
 from six.moves import range
 
 class Script:
@@ -225,7 +225,7 @@ def script_type(char):
     # Normalize/typecheck our input.
     char = text_type(char)[0]
 
-    for script, (start_band, end_band) in _known_bands.iteritems():
+    for script, (start_band, end_band) in iteritems(_known_bands):
         if start_band <= char <= end_band:
             return script
     else:

@@ -17,7 +17,7 @@ from cjktools.common import sopen
 
 from functools import reduce
 
-import cjkdata
+from . import cjkdata
 
 
 basic_features = set([
@@ -67,8 +67,8 @@ class KanjidicEntry(object):
     def get_all_readings(self):
         "Construct a reading pool for this entry."
         reading_set = set()
-        for reading in (self.kun_readings +
-                        map(scripts.to_hiragana, self.on_readings)):
+        for reading in chain(self.kun_readings,
+                             map(scripts.to_hiragana, self.on_readings)):
             # Ignore suffix/prefix information about readings.
             if '-' in reading:
                 reading = reading.replace('-', '')

@@ -30,8 +30,8 @@ setup(
     author_email="lars@yencken.org",
     license="BSD",
 
-    install_requires=['simplestats'],
-
+    install_requires=['six', 'simplestats'],
     package_dir={'cjktools': 'cjktools'},
     packages=['cjktools', 'cjktools.resources'],
+    test_suite='cjktools.tests'
 )

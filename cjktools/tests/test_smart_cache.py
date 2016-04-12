@@ -10,7 +10,7 @@ Tests for the smart_cache module.
 
 import os
 import unittest
-import smart_cache
+from .. import smart_cache
 
 
 def suite():
