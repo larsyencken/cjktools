@@ -10,7 +10,7 @@ An interface to the zhuyin <-> pinyin table.
 
 import codecs
 
-import cjkdata
+from . import cjkdata
 
 
 def _default_stream():

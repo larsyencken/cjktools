@@ -7,7 +7,7 @@
 import re
 from collections import defaultdict
 
-from auto_format import iter_entries
+from .auto_format import iter_entries
 
 
 def load_coded_dictionary(file_or_stream):

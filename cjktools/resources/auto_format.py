@@ -9,7 +9,7 @@ A module of methods to automatically detect the format given a dictionary
 file.
 """
 
-from dict_format import RegexFormat, UnknownFormatError
+from .dict_format import RegexFormat, UnknownFormatError
 
 
 def detect_format(header):

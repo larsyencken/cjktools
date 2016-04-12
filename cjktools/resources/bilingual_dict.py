@@ -8,7 +8,7 @@
 A generic bilingual dictionary class.
 """
 
-import enum
+from enum import Enum
 from cjktools.errors import NotYetImplementedError
 
 from six import text_type

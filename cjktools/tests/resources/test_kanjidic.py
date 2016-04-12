@@ -4,7 +4,7 @@
 #
 
 import unittest
-from kanjidic import Kanjidic
+from cjktools.resources.kanjidic import Kanjidic
 
 
 def suite():

@@ -6,8 +6,8 @@
 
 import unittest
 
-import scripts
-from scripts import Script
+from cjktools import scripts
+from cjktools.scripts import Script
 
 
 def suite():

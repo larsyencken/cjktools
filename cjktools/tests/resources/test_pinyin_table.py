@@ -5,7 +5,7 @@
 #
 
 import unittest
-import pinyin_table
+from cjktools.resources import pinyin_table
 
 
 def suite():

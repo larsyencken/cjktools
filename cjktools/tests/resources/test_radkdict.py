@@ -5,9 +5,9 @@
 #
 
 import unittest
-from cStringIO import StringIO
+from six.moves import StringIO
 
-from radkdict import RadkDict
+from cjktools.resources.radkdict import RadkDict
 
 
 def suite():

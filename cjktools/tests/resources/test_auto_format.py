@@ -10,8 +10,8 @@ try:
 except ImportError:
     from io import StringIO
 
-from auto_format import detect_format, load_dictionary
-from bilingual_dict import BilingualDictionary
+from cjktools.resources.auto_format import detect_format, load_dictionary
+from cjktools.resources.bilingual_dict import BilingualDictionary
 
 from six import text_type, binary_type
 

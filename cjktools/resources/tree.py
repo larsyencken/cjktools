@@ -255,7 +255,7 @@ class TreeNode(object):
         if method is None:
             method = lambda n: n.label
 
-        print method(self)
+        print(method(self))
         self._layout_children(self, '', method)
         return
 
@@ -265,11 +265,11 @@ class TreeNode(object):
             return
 
         for child in children[:-1]:
-            print '%s├─ %s' % (prefix, method(child))
+            print('%s├─ %s' % (prefix, method(child)))
             self._layout_children(child, prefix + '│  ', method)
 
         child = children[-1]
-        print '%s└─ %s' % (prefix, method(child))
+        print('%s└─ %s' % (prefix, method(child)))
         self._layout_children(child, prefix + '   ', method)
 
         return

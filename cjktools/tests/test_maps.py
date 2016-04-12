@@ -6,7 +6,7 @@
 
 import unittest
 
-import maps
+from cjktools import maps
 
 
 def suite():

@@ -12,7 +12,7 @@ import sys
 import codecs
 from cjktools import maps
 
-import cjkdata
+from . import cjkdata
 
 
 class RadkDict(dict):
@@ -81,7 +81,7 @@ def print_radicals(kanji_list):
         kanji = unicode(kanji, 'utf8')
         radicals = radical_dict[kanji]
 
-        print '%s: ' % kanji, ' '.join(sorted(radicals))
+        print('%s: ' % kanji, ' '.join(sorted(radicals)))
 
 
 if __name__ == '__main__':

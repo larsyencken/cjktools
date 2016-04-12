@@ -5,7 +5,7 @@
 #
 
 import unittest
-import kana_table
+from cjktools import kana_table
 
 
 def suite():

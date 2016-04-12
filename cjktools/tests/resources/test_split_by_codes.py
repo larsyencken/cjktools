@@ -6,9 +6,9 @@
 
 import unittest
 import codecs
-from cStringIO import StringIO
+from six.moves import StringIO
 
-from split_by_codes import load_coded_dictionary
+from cjktools.resources.split_by_codes import load_coded_dictionary
 
 
 def suite():

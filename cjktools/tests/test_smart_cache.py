@@ -10,10 +10,6 @@ Tests for the smart_cache module.
 
 from __future__ import print_function
 
-# So cjktools imports come from the dev version
-import sys
-sys.path.insert(1, '../..')
-
 import os
 import time
 import unittest

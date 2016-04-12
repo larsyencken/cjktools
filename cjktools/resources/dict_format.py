@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 import re
 
 from cjktools.errors import NotYetImplementedError
-from bilingual_dict import BilingualDictionary, DictionaryEntry
+from .bilingual_dict import BilingualDictionary, DictionaryEntry
 
 
 class UnknownFormatError(Exception):

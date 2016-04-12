@@ -11,7 +11,7 @@ import os
 import warnings
 warnings.simplefilter("ignore", RuntimeWarning)
 
-import place
+from cjktools.resources import place
 
 
 def suite():

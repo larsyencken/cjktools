@@ -6,7 +6,7 @@
 
 import unittest
 
-from tree import TreeNode
+from cjktools.resources.tree import TreeNode
 
 
 def suite():

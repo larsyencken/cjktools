@@ -6,9 +6,10 @@
 
 import re
 import unittest
-from cStringIO import StringIO
 
-import zhuyin_table
+from io import StringIO
+
+from cjktools.resources import zhuyin_table
 
 
 def suite():

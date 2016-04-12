@@ -11,8 +11,8 @@ A table for conversion of hanzi to pinyin.
 import re
 import codecs
 
-import zhuyin_table
-import cjkdata
+from . import zhuyin_table
+from . import cjkdata
 
 vowels = u'aeiouü'
 consonants = u'bcdfghjklmnpqrstvwxyz'

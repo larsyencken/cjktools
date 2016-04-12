@@ -6,7 +6,7 @@
 
 import unittest
 
-import kanji_list
+from cjktools.resources import kanji_list
 
 
 def suite():

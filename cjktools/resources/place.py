@@ -84,10 +84,10 @@ class Place(dict):
                 path = path[:-depth_diff]
 
             else:
-                raise Exception, "Strange depth found %s (line %d)" % (
+                raise Exception("Strange depth found %s (line %d)" % (
                     filename,
                     line_no + 1
-                )
+                ))
 
             path[-1].append(node)
             last_node = node
