@@ -4,11 +4,14 @@
 #  cjktools
 #
 
+import sys
+sys.path.insert(1, '../..')
+
 import unittest
 import doctest
-import alternations
+from cjktools import alternations
 
-from simplestats.comb import combinations
+from itertools import product
 
 
 def suite():
@@ -24,7 +27,7 @@ class AlternationsTestCase(unittest.TestCase):
         base = (u'ゆっ', u'ぐり')
         seg1Cases = [u'ゆ' + c for c in u'いちりきつくっ']
         seg2Cases = [u'くり', u'ぐり']
-        expected = set(combinations(seg1Cases, seg2Cases))
+        expected = set(product(seg1Cases, seg2Cases))
 
         self.assertEqual(set(alternations.canonical_forms(base)), expected)
 

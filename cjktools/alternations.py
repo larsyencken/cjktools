@@ -10,15 +10,14 @@ recovering from them.
 """
 from __future__ import unicode_literals
 
-from simplestats.comb import combinations
-
-import kana_table
-import scripts
-import maps
+from cjktools import kana_table
+from cjktools import scripts
+from cjktools import maps
 
 from six import unichr as chr
 from six import iteritems
 
+from itertools import product
 
 def canonical_forms(kana_segments):
     """
@@ -47,7 +46,7 @@ def canonical_forms(kana_segments):
 
         candidate_sets.append(variants)
 
-    return combinations(*candidate_sets)
+    return product(*candidate_sets)
 
 
 def canonical_segment_forms(segment, left_context=True, right_context=True):
@@ -135,8 +134,8 @@ def insert_duplicate_kanji(kanji_string):
     """
     Inserts full kanji for characters where a shorthand is used.
 
-        >>> k = insert_duplicate_kanji(unicode('私々', 'utf8'))
-        >>> expected = unicode('私私', 'utf8')
+        >>> k = insert_duplicate_kanji(u'私々')
+        >>> expected = u'私私'
         >>> k == expected
         True
     """
@@ -153,8 +152,8 @@ def expand_long_vowels(kana_string):
     """
     Expands whatever long vowels are possible to expand.
 
-        >>> a = expand_long_vowels(unicode('すー', 'utf8'))
-        >>> b = unicode('すう', 'utf8')
+        >>> a = expand_long_vowels(u'すー')
+        >>> b = u'すう'
         >>> a == b
         True
     """

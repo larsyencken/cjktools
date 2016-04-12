@@ -56,7 +56,7 @@ class KanaTable(object):
         self._to_consonant_line = to_consonant_line
 
         to_vowel_line = {}
-        for vowel_line in apply(zip, self._table.values()):
+        for vowel_line in zip(*self._table.values()):
             vowel_line = list(sorted(vowel_line))
             vowel = vowel_line[0]
             to_vowel_line.update([(k, vowel) for k in vowel_line])
