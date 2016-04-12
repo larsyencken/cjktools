@@ -8,7 +8,6 @@
 This module implements a smart caching function, with dependencies.
 """
 
-import common
 import types
 import os
 from os import path
@@ -16,6 +15,7 @@ from os import path
 from six import string_types
 from six.moves import cPickle as pickle
 
+from . import common
 
 def disk_proxy_direct(method, cache_file, dependencies=[]):
     """
@@ -100,23 +100,21 @@ def try_cache(filename, method_args=[], method_params={}, dependencies=[]):
         return None
 
     try:
-        i_stream = common.sopen(filename, 'r', encoding=None)
-        stored_args = pickle.load(i_stream)
-        stored_params = pickle.load(i_stream)
+        with common.sopen(filename, 'rb', encoding=None) as i_stream:
+            stored_args = pickle.load(i_stream)
+            stored_params = pickle.load(i_stream)
 
-        if stored_args == method_args and stored_params == method_params:
-            obj = pickle.load(i_stream)
-            i_stream.close()
-            return obj
-        else:
-            i_stream.close()
-            return None
+            if stored_args == method_args and stored_params == method_params:
+                obj = pickle.load(i_stream)
+                return obj
     except:
         # could get several errors here:
         # - badly pickled file
         # - changed local modules when loading pickled value
         # - filesystem permissions or problems
-        return None
+        pass
+
+    return None
 
 
 def store_cache_object(obj, filename, method_args=[], method_params={}):
@@ -130,11 +128,10 @@ def store_cache_object(obj, filename, method_args=[], method_params={}):
     @param method_params: Any keyword parameters passed to the cached
         method.
     """
-    o_stream = common.sopen(filename, 'w', encoding=None)
-    pickle.dump(method_args, o_stream, pickle.HIGHEST_PROTOCOL)
-    pickle.dump(method_params, o_stream, pickle.HIGHEST_PROTOCOL)
-    pickle.dump(obj, o_stream, pickle.HIGHEST_PROTOCOL)
-    o_stream.close()
+    with common.sopen(filename, 'wb', encoding=None) as o_stream:
+        pickle.dump(method_args, o_stream, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(method_params, o_stream, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(obj, o_stream, pickle.HIGHEST_PROTOCOL)
 
     return
 
