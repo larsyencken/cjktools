@@ -38,7 +38,8 @@ class TreeTestCase(unittest.TestCase):
     def test_prune(self):
         x = self.fruit.copy().prune(lambda n: 'y' not in n.label)
         self.assertEqual(x.label, 'fruit')
-        self.assertEqual(x.children.values(), [self.fruit.children['lemon']])
+        self.assertEqual(list(x.children.values()),
+                         [self.fruit.children['lemon']])
 
 
 if __name__ == "__main__":

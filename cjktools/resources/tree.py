@@ -63,7 +63,7 @@ class TreeNode(object):
         while stack:
             node = stack.pop()
             yield node
-            stack.extend(node.children.values())
+            stack.extend(list(node.children.values()))
 
         return
 
@@ -175,7 +175,6 @@ class TreeNode(object):
         """Adds the child node to this tree."""
         self.children[child_node.label] = child_node
         child_node.parent = self
-        return
 
     def del_child(self, child_node):
         """
@@ -184,7 +183,6 @@ class TreeNode(object):
         """
         del self.children[child_node.label]
         child_node.attrib['parent'] = None
-        return
 
     def get_path(self, path):
         """Get a particular path in the node."""
@@ -260,7 +258,7 @@ class TreeNode(object):
         return
 
     def _layout_children(self, node, prefix, method):
-        children = node.children.values()
+        children = list(node.children.values())
         if not children:
             return
 
