@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  test_maps.py
+#  test_mapsbad.py
 #  cjktools
 #
 
@@ -81,8 +81,8 @@ class PartialMapTestCase(unittest.TestCase):
         init_list = range(10)
         ok_list, bad_list = maps.partial_map(to_none, init_list)
 
-        assert ok_list == []
-        assert bad_list == range(10)
+        self.assertEqual(ok_list, [])
+        self.assertEqual(bad_list, list(range(10)))
 
     def test_all_ok(self):
         """
@@ -94,10 +94,10 @@ class PartialMapTestCase(unittest.TestCase):
         init_list = range(1, 11)
         ok_list, bad_list = maps.partial_map(id, init_list)
 
-        assert ok_list == init_list, (
+        self.assertEqual(ok_list, list(init_list), (
             "Expected: %s, got: %s" % (repr(init_list), repr(ok_list))
-        )
-        assert bad_list == []
+        ))
+        self.assertEqual(bad_list, [])
 
     def test_partial(self):
         """
