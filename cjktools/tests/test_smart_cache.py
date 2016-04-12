@@ -15,6 +15,7 @@ import sys
 sys.path.insert(1, '../..')
 
 import os
+import time
 import unittest
 from cjktools import smart_cache
 
@@ -63,7 +64,7 @@ class CacheTestCase(unittest.TestCase):
         self.assertEqual(new_obj, obj)
 
         # now touch the dependency, after a significant delay
-        os.system('sleep 1')
+        time.sleep(1)
         with open(self.dep_file, 'w') as o_stream:
             print("A new change has been made to this file", file=o_stream)
 
@@ -91,7 +92,7 @@ class CacheTestCase(unittest.TestCase):
         self.assertEqual(self.num_calls, 1)
 
         # changing a dependency, should trigger an additional call
-        os.system('sleep 1')
+        time.sleep(1)
         with open(self.dep_file, 'a') as o_stream:
             print(o_stream, "Added a line", file=o_stream)
 
