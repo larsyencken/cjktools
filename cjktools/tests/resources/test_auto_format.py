@@ -5,15 +5,11 @@
 #
 import unittest
 import codecs
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 from cjktools.resources.auto_format import detect_format, load_dictionary
 from cjktools.resources.bilingual_dict import BilingualDictionary
 
-from six import text_type, binary_type
+from .._common import to_unicode_stream
 
 def suite():
     test_suite = unittest.TestSuite((
@@ -34,19 +30,13 @@ JPLACES_SAMPLE = \
 上野 [うえの] /Ueno (loc)/
 """  # nopep8
 
-def _to_unicode_stream(x):
-    o = StringIO(x)
 
-    if isinstance(x, binary_type):
-        o = codecs.getreader('utf8')(o)
-
-    return o
 
 class AutoFormatTestCase(unittest.TestCase):
     def setUp(self):
 
-        self.je_edict = _to_unicode_stream(EDICT_SAMPLE)
-        self.je_jplaces = _to_unicode_stream(JPLACES_SAMPLE)
+        self.je_edict = to_unicode_stream(EDICT_SAMPLE)
+        self.je_jplaces = to_unicode_stream(JPLACES_SAMPLE)
 
     def test_formats(self):
         "Tests correct format detection for a variety of dictionaries."
