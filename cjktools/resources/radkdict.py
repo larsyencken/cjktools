@@ -11,21 +11,26 @@ import sys
 
 import codecs
 from cjktools import maps
+from cjktools.common import get_stream_context, stream_codec
 
 from . import cjkdata
 
+from six import text_type
+
+def _default_stream():
+    return open(cjkdata.get_resource('radkfile'))
 
 class RadkDict(dict):
-    "Determines which radicals a character contains."
+    """Determines which radicals a character contains."""
 
     def __init__(self, istream=None):
         """
         @param dict_file: The radkfile to parse.
         """
-        if istream is None:
-            istream = open(cjkdata.get_resource('radkfile'))
 
-        self._parse_radkfile(codecs.getreader('utf8')(istream))
+        with get_stream_context(_default_stream, istream) as istream:
+
+            self._parse_radkfile(stream_codec(istream))
 
     def _parse_radkfile(self, line_stream):
         """
@@ -78,7 +83,7 @@ def print_radicals(kanji_list):
     "Print out each kanji and the radicals it contains."
     radical_dict = RadkDict()
     for kanji in kanji_list:
-        kanji = unicode(kanji, 'utf8')
+        kanji = text_type(kanji)
         radicals = radical_dict[kanji]
 
         print('%s: ' % kanji, ' '.join(sorted(radicals)))

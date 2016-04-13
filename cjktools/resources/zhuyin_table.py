@@ -10,31 +10,20 @@ An interface to the zhuyin <-> pinyin table.
 
 import codecs
 
-from six import PY2
+from functools import partial
 
 from . import cjkdata
-from cjktools.common import _NullContextWrapper as NullContextWrapper
+from cjktools.common import get_stream_context, stream_codec
 
 
 def _default_stream():
     return open(cjkdata.get_resource('tables/zhuyin_pinyin_conv_table'))
 
-def _get_stream_context(istream=None):
-    """
-    If passed a stream, return a context that does not affect that stream's
-    context when passed to a ``with`` statement. If no stream is passed,
-    this passes the (opened) default stream.
-    """
-    if istream is None:
-        return _default_stream()
-    else:
-        return NullContextWrapper(istream)
+_get_stream_context = partial(get_stream_context, _default_stream)
 
 
 def parse_lines(istream):
-    # TODO: Come up with a more elegant way to handle this
-    if PY2:
-        istream = codecs.getreader('utf8')(istream)
+    istream = stream_codec(istream)
 
     for line in istream:
         if not line.startswith('#'):

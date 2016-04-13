@@ -62,6 +62,25 @@ def sopen(filename, mode='rb', encoding='utf8'):
     return stream
 
 
+def stream_codec(istream):
+    """
+    Handles the common case where, in Python 2.x the stream needs decoding, but
+    in Python 3.x it's doesn't.
+    """
+    # TODO: Find a more elegant way to do this
+    if six.PY2:
+        return codecs.getreader('utf8')(istream)
+
+    return istream
+
+
+def get_stream_context(default_stream_func, istream=None):
+    if istream is None:
+        return default_stream_func()
+    else:
+        return _NullContextWrapper(istream)
+
+
 class _NullContextWrapper(object):
     """
     Class for wrapping contexts so that they are passed through in a 

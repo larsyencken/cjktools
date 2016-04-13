@@ -19,8 +19,6 @@ from functools import reduce
 
 from . import cjkdata
 
-from six import binary_type
-
 
 basic_features = set([
     'gloss',
