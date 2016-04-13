@@ -7,7 +7,7 @@
 import re
 import unittest
 
-from io import StringIO
+from six.moves import StringIO
 
 from cjktools.resources import zhuyin_table
 
@@ -21,13 +21,11 @@ def suite():
 
 class ZhuyinTableTestCase(unittest.TestCase):
     def setUp(self):
-        self.data = \
-"""ㄔㄚ cha
-ㄅㄟ bei
-ㄐㄧㄥ jing
-ㄉㄚ da
-ㄒㄩㄝ xue
-"""  # nopep8
+        self.data = '\n'.join(('ㄔㄚ cha',
+                               'ㄅㄟ bei',
+                               'ㄐㄧㄥ jing',
+                               'ㄉㄚ da',
+                               'ㄒㄩㄝ xue'))
 
     def test_zhuyin_to_pinyin(self):
         dict_obj = zhuyin_table.zhuyin_to_pinyin_table(

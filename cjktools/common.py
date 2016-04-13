@@ -13,9 +13,12 @@ import codecs
 import bz2
 import gzip
 
+import six
 
 def filter_comments(file_stream):
-    "Filter a filestream, removing comment lines marked with an initial hash."
+    """
+    Filter a filestream, removing comment lines marked with an initial hash.
+    """
     for line in file_stream:
         if line.startswith('#'):
             continue
@@ -57,3 +60,19 @@ def sopen(filename, mode='rb', encoding='utf8'):
             return codecs.getwriter(encoding)(stream)
 
     return stream
+
+
+class _NullContextWrapper(object):
+    """
+    Class for wrapping contexts so that they are passed through in a 
+    with statement.
+    """
+    def __init__(self, context):
+        self.context = context
+
+    def __enter__(self):
+        return self.context
+
+    def __exit__(*args, **kwargs):
+        pass
+

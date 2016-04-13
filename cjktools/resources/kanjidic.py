@@ -19,6 +19,8 @@ from functools import reduce
 
 from . import cjkdata
 
+from six import binary_type
+
 
 basic_features = set([
     'gloss',
@@ -57,7 +59,7 @@ remappings = {
 
 
 class KanjidicEntry(object):
-    "A single entry in the kanjidic file."
+    """A single entry in the kanjidic file."""
 
     def __init__(self, **entry_details):
         assert ('on_readings' in entry_details
