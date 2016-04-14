@@ -53,7 +53,7 @@ def sopen(filename, mode='rb', encoding='utf8'):
     else:
         stream = open(filename, mode)
 
-    if encoding not in (None, 'byte'):
+    if encoding not in (None, 'byte') and six.PY2:
         if read_mode:
             return codecs.getreader(encoding)(stream)
         else:
