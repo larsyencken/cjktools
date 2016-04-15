@@ -101,7 +101,7 @@ class Kanjidic(dict):
                 cjkdata.get_resource('kanjd212'),
             ]
 
-        line_stream = reduce(chain, [sopen(f) for f in kanjidic_files])
+        line_stream = reduce(chain, [sopen(f, mode='r') for f in kanjidic_files])
         self._parse_kanjidic(line_stream)
 
     @classmethod
