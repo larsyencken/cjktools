@@ -31,7 +31,7 @@ def parse_lines(istream):
 
 
 def zhuyin_to_pinyin_table(istream=None):
-    """Returns a dictionary mapping zhuyin to pinyin."""
+    """ Returns a dictionary mapping zhuyin to pinyin. """
     with _get_stream_context(istream) as stream:
         table = {}
         for zhuyin, pinyin in parse_lines(stream):
@@ -41,8 +41,8 @@ def zhuyin_to_pinyin_table(istream=None):
 
 
 def pinyin_to_zhuyin_table(istream=None):
-    "Returns a dictionary mapping zhuyin to pinyin."
-    with _get_stream_context(istream):
+    """ Returns a dictionary mapping zhuyin to pinyin. """
+    with _get_stream_context(istream) as istream:
         table = {}
         for zhuyin, pinyin in parse_lines(istream):
             table[pinyin] = zhuyin
@@ -51,8 +51,8 @@ def pinyin_to_zhuyin_table(istream=None):
 
 
 def pinyin_regex_pattern(istream=None):
-    "Returns a pinyin regex pattern, with optional tone number."
-    with _get_stream_context(istream):
+    """ Returns a pinyin regex pattern, with optional tone number. """
+    with _get_stream_context(istream) as istream:
         all_pinyin = ['r']
 
         for zhuyin, pinyin in parse_lines(istream):
@@ -70,7 +70,7 @@ def pinyin_regex_pattern(istream=None):
 
 def zhuyin_regex_pattern(istream=None):
     "Returns a zhuyin regex pattern."
-    with _get_stream_context(istream):
+    with _get_stream_context(istream) as istream:
         all_pinyin = []
 
         for zhuyin, pinyin in parse_lines(istream):
