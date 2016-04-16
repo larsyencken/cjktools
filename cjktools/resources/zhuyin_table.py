@@ -50,13 +50,20 @@ def pinyin_to_zhuyin_table(istream=None):
     return table
 
 
-def pinyin_regex_pattern(istream=None):
-    """ Returns a pinyin regex pattern, with optional tone number. """
+def get_all_pinyin(istream=None):
+    """ Returns a list of all pinyin """
     with _get_stream_context(istream) as istream:
         all_pinyin = ['r']
 
         for zhuyin, pinyin in parse_lines(istream):
             all_pinyin.append(pinyin)
+
+    return all_pinyin
+
+
+def pinyin_regex_pattern(istream=None):
+    """ Returns a pinyin regex pattern, with optional tone number. """
+    all_pinyin = get_all_pinyin(istream)
 
     # Sort from longest to shortest, so as to make maximum matches whenever
     # possible.
