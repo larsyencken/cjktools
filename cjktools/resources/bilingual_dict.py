@@ -11,6 +11,7 @@ A generic bilingual dictionary class.
 from enum import Enum
 from cjktools.errors import NotYetImplementedError
 
+import six
 from six import text_type
 
 class ClashPolicy(Enum):
@@ -24,19 +25,19 @@ class BilingualDictionary(dict):
     stored as senses of the same lexeme, rather than being separate.
     """
 
-    def __init__(self, format):
+    def __init__(self, fmt):
         """
         @param format: The format object for this dictionary.
         @type format: DictionaryFormat
         """
-        self.format = format
+        self.format = fmt
 
     def update(self, rhs_dictionary, clash_policy=ClashPolicy.Overwrite):
         "Merges another dictionary into this one, in-place."
         if clash_policy == ClashPolicy.Merge:
             raise NotYetImplementedError
 
-        return dict.update(self, rhs_dictionary)
+        return super(BilingualDictionary, self).update(rhs_dictionary)
 
 
 class DictionaryEntry(object):
@@ -95,12 +96,15 @@ class DictionaryEntry(object):
     def __repr__(self):
         return text_type(self)
 
-    def __unicode__(self):
+    def __str__(self):
         return '<DictionaryEntry: %s (%s readings, %s senses)>' % (
             self.word,
             len(set(self.readings)),
             len(self.senses),
         )
+
+    if six.PY2:
+        __unicode__ = __str__
 
     def __hash__(self):
         return hash(self.name, tuple(self.readings), tuple(self.senses))

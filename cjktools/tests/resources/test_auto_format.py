@@ -3,6 +3,7 @@
 #  test_auto_format.py
 #  cjktools
 #
+from __future__ import unicode_literals
 import unittest
 import codecs
 
@@ -32,7 +33,6 @@ JPLACES_SAMPLE = \
 """  # nopep8
 
 
-
 class AutoFormatTestCase(unittest.TestCase):
     def setUp(self):
 
@@ -57,7 +57,7 @@ class AutoFormatTestCase(unittest.TestCase):
     def test_edict(self):
         "Tests correct detection and parsing of edict."
         d = load_dictionary(self.je_edict)
-        assert isinstance(d, BilingualDictionary)
+        self.assertIsInstance(d, BilingualDictionary)
         self.assertEqual(d.format.name, 'edict')
 
         self.assertEqual(len(d), 2)
@@ -76,6 +76,18 @@ class AutoFormatTestCase(unittest.TestCase):
             ['(n,adj-no) cavity', 'tooth decay', 'decayed tooth',
                 'caries']*2,
         )
+
+    def test_edict_senses(self):
+        """
+        Test that senses_by_reading works
+        """
+        expected = {'げっしもく': ['(n) (1) Rodentia',
+                                '(adj-no) (2) rat-like',
+                                'rodential']}
+
+        d = load_dictionary(self.je_edict)
+        self.assertEqual(d['齧歯目'].senses_by_reading(), expected)
+
 
     def _check_lookup(self, dictionary, key, readings, senses):
         entry = dictionary[key]
