@@ -89,6 +89,7 @@ class PinyinTable(dict):
         """ Apply a tone to a syllable. """
         if tone == 5:
             tone = 0
+
         results = []
         results.append(syllable[0])
 

@@ -60,7 +60,7 @@ def pinyin_regex_pattern(istream=None):
 
     # Sort from longest to shortest, so as to make maximum matches whenever
     # possible.
-    all_pinyin = sorted(all_pinyin, key=len)
+    all_pinyin = sorted(all_pinyin, key=len, reverse=True)
 
     # Build a generic pattern for a single pinyin with an optional tone.
     pattern = '(%s)([0-5]?)' % '|'.join(all_pinyin)
