@@ -52,11 +52,33 @@ class KanaTableTestCase(unittest.TestCase):
         self.assertEqual(self.table.from_coords(u'ぱ', u'え'), u'ぺ')
 
     def test_is_voiced(self):
-        self.assertTrue(self.table.is_voiced('ば'))
-        self.assertTrue(self.table.is_voiced('ぱ'))
-        self.assertFalse(self.table.is_voiced('は'))
-        self.assertTrue(self.table.is_voiced('だ'))
-        self.assertTrue(self.table.is_voiced('ざ'))
+        po_composed = 'ほ' + '\u309a'
+        vu_composed = 'う' + '\u3099'
+        ji_composed = 'し' + '\u3099'
+        bad_composed = 'ま' + '\u3099'    # Still should show up voiced
+
+        composed_chars = (po_composed,
+                          vu_composed,
+                          ji_composed,
+                          bad_composed)
+
+        voiced_chars = tuple('ばだゔざ')
+        semivoiced_chars = tuple('ぱ')
+
+        for v in (voiced_chars + semivoiced_chars + composed_chars):
+            self.assertTrue(self.table.is_voiced(v), v)
+
+        for nv in tuple('はしもにちゃ'):
+            self.assertFalse(self.table.is_voiced(nv), nv)
+
+    def test_is_semivoiced(self):
+        po_composed = ('ほ' + '\u309a', )
+        bo_composed = ('ほ' + '\u3099', )
+        for sv in tuple('ぱぽぺぴぷパペピプポ') + po_composed:
+            self.assertTrue(self.table.is_semivoiced(sv), sv)
+
+        for nsv in tuple('まかにじばぼびサツズシホハABCç') + bo_composed:
+            self.assertFalse(self.table.is_semivoiced(nsv), nsv)
 
     def test_repr(self):
         self.assertEqual(repr(self.table), 'KanaTable()')
