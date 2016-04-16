@@ -93,7 +93,7 @@ class Kanjidic(dict):
     """
 
     def __init__(self, kanjidic_files=None):
-        dict.__init__(self)
+        super(Kanjidic, self).__init__
 
         if kanjidic_files is None:
             kanjidic_files = [
@@ -106,10 +106,10 @@ class Kanjidic(dict):
 
     @classmethod
     def get_cached(cls):
-        if not hasattr(cls, '_cached'):
-            cls._cached = cls()
+        cached = getattr(cls, '_cached', cls())
+        cls._cached = cached
 
-        return cls._cached
+        return cached
 
     def _parse_kanjidic(self, line_stream):
         """

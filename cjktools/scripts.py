@@ -11,10 +11,7 @@ module which requires a utf8 encoding for the additional Japanese characters.
 """
 from __future__ import unicode_literals
 
-try:
-    from enum import Enum
-except ImportError:
-    from compat import Enum
+from enum import Enum
 
 from six import unichr, text_type, iteritems
 from six.moves import range

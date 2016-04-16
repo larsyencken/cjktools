@@ -129,8 +129,6 @@ def procmap(method, item_list):
     for item in item_list:
         method(item)
 
-    return
-
 
 def merge_dicts(*args):
     """
