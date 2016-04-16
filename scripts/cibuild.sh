@@ -8,4 +8,6 @@ if [ ! -d $CJKDATA ]; then
   tar xfz $tarball
 fi
 
+pip install .
+
 nosetests
