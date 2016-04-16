@@ -14,6 +14,8 @@ import copy
 from six import iteritems, text_type
 import six
 
+import unicodedata
+
 small_kana = 'ぁぃぅぇぉっょゅゃ'
 n_kana = 'ん'
 
@@ -91,9 +93,17 @@ class KanaTable(object):
         """Returns the consonant line of the given kana."""
         return self._to_consonant_line.get(kana)
 
+    @classmethod
     def is_voiced(self, kana):
         """Returns True if the kana is voiced, False otherwise."""
-        return self.to_consonant_line(kana) in self.voiced_consonants
+        kana = unicodedata.normalize('NFD', kana)
+        return len(kana) == 2 and kana[1] in ('\u3099', '\u309a')
+
+    @classmethod
+    def is_semivoiced(self, kana):
+        """ Returns True if the kana is semivoiced, False otherwise """
+        kana = unicodedata.normalize('NFD', kana)
+        return len(kana) == 2 and kana[1] == '\u309a'
 
     def get_table(self):
         """Return the kana table itself."""

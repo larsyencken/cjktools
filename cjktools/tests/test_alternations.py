@@ -68,7 +68,6 @@ class AlternationsTestCaseHiragana(unittest.TestCase):
 
 class AlternationsTestCaseKatagana(unittest.TestCase):
     # Can probably get more clever about this by parameterizing
-    @unittest.skip('Known failure')
     def test_canonical_forms(self):
         base = ('ユッ', 'グリ')
         seg1Cases = ['ユ' + c for c in 'イチリキツクッ']
@@ -77,7 +76,6 @@ class AlternationsTestCaseKatagana(unittest.TestCase):
 
         self.assertEqual(set(alternations.canonical_forms(base)), expected)
 
-    @unittest.skip('Known failure')
     def test_canonical_segment_forms(self):
         voiced = 'バリ'
         expected = set(['バリ', 'ハリ'])
@@ -87,7 +85,6 @@ class AlternationsTestCaseKatagana(unittest.TestCase):
         self.assertEqual(alternations.canonical_segment_forms('ワ'),
                          set(['ワ']))
 
-    @unittest.skip('Known failure')
     def test_canonical_segment_forms_doubling(self):
         doubled = 'サッ'
 
@@ -122,6 +119,12 @@ class AlternationsTestCase(unittest.TestCase):
         actual = alternations.insert_duplicate_kanji(shorthand)
         expected = '孜孜'
         self.assertEqual(actual, expected)
+
+    def test_canonical_segment_forms_ascii(self):
+        segments = ('oh', 'no')
+
+        with self.assertRaises(ValueError):
+            alternations.canonical_segment_forms(segments)
 
     def test_expand_long_vowels_mixed(self):
         long_mixed = 'ABCキーさー白い'

@@ -20,6 +20,12 @@ from six import iteritems
 import re
 from itertools import product
 
+_sokuon_map = {scripts.Script.Hiragana: 'っ',
+               scripts.Script.Katakana: 'ッ'}
+
+_onbin_map = {scripts.Script.Hiragana: 'いちりきつく',
+              scripts.Script.Katakana: 'イチリキツク'}
+
 def canonical_forms(kana_segments):
     """
     When given a sequence of segments, determine all possible canonical
@@ -34,16 +40,11 @@ def canonical_forms(kana_segments):
 
     candidate_sets = []
     for i, segment in enumerate(kana_segments):
-        variants = [segment]
-
-        if (i < num_segments - 1 and len(segment) > 1 and
-                segment.endswith('っ')):
-            # Can restore onbin cases.
-            variants.extend([segment[:-1] + c for c in 'いちりきつく'])
-
-        if i > 0 and table.is_voiced(segment[0]):
-            # Can devoice.
-            variants.extend([from_voiced[v[0]] + v[1:] for v in variants])
+        left_context = i > 0
+        right_context = i < num_segments -1
+        variants = canonical_segment_forms(segment,
+                                           left_context=left_context,
+                                           right_context=right_context)
 
         candidate_sets.append(variants)
 
@@ -59,11 +60,20 @@ def canonical_segment_forms(segment, left_context=True, right_context=True):
     """
     table = kana_table.KanaTable.get_cached()
     variants = set([segment])
+    stype = scripts.script_type(segment)
+    sokuon = _sokuon_map.get(stype, None)
+    onbin = _onbin_map.get(stype, None)
 
-    if right_context and len(segment) > 1 and segment.endswith('っ'):
-        variants.update([segment[:-1] + c for c in 'いちりきつく'])
+    if sokuon is None:
+        raise ValueError('Unsupported script type. '
+                         'Segments must be hiragana or katakana')
+
+    if right_context and len(segment) > 1 and segment.endswith(sokuon):
+        # Can restore onbin cases
+        variants.update([segment[:-1] + c for c in onbin])
 
     if left_context and table.is_voiced(segment[0]):
+        # Can devoice
         variants.update([from_voiced[v[0]] + v[1:] for v in variants])
 
     return variants
@@ -94,8 +104,6 @@ def rendaku_variants(kana_segment):
     return variants
 
 
-_sokuon_map = {scripts.Script.Hiragana: 'っ',
-               scripts.Script.Katakana: 'ッ'}
 def onbin_variants(kana_segment):
     """
     Determine the sound euphony variants of a kana segment.
