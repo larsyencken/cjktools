@@ -71,7 +71,6 @@ class KanaTable(object):
         Returns the pair (consonant line, vowel line) for the given kana
         character.
         """
-
         return (self._to_consonant_line[kana], self._to_vowel_line[kana])
 
     def from_coords(self, consonant, vowel):

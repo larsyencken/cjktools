@@ -223,6 +223,9 @@ def script_type(char):
     @return: The script type.
     """
     # Normalize/typecheck our input.
+    if not len(char):
+        return script.Unknown
+
     char = text_type(char)[0]
 
     for script, (start_band, end_band) in iteritems(_known_bands):
@@ -244,9 +247,12 @@ def script_boundaries(j_string):
     @type j_string: string
     @return: A tuple of script-contiguous blocks
     """
+    if not len(j_string):
+        return (j_string, )
+
     assert isinstance(j_string, text_type)
     segments = ()
-    current_seg_type = script_type(j_string[0])
+    current_seg_type = script_type(j_string)
     current_seg = j_string[0]
     for char in j_string[1:]:
         if script_type(char) == current_seg_type or char == 'ー':

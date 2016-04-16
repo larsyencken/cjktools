@@ -17,6 +17,7 @@ from cjktools import maps
 from six import unichr as chr
 from six import iteritems
 
+import re
 from itertools import product
 
 def canonical_forms(kana_segments):
@@ -80,7 +81,7 @@ def surface_forms(reading_segments):
         map(rendaku_variants, reading_segments[1:])
     )
 
-    return combinations(*candidate_sets)
+    return product(*candidate_sets)
 
 
 def rendaku_variants(kana_segment):
@@ -147,7 +148,7 @@ def insert_duplicate_kanji(kanji_string):
 
     return kanji_string
 
-
+_long_finder = re.compile(r'(?<=[\u3041-\u3096])ー')  # Finds only in hiragana
 def expand_long_vowels(kana_string):
     """
     Expands whatever long vowels are possible to expand.
@@ -157,21 +158,34 @@ def expand_long_vowels(kana_string):
         >>> a == b
         True
     """
-    not_found = -1
-    kana_string = scripts.to_hiragana(kana_string)
+    script_converters = {scripts.Script.Hiragana: lambda x: x,
+                         scripts.Script.Katakana: scripts.to_katakana}
+
     table = kana_table.KanaTable.get_cached()
 
-    i = kana_string.find('ー', 1)
-    while i != not_found:
-        previous_char = kana_string[i-1]
-        previous_script = scripts.script_type(previous_char)
-        if previous_script == scripts.Script.Hiragana:
-            # Ok, we can correct this one.
-            vowel = table.to_vowel_line(previous_char)
-            kana_string = kana_string[:i] + vowel + kana_string[i+1:]
+    out_string = ''
+    for segment in scripts.script_boundaries(kana_string):
+        if len(segment):
+            char_type = scripts.script_type(segment)
 
-        i = kana_string.find('ー', i+1)
+            if char_type not in script_converters:
+                out_string += segment
+                continue
 
-    return kana_string
+            reverse_operation = script_converters[char_type]
+            segment = scripts.to_hiragana(segment)
+        else:
+            continue
+
+        for m in _long_finder.finditer(segment):
+            i = m.start() 
+            vowel = table.to_vowel_line(segment[i-1])
+            print(segment)
+            segment = segment[:i] + vowel + segment[i+1:]
+            print(segment)
+
+        out_string += reverse_operation(segment)
+
+    return out_string
 
 #----------------------------------------------------------------------------#
