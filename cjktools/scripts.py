@@ -111,8 +111,8 @@ def normalize_kana(j_string):
     Normalizes all half-width katakana to normal width katakana. Leaves
     all other characters unchanged.
 
-        >>> x = normalize_kana(unicode('ｶｷｸｹｺ', 'utf8'))
-        >>> x == unicode('カキクケコ', 'utf8')
+        >>> x = normalize_kana(u'ｶｷｸｹｺ')
+        >>> x == u'カキクケコ'
         True
 
     @param j_string: The string to convert.
@@ -135,8 +135,8 @@ def normalize(j_string):
     Jointly normalized full width ascii to single width ascii and half-width
     katakana to full with katakana.
 
-        >>> x = normalize(unicode('Aあア阿ｱＡ', 'utf8'))
-        >>> x == unicode('Aあア阿アA', 'utf8')
+        >>> x = normalize(u'Aあア阿ｱＡ')
+        >>> x == u'Aあア阿アA'
         True
 
     @param j_string: The string to convert.
@@ -164,9 +164,9 @@ def compare_kana(j_string_a, j_string_b):
     """
     Compares two kana strings in a script-independent manner.
 
-        >>> ru_h = unicode('る', 'utf8')
-        >>> ka_h = unicode('か', 'utf8')
-        >>> ka_k = unicode('カ', 'utf8')
+        >>> ru_h = u'る'
+        >>> ka_h = u'か'
+        >>> ka_k = u'カ'
         >>> compare_kana(ru_h, ka_k) == cmp(ru_h, ka_h)
         True
 
@@ -207,11 +207,11 @@ def script_type(char):
         >>> script_types(woof)
         set([Ascii])
 
-        >>> beijing = unicode('北京', 'utf8')
+        >>> beijing = u'北京'
         >>> script_types(beijing)
         set([Kanji])
 
-        >>> ru = unicode('る', 'utf8')
+        >>> ru = u'る'
         >>> script_types(ru)
         set([Hiragana])
 
@@ -221,7 +221,7 @@ def script_type(char):
     """
     # Normalize/typecheck our input.
     if not len(char):
-        return script.Unknown
+        return Script.Unknown
 
     char = text_type(char)[0]
 
@@ -236,7 +236,7 @@ def script_boundaries(j_string):
     """
     Determines where the script boundaries are in the given string.
 
-        >>> taberu = unicode('食べる', 'utf8')
+        >>> taberu = u'食べる'
         >>> script_boundaries(taberu) == (taberu[0], taberu[1:])
         True
 
@@ -274,11 +274,11 @@ def script_types(j_string):
         >>> script_types(woof)
         set([Ascii])
 
-        >>> beijing = unicode('北京', 'utf8')
+        >>> beijing = u'北京'
         >>> script_types(beijing)
         set([Kanji])
 
-        >>> taberu = unicode('食べる', 'utf8')
+        >>> taberu = u'食べる'
         >>> script_types(taberu)
         set([Hiragana, Kanji])
     """
@@ -289,7 +289,7 @@ def unique_kanji(j_string):
     """
     Returns the set of all unique kanji found in the given string.
 
-        >>> taberu = unicode('食べる', 'utf8')
+        >>> taberu = u'食べる'
         >>> unique_kanji(taberu) == set([taberu[0]])
         True
     """
