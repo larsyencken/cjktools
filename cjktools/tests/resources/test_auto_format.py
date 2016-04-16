@@ -8,6 +8,7 @@ import codecs
 
 from cjktools.resources.auto_format import detect_format, load_dictionary
 from cjktools.resources.bilingual_dict import BilingualDictionary
+from cjktools.resources.dict_format import UnknownFormatError
 
 from .._common import to_unicode_stream
 
@@ -37,6 +38,7 @@ class AutoFormatTestCase(unittest.TestCase):
 
         self.je_edict = to_unicode_stream(EDICT_SAMPLE)
         self.je_jplaces = to_unicode_stream(JPLACES_SAMPLE)
+        self.invalid = to_unicode_stream('BAD HEADER は BAD HEADER')
 
     def test_formats(self):
         "Tests correct format detection for a variety of dictionaries."
@@ -48,6 +50,9 @@ class AutoFormatTestCase(unittest.TestCase):
             detect_format(next(self.je_jplaces)).name,
             'edict',
         )
+
+        with self.assertRaises(UnknownFormatError):
+            detect_format(next(self.invalid))
 
     def test_edict(self):
         "Tests correct detection and parsing of edict."
