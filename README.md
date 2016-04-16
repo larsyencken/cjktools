@@ -95,6 +95,3 @@ above, up
 うえ, -うえ, うわ-, かみ, あ.げる, -あ.げる, あ.がる, -あ.がる, あ.がり, -あ.がり
 ```
 
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/larsyencken/cjktools/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
