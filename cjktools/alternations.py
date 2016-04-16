@@ -47,7 +47,7 @@ def canonical_forms(kana_segments):
 
         candidate_sets.append(variants)
 
-    return product(*candidate_sets)
+    return list(product(*candidate_sets))
 
 
 def canonical_segment_forms(segment, left_context=True, right_context=True):
@@ -81,7 +81,7 @@ def surface_forms(reading_segments):
         map(rendaku_variants, reading_segments[1:])
     )
 
-    return product(*candidate_sets)
+    return list(product(*candidate_sets))
 
 
 def rendaku_variants(kana_segment):
@@ -94,13 +94,16 @@ def rendaku_variants(kana_segment):
     return variants
 
 
+_sokuon_map = {scripts.Script.Hiragana: 'っ',
+               scripts.Script.Katakana: 'ッ'}
 def onbin_variants(kana_segment):
     """
     Determine the sound euphony variants of a kana segment.
     """
     variants = set([kana_segment])
     if len(kana_segment) > 1:
-        variants.add(kana_segment[:-1] + 'っ')
+        sokuon = _sokuon_map[scripts.script_type(kana_segment)]
+        variants.add(kana_segment[:-1] + sokuon)
 
     return variants
 
@@ -123,6 +126,12 @@ def _create_voicing_map():
             voicing_map[kana] = [chr(ord_kana+1), chr(ord_kana+2)]
         else:
             voicing_map[kana] = []
+
+    # Add katakana into the mix
+    katakana_vm = {scripts.to_katakana(k): list(map(scripts.to_katakana, v))
+                   for k, v in iteritems(voicing_map)}
+
+    voicing_map.update(katakana_vm)
 
     return voicing_map
 

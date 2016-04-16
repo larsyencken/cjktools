@@ -48,7 +48,14 @@ class AlternationsTestCaseHiragana(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_surface_forms(self):
-        pass # ?
+        plan = ('けい', 'かく')
+        expected = [('けい', 'がく'),
+                    ('けい', 'かく'),
+                    ('けっ', 'がく'),
+                    ('けっ', 'かく')]
+
+        self.assertEqual(set(alternations.surface_forms(plan)),
+                         set(expected))
 
     def test_expand_long_vowels(self):
         # Skipping 'けー' and 'そー' unclear what to do there
@@ -90,7 +97,13 @@ class AlternationsTestCaseKatagana(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_surface_forms(self):
-        pass # ?
+        plan = ('ケイ', 'カク')
+        expected = [('ケイ', 'ガク'),
+                    ('ケイ', 'カク'),
+                    ('ケッ', 'ガク'),
+                    ('ケッ', 'カク')]
+
+        self.assertEqual(set(alternations.surface_forms(plan)), set(expected))
 
     def test_expand_long_vowels(self):
         # Skipping 'ケー' and 'ソー' unclear what to do there
