@@ -13,7 +13,8 @@ import random
 
 from cjktools.common import sopen
 
-from six import string_types, text_type
+from six import string_types, text_type, iteritems
+import six
 
 
 class Place(dict):
@@ -50,12 +51,16 @@ class Place(dict):
     def __repr__(self):
         return text_type(self)
     
-    def __unicode__(self):
+
+    def __str__(self):    
         return '<Place: %s%s %d children>' % (
             self.label,
             (self.reading and ' /%s/' % self.reading or ''),
             len(self),
         )
+
+    if six.PY2:
+        __unicode__ = __str__
 
     def dump(self, filename):
         with sopen(filename, 'w') as o_stream:
@@ -126,7 +131,7 @@ class Place(dict):
                     target_path = current_path + [label]
                     return target_node, target_path
                 else:
-                    for new_label, new_node in next_node.iteritems():
+                    for new_label, new_node in iteritems(next_node):
                         next_frontier.append(
                             (current_path + [new_label], new_node)
                         )
@@ -194,8 +199,6 @@ class Place(dict):
 
             last_node = node
             last_depth = depth
-
-        return
 
     def _to_line(self, depth):
         """

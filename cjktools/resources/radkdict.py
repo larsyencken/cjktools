@@ -5,7 +5,9 @@
 #  cjktools
 #
 
-"Based on the radkfile, a dictionary mapping character to bag of radicals."
+"""
+Based on the radkfile, a dictionary mapping character to bag of radicals.
+"""
 
 import sys
 
@@ -72,9 +74,9 @@ class RadkDict(dict):
 
     @classmethod
     def get_cached(cls):
-        "Returns a memory-cached class instance."
-        if not hasattr(cls, '_cached'):
-            cls._cached = cls()
+        """ Returns a memory-cached class instance. """
+        cached = getattr(cls, '_cached', cls())
+        cls._cached = cached
 
         return cls._cached
 

@@ -44,6 +44,14 @@ class RadkdictTestCase(unittest.TestCase):
                                  u'冊'])
         self.assertEqual(radicals, expected_radicals)
 
+    def test_get_cached(self):
+        rd = RadkDict.get_cached()
+
+        self.assertIsInstance(rd, RadkDict)
+
+        rd2 = RadkDict.get_cached()
+        self.assertIs(rd, rd2)
+
 
 if __name__ == "__main__":
     unittest.TextTestRunner(verbosity=1).run(suite())

@@ -76,7 +76,7 @@ def pinyin_regex_pattern(istream=None):
 
 
 def zhuyin_regex_pattern(istream=None):
-    "Returns a zhuyin regex pattern."
+    """ Returns a zhuyin regex pattern. """
     with _get_stream_context(istream) as istream:
         all_pinyin = []
 
