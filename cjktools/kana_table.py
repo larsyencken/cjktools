@@ -12,10 +12,10 @@ from __future__ import unicode_literals
 
 import copy
 from six import iteritems, text_type
+import six
 
 small_kana = 'ぁぃぅぇぉっょゅゃ'
 n_kana = 'ん'
-
 
 class KanaTable(object):
     """
@@ -34,6 +34,10 @@ class KanaTable(object):
         self.vowels = 'あいうえお'
         self.consonants = 'かがさざただまはばぱなら'
         self.voiced_consonants = set('がだざびぴじばぱ')
+
+        self._build_dicts()
+
+    def _build_dicts(self):
         self._table = {
             'あ': 'あいうえお',
             'か': 'かきくけこ',
@@ -61,15 +65,12 @@ class KanaTable(object):
             vowel = vowel_line[0]
             to_vowel_line.update([(k, vowel) for k in vowel_line])
         self._to_vowel_line = to_vowel_line
-        return
 
     def get_coords(self, kana):
         """
         Returns the pair (consonant line, vowel line) for the given kana
         character.
         """
-        if not self._to_consonant_line or not self._to_vowel_line:
-            self._build_dicts()
 
         return (self._to_consonant_line[kana], self._to_vowel_line[kana])
 
@@ -107,8 +108,6 @@ class KanaTable(object):
 
         return cls._cached
 
-    def __unicode__(self):
-        return '<KanaTable object %s>' % hash(self)
-
     def __repr__(self):
-        return text_type(self).encode('utf8')
+        return 'KanaTable()'
+

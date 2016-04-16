@@ -4,6 +4,8 @@
 #  cjktools
 #
 
+from __future__ import unicode_literals
+
 import unittest
 from cjktools import kana_table
 
@@ -18,7 +20,15 @@ def suite():
 class KanaTableTestCase(unittest.TestCase):
     def setUp(self):
         self.table = kana_table.KanaTable.get_cached()
-        self.test_script = u'AＡあア亜'
+        self.test_script = 'AＡあア亜'
+
+    def test_get_coords(self):
+        new_table = kana_table.KanaTable()
+
+        for table in (self.table, new_table):
+            self.assertEqual(table.get_coords('ち'), ('た', 'い'))
+            self.assertEqual(table.get_coords('ぷ'), ('ぱ', 'う'))
+            self.assertEqual(table.get_coords('お'), ('あ', 'お'))
 
     def test_vowel_line(self):
         """
@@ -42,11 +52,14 @@ class KanaTableTestCase(unittest.TestCase):
         self.assertEqual(self.table.from_coords(u'ぱ', u'え'), u'ぺ')
 
     def test_is_voiced(self):
-        assert self.table.is_voiced(u'ば')
-        assert self.table.is_voiced(u'ぱ')
-        assert not self.table.is_voiced(u'は')
-        assert self.table.is_voiced(u'だ')
-        assert self.table.is_voiced(u'ざ')
+        self.assertTrue(self.table.is_voiced('ば'))
+        self.assertTrue(self.table.is_voiced('ぱ'))
+        self.assertFalse(self.table.is_voiced('は'))
+        self.assertTrue(self.table.is_voiced('だ'))
+        self.assertTrue(self.table.is_voiced('ざ'))
+
+    def test_repr(self):
+        self.assertEqual(repr(self.table), 'KanaTable()')
 
 
 if __name__ == "__main__":
