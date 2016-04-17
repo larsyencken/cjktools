@@ -197,9 +197,7 @@ def expand_long_vowels(kana_string):
         for m in _long_finder.finditer(segment):
             i = m.start() 
             vowel = table.to_vowel_line(segment[i-1])
-            print(segment)
             segment = segment[:i] + vowel + segment[i+1:]
-            print(segment)
 
         out_string += reverse_operation(segment)
 

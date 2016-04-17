@@ -38,9 +38,6 @@ class PinyinTableTestCase(unittest.TestCase):
         # Tests for correct segmentation and tones detection.
         segmenter = pinyin_table.get_pinyin_segmenter()
 
-        from cjktools.resources import zhuyin_table
-        print(zhuyin_table.pinyin_regex_pattern())
-
         self.assertEqual(
             segmenter.segment_pinyin('woshangdaxue'),
             (('wo', 0), ('shang', 0), ('da', 0), ('xue', 0)),
