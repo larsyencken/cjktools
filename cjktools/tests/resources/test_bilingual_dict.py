@@ -13,9 +13,13 @@ from cjktools.errors import NotYetImplementedError
 
 from cjktools.resources.dict_format import RegexFormat
 
-edict_fmt = RegexFormat('edict', '^.？？？.*$',
+edict_fmt = RegexFormat(
+    'edict',
+    '^.？？？.*$',
     '^(?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\] )?(?P<senses>.*)$',
-    '/(?P<sense>[^/]+)')
+    '/(?P<sense>[^/]+)'
+)
+
 
 class BilingualDictTest(unittest.TestCase):
     def testUpdateDefaultPolicy(self):
@@ -49,13 +53,3 @@ class BilingualDictTest(unittest.TestCase):
         with self.assertRaises(NotYetImplementedError):
             clash_policy = bilingual_dict.ClashPolicy.Merge
             d1.update(d2, clash_policy=clash_policy)
-
-
-
-
-
-
-
-
-
-

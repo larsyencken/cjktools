@@ -10,6 +10,7 @@ dictionary which is line-based, and whose entries are flat text, and thus
 amenable to being parsed with regular expressions. The list of known
 formats is provided in the known_formats object.
 """
+
 from __future__ import unicode_literals
 
 import re

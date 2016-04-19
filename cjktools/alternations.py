@@ -8,6 +8,7 @@
 This module deals with sound and reading alternations, both predicting and
 recovering from them.
 """
+
 from __future__ import unicode_literals
 
 from cjktools import kana_table
@@ -26,6 +27,7 @@ _sokuon_map = {scripts.Script.Hiragana: 'っ',
 _onbin_map = {scripts.Script.Hiragana: 'いちりきつく',
               scripts.Script.Katakana: 'イチリキツク'}
 
+
 def canonical_forms(kana_segments):
     """
     When given a sequence of segments, determine all possible canonical
@@ -35,13 +37,12 @@ def canonical_forms(kana_segments):
 
     @param kana_segments: Reading segments in their surface form.
     """
-    table = kana_table.KanaTable.get_cached()
     num_segments = len(kana_segments)
 
     candidate_sets = []
     for i, segment in enumerate(kana_segments):
         left_context = i > 0
-        right_context = i < num_segments -1
+        right_context = i < num_segments - 1
         variants = canonical_segment_forms(segment,
                                            left_context=left_context,
                                            right_context=right_context)
@@ -165,7 +166,10 @@ def insert_duplicate_kanji(kanji_string):
 
     return kanji_string
 
+
 _long_finder = re.compile(r'(?<=[\u3041-\u3096])ー')  # Finds only in hiragana
+
+
 def expand_long_vowels(kana_string):
     """
     Expands whatever long vowels are possible to expand.
@@ -195,12 +199,10 @@ def expand_long_vowels(kana_string):
             continue
 
         for m in _long_finder.finditer(segment):
-            i = m.start() 
+            i = m.start()
             vowel = table.to_vowel_line(segment[i-1])
             segment = segment[:i] + vowel + segment[i+1:]
 
         out_string += reverse_operation(segment)
 
     return out_string
-
-#----------------------------------------------------------------------------#

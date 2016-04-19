@@ -45,9 +45,10 @@ def iter_entries(istream):
     header = next(lines)
     return detect_format(header).iter_entries(lines)
 
-#----------------------------------------------------------------------------#
-# DICTIONARY FORMATS
-#----------------------------------------------------------------------------#
+
+#
+#  DICTIONARY FORMATS
+#
 
 known_formats = [
     RegexFormat(

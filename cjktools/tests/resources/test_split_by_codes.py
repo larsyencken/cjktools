@@ -6,18 +6,18 @@
 from __future__ import unicode_literals
 
 import unittest
-import codecs
-from six.moves import StringIO
 
 from cjktools.resources.split_by_codes import load_coded_dictionary
 
 from .._common import to_unicode_stream
+
 
 def suite():
     test_suite = unittest.TestSuite((
         unittest.makeSuite(SplitByCodesTestCase)
     ))
     return test_suite
+
 
 ENAMDICT_SAMPLE = \
 """？？？？ /ENAMDICT - Japanese Proper Name Dictionary File/Copyright Electronic Dictionary Research & Development Group, Monash University, 2007/Created: 2011-07-03/

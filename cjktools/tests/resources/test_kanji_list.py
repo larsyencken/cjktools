@@ -10,6 +10,7 @@ from cjktools.resources import kanji_list
 
 from six import text_type
 
+
 def suite():
     test_suite = unittest.TestSuite((
         unittest.makeSuite(KanjiListTest),

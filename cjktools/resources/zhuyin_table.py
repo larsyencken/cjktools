@@ -8,8 +8,6 @@
 An interface to the zhuyin <-> pinyin table.
 """
 
-import codecs
-
 from functools import partial
 
 from . import cjkdata

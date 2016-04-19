@@ -10,6 +10,8 @@ An abstract tree datatype.
 
 from random import shuffle
 
+import six
+
 
 class TreeNode(object):
     """
@@ -186,10 +188,8 @@ class TreeNode(object):
 
     def get_path(self, path):
         """Get a particular path in the node."""
-        if type(path) in (str, unicode):
+        if isinstance(path, six.text_type):
             path = path.lstrip('/').split('/')
-        else:
-            assert type(path) == list
 
         next_node = self
 
@@ -226,9 +226,9 @@ class TreeNode(object):
         return
 
     def __eq__(self, rhs):
-        return (self.label == rhs.label
-                and self.attrib == rhs.attrib
-                and self.children == rhs.children)
+        return (self.label == rhs.label and
+                self.attrib == rhs.attrib and
+                self.children == rhs.children)
 
     def build_index(self):
         """
@@ -278,10 +278,6 @@ class TreeDist(object):
     A tree probability distribution, initialized by passing in a constructed
     tree which needs annotation.
     """
-    #------------------------------------------------------------------------#
-    # PUBLIC
-    #------------------------------------------------------------------------#
-
     def __init__(self, root, count_method=len):
         """
         Builds a tree distribution out of the existing tree structure.
@@ -295,8 +291,8 @@ class TreeDist(object):
         for node in self.root.walk_postorder():
             node['count'] = count_method(node)
             node['cum_count'] = (
-                node['count']
-                + sum([c['count'] for c in node.children.values()])
+                node['count'] +
+                sum([c['count'] for c in node.children.values()])
             )
 
         # Second pass, convert to MLE probabilities, with the assumption that
@@ -307,21 +303,15 @@ class TreeDist(object):
 
         return
 
-    #------------------------------------------------------------------------#
-
     def copy(self):
         """Returns a shallow copy of the tree."""
         return TreeDist(self.root.copy(), count_method=None)
-
-    #------------------------------------------------------------------------#
 
     def layout(self):
         """Prints a graphical representation of the tree to stdout."""
         return self.root.layout(
             method=lambda n: '%s %.04f' % (n.label, n['freq'])
         )
-
-    #------------------------------------------------------------------------#
 
     def combine(self, rhs, f=lambda x, y: (x + y)/2.0, label='union'):
         """Returns a tree which is topologically the union of the two trees."""

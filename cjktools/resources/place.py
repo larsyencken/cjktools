@@ -32,11 +32,10 @@ class Place(dict):
         if not isinstance(label, text_type):
             label = text_type(label)        # Convert to unicode
 
-        if (' ' in label
-                or (reading and ' ' in reading)
-                or (aliases and ' ' in ''.join(aliases))):
+        if (' ' in label or
+                (reading and ' ' in reading) or
+                (aliases and ' ' in ''.join(aliases))):
             raise ValueError("no spaces allowed in place details")
-
 
         super(Place, self).__init__()
         self.label = label
@@ -50,9 +49,8 @@ class Place(dict):
 
     def __repr__(self):
         return text_type(self)
-    
 
-    def __str__(self):    
+    def __str__(self):
         return '<Place: %s%s %d children>' % (
             self.label,
             (self.reading and ' /%s/' % self.reading or ''),

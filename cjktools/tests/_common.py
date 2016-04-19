@@ -10,6 +10,7 @@ import codecs
 from six.moves import StringIO
 from six import binary_type
 
+
 def to_unicode_stream(x):
     o = StringIO(x)
 

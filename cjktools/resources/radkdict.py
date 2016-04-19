@@ -11,7 +11,6 @@ Based on the radkfile, a dictionary mapping character to bag of radicals.
 
 import sys
 
-import codecs
 from cjktools import maps
 from cjktools.common import get_stream_context, stream_codec
 
@@ -19,8 +18,10 @@ from . import cjkdata
 
 from six import text_type
 
+
 def _default_stream():
     return open(cjkdata.get_resource('radkfile'))
+
 
 class RadkDict(dict):
     """Determines which radicals a character contains."""

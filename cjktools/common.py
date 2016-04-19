@@ -15,6 +15,7 @@ import gzip
 
 import six
 
+
 def filter_comments(file_stream):
     """
     Filter a filestream, removing comment lines marked with an initial hash.
@@ -83,7 +84,7 @@ def get_stream_context(default_stream_func, istream=None):
 
 class _NullContextWrapper(object):
     """
-    Class for wrapping contexts so that they are passed through in a 
+    Class for wrapping contexts so that they are passed through in a
     with statement.
     """
     def __init__(self, context):
@@ -94,4 +95,3 @@ class _NullContextWrapper(object):
 
     def __exit__(*args, **kwargs):
         pass
-

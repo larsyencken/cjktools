@@ -11,10 +11,9 @@ module which requires a utf8 encoding for the additional Japanese characters.
 """
 from __future__ import unicode_literals
 
-from enum import Enum
-
 from six import unichr, text_type, iteritems
 from six.moves import range
+
 
 class Script:
     Hiragana = 1
@@ -55,9 +54,8 @@ class ScriptMapping:
         self.from_start, self.from_end = _known_bands[from_script]
         self.to_start, self.to_end = _known_bands[to_script]
         self.ord_diff = ord(self.to_start) - ord(self.from_start)
-        assert ((ord(self.from_end) - ord(self.from_start))
-                <= (ord(self.to_end) - ord(self.to_start)))
-        return
+        assert ((ord(self.from_end) - ord(self.from_start)) <=
+                (ord(self.to_end) - ord(self.to_start)))
 
     def __call__(self, j_string):
         """

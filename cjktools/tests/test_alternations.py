@@ -66,6 +66,7 @@ class AlternationsTestCaseHiragana(unittest.TestCase):
             out = alternations.expand_long_vowels(i)
             self.assertEqual(out, e)
 
+
 class AlternationsTestCaseKatagana(unittest.TestCase):
     # Can probably get more clever about this by parameterizing
     def test_canonical_forms(self):

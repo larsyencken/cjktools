@@ -14,9 +14,11 @@ from cjktools.errors import NotYetImplementedError
 import six
 from six import text_type
 
+
 class ClashPolicy(Enum):
     Overwrite = 1
     Merge = 2
+
 
 class BilingualDictionary(dict):
     """
@@ -65,7 +67,6 @@ class DictionaryEntry(object):
         if not self.word == rhs_entry.word:
             raise Exception("Can only merge homographs")
 
-        #print 'Merging entries for %s' % self.word
         # If we have only one reading, pad to the number of senses so that
         # we have one sense per reading.
         if len(self.readings) == 1:

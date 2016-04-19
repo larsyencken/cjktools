@@ -60,8 +60,8 @@ class KanjidicEntry(object):
     """A single entry in the kanjidic file."""
 
     def __init__(self, **entry_details):
-        assert ('on_readings' in entry_details
-                and 'kun_readings' in entry_details)
+        assert ('on_readings' in entry_details and
+                'kun_readings' in entry_details)
         self.__dict__.update(entry_details)
 
     def get_all_readings(self):
@@ -149,8 +149,8 @@ class Kanjidic(dict):
             if s.startswith('{'):
                 info['gloss'].append(s[1:-1])
 
-            elif (scripts.script_type(s) != scripts.Script.Ascii
-                    or s.startswith('-')):
+            elif (scripts.script_type(s) != scripts.Script.Ascii or
+                  s.startswith('-')):
                 # It must be a reading.
                 char = s[0]
                 if char == '-':

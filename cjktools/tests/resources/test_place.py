@@ -9,9 +9,6 @@ import unittest
 import os
 import tempfile
 
-import warnings
-warnings.simplefilter("ignore", RuntimeWarning)     # Why?
-
 from cjktools.resources import place
 
 
@@ -46,7 +43,7 @@ class PlaceTestCase(unittest.TestCase):
 
         sydney = place.Place('Sydney', 'シドニー')
         self.assertRaises(ValueError, place.Place, "Anja's place")
-        
+
         sydney.append(place.Place("Anja's_place"))
         original_place.append(sydney)
 

@@ -3,15 +3,16 @@
 #  test_auto_format.py
 #  cjktools
 #
+
 from __future__ import unicode_literals
 import unittest
-import codecs
 
 from cjktools.resources.auto_format import detect_format, load_dictionary
 from cjktools.resources.bilingual_dict import BilingualDictionary
 from cjktools.resources.dict_format import UnknownFormatError
 
 from .._common import to_unicode_stream
+
 
 def suite():
     test_suite = unittest.TestSuite((
@@ -81,13 +82,16 @@ class AutoFormatTestCase(unittest.TestCase):
         """
         Test that senses_by_reading works
         """
-        expected = {'げっしもく': ['(n) (1) Rodentia',
-                                '(adj-no) (2) rat-like',
-                                'rodential']}
+        expected = {
+            'げっしもく': [
+                '(n) (1) Rodentia',
+                '(adj-no) (2) rat-like',
+                'rodential'
+            ]
+        }
 
         d = load_dictionary(self.je_edict)
         self.assertEqual(d['齧歯目'].senses_by_reading(), expected)
-
 
     def _check_lookup(self, dictionary, key, readings, senses):
         entry = dictionary[key]

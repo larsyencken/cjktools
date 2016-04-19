@@ -11,13 +11,13 @@ Japanese hiragana and katakana syllabaries.
 from __future__ import unicode_literals
 
 import copy
-from six import iteritems, text_type
-import six
+from six import iteritems
 
 import unicodedata
 
 small_kana = 'ぁぃぅぇぉっょゅゃ'
 n_kana = 'ん'
+
 
 class KanaTable(object):
     """
@@ -119,4 +119,3 @@ class KanaTable(object):
 
     def __repr__(self):
         return 'KanaTable()'
-

@@ -10,6 +10,7 @@ import six
 
 from cjktools.resources.tree import TreeNode
 
+
 def suite():
     test_suite = unittest.TestSuite((
         unittest.makeSuite(TreeTestCase),

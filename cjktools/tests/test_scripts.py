@@ -3,6 +3,7 @@
 #  test_scripts.py
 #  cjktools
 #
+
 from __future__ import unicode_literals
 
 import unittest

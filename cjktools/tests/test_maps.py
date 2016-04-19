@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  test_mapsbad.py
+#  test_maps.py
 #  cjktools
 #
 
