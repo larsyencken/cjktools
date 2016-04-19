@@ -46,7 +46,7 @@ setup(
     version=VERSION,
     long_description=LONG_DESCRIPTION,
     classifiers=CLASSIFIERS,
-    url="http://bitbucket.org/larsyencken/cjktools/",
+    url="https://github.com/larsyencken/cjktools",
     author="Lars Yencken",
     author_email="lars@yencken.org",
     license="BSD",
