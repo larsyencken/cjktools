@@ -3,11 +3,12 @@
 #  test_scripts.py
 #  cjktools
 #
+from __future__ import unicode_literals
 
 import unittest
 
-import scripts
-from scripts import Script
+from cjktools import scripts
+from cjktools.scripts import Script
 
 
 def suite():
@@ -20,22 +21,20 @@ def suite():
 class ScriptsTestCase(unittest.TestCase):
     """This class tests script detection and invariance."""
     def setUp(self):
-        self.test_script = u'AＡあア亜'
+        self.test_script = 'AＡあア亜'
         pass
 
     def test_fetch_scripts(self):
         """
         Test fetching of hiragana and katakana, and converting between them.
         """
-        hiragana = u'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ'  # nopep8
+        hiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ'  # nopep8
         self.assertEqual(scripts.get_script(Script.Hiragana), hiragana)
-        katakana = u'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ'  # nopep8
+        katakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ'  # nopep8
         self.assertEqual(scripts.get_script(Script.Katakana), katakana)
 
         self.assertEqual(scripts.to_hiragana(katakana), hiragana)
         self.assertEqual(scripts.to_katakana(hiragana), katakana)
-
-        return
 
     def test_script_type(self):
         """ Tests the script_type() method.
@@ -47,42 +46,47 @@ class ScriptsTestCase(unittest.TestCase):
         self.assertEqual(script_type(self.test_script[3]), Script.Katakana)
         self.assertEqual(script_type(self.test_script[4]), Script.Kanji)
 
-        return
-
     def test_contains_script(self):
         """
         Tests the contains_script() method.
         """
         contains_script = scripts.contains_script
-        assert contains_script(Script.Hiragana, self.test_script)
-        assert contains_script(Script.Kanji, self.test_script)
-        assert contains_script(Script.Ascii, self.test_script)
-        assert contains_script(Script.Katakana, self.test_script)
+        self.assertTrue(contains_script(Script.Hiragana, self.test_script))
+        self.assertTrue(contains_script(Script.Kanji, self.test_script))
+        self.assertTrue(contains_script(Script.Ascii, self.test_script))
+        self.assertTrue(contains_script(Script.Katakana, self.test_script))
 
-        assert not contains_script(Script.Ascii, self.test_script[1:])
-        assert not contains_script(Script.Kanji, self.test_script[:-1])
-
-        return
+        self.assertFalse(contains_script(Script.Ascii, self.test_script[1:]))
+        self.assertFalse(contains_script(Script.Kanji, self.test_script[:-1]))
 
     def test_compare_kana(self):
         """
         Tests the compare_kana() method.
         """
-        assert scripts.compare_kana(u'Aあア亜', u'Aアあ亜') == 0
-        assert scripts.compare_kana(u'あAア亜', u'アあ亜A') != 0
+        self.assertEqual(scripts.compare_kana('Aあア亜', 'Aアあ亜'), 0)
+        self.assertNotEqual(scripts.compare_kana('あAア亜', 'アあ亜A'),  0)
 
     def test_normalize_ascii(self):
         """
         Tests that ascii characters are normalized correctly.
         """
-        full_width_string = u'ｋｌｉｎｇｏｎｓ　ｏｎ　ｔｈｅ　'\
-            u'ｓｔａｒｂｏａｒｄ　ｂｏｗ！＠＃＆＊（）？，。；＋＝"'
-        half_width_string = u'klingons on the starboard bow!@#&*()?,.;+="'
+        full_width_string = 'ｋｌｉｎｇｏｎｓ　ｏｎ　ｔｈｅ　'\
+            'ｓｔａｒｂｏａｒｄ　ｂｏｗ！＠＃＆＊（）？，。；＋＝"'
+        half_width_string = 'klingons on the starboard bow!@#&*()?,.;+="'
 
         self.assertEqual(len(full_width_string), len(half_width_string))
 
         for full_char, half_char in zip(full_width_string, half_width_string):
             self.assertEqual(scripts.normalize_ascii(full_char), half_char)
+
+    def test_normalize_kana(self):
+        self.assertEqual(scripts.normalize_kana('ｶｷｸｹｺ'), 'カキクケコ')
+
+    def test_normalize(self):
+        self.assertEqual(scripts.normalize('Aあア阿ｱＡ'), 'Aあア阿アA')
+
+    def test_script_type_empty(self):
+        self.assertEqual(scripts.script_type(''), scripts.Script.Unknown)
 
 
 if __name__ == "__main__":

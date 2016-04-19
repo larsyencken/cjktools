@@ -3,14 +3,15 @@
 #  test_auto_format.py
 #  cjktools
 #
-
+from __future__ import unicode_literals
 import unittest
 import codecs
-from cStringIO import StringIO
 
-from auto_format import detect_format, load_dictionary
-from bilingual_dict import BilingualDictionary
+from cjktools.resources.auto_format import detect_format, load_dictionary
+from cjktools.resources.bilingual_dict import BilingualDictionary
+from cjktools.resources.dict_format import UnknownFormatError
 
+from .._common import to_unicode_stream
 
 def suite():
     test_suite = unittest.TestSuite((
@@ -34,24 +35,29 @@ JPLACES_SAMPLE = \
 
 class AutoFormatTestCase(unittest.TestCase):
     def setUp(self):
-        self.je_edict = codecs.getreader('utf8')(StringIO(EDICT_SAMPLE))
-        self.je_jplaces = codecs.getreader('utf8')(StringIO(JPLACES_SAMPLE))
+
+        self.je_edict = to_unicode_stream(EDICT_SAMPLE)
+        self.je_jplaces = to_unicode_stream(JPLACES_SAMPLE)
+        self.invalid = to_unicode_stream('BAD HEADER は BAD HEADER')
 
     def test_formats(self):
         "Tests correct format detection for a variety of dictionaries."
         self.assertEqual(
-            detect_format(self.je_edict.next()).name,
+            detect_format(next(self.je_edict)).name,
             'edict',
         )
         self.assertEqual(
-            detect_format(self.je_jplaces.next()).name,
+            detect_format(next(self.je_jplaces)).name,
             'edict',
         )
+
+        with self.assertRaises(UnknownFormatError):
+            detect_format(next(self.invalid))
 
     def test_edict(self):
         "Tests correct detection and parsing of edict."
         d = load_dictionary(self.je_edict)
-        assert isinstance(d, BilingualDictionary)
+        self.assertIsInstance(d, BilingualDictionary)
         self.assertEqual(d.format.name, 'edict')
 
         self.assertEqual(len(d), 2)
@@ -70,6 +76,18 @@ class AutoFormatTestCase(unittest.TestCase):
             ['(n,adj-no) cavity', 'tooth decay', 'decayed tooth',
                 'caries']*2,
         )
+
+    def test_edict_senses(self):
+        """
+        Test that senses_by_reading works
+        """
+        expected = {'げっしもく': ['(n) (1) Rodentia',
+                                '(adj-no) (2) rat-like',
+                                'rodential']}
+
+        d = load_dictionary(self.je_edict)
+        self.assertEqual(d['齧歯目'].senses_by_reading(), expected)
+
 
     def _check_lookup(self, dictionary, key, readings, senses):
         entry = dictionary[key]

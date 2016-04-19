@@ -8,12 +8,14 @@
 This module implements a smart caching function, with dependencies.
 """
 
-import common
-import cPickle as pickle
 import types
 import os
 from os import path
 
+from six import string_types
+from six.moves import cPickle as pickle
+
+from . import common
 
 def disk_proxy_direct(method, cache_file, dependencies=[]):
     """
@@ -30,16 +32,16 @@ def disk_proxy_direct(method, cache_file, dependencies=[]):
 
         if cached_val is None:
             if 'CACHE_DEBUG' in os.environ:
-                print '[cache miss: %s]' % os.path.basename(cache_file)
+                print('[cache miss: %s]' % os.path.basename(cache_file))
             # cache miss, expensive fetch and repopulate cache
-            result = apply(method, args, params)
+            result = method(*args, **params)
             if 'CACHE_DEBUG' in os.environ:
-                print '[storing: %s]' % os.path.basename(cache_file)
+                print('[storing: %s]' % os.path.basename(cache_file))
             store_cache_object(result, cache_file, args, params)
             return result
         else:
             if 'CACHE_DEBUG' in os.environ:
-                print '[cache hit: %s]' % os.path.basename(cache_file)
+                print('[cache hit: %s]' % os.path.basename(cache_file))
             # cache hit
             return cached_val
 
@@ -74,7 +76,7 @@ def memory_proxy(method):
             return method_dict[key]
         else:
             # cache miss, expensive call and insert
-            result = apply(method, args, params)
+            result = method(*args, **params)
             method_dict[key] = result
             return result
 
@@ -98,23 +100,21 @@ def try_cache(filename, method_args=[], method_params={}, dependencies=[]):
         return None
 
     try:
-        i_stream = common.sopen(filename, 'r', encoding=None)
-        stored_args = pickle.load(i_stream)
-        stored_params = pickle.load(i_stream)
+        with common.sopen(filename, 'rb', encoding=None) as i_stream:
+            stored_args = pickle.load(i_stream)
+            stored_params = pickle.load(i_stream)
 
-        if stored_args == method_args and stored_params == method_params:
-            obj = pickle.load(i_stream)
-            i_stream.close()
-            return obj
-        else:
-            i_stream.close()
-            return None
+            if stored_args == method_args and stored_params == method_params:
+                obj = pickle.load(i_stream)
+                return obj
     except:
         # could get several errors here:
         # - badly pickled file
         # - changed local modules when loading pickled value
         # - filesystem permissions or problems
-        return None
+        pass
+
+    return None
 
 
 def store_cache_object(obj, filename, method_args=[], method_params={}):
@@ -128,11 +128,10 @@ def store_cache_object(obj, filename, method_args=[], method_params={}):
     @param method_params: Any keyword parameters passed to the cached
         method.
     """
-    o_stream = common.sopen(filename, 'w', encoding=None)
-    pickle.dump(method_args, o_stream, pickle.HIGHEST_PROTOCOL)
-    pickle.dump(method_params, o_stream, pickle.HIGHEST_PROTOCOL)
-    pickle.dump(obj, o_stream, pickle.HIGHEST_PROTOCOL)
-    o_stream.close()
+    with common.sopen(filename, 'wb', encoding=None) as o_stream:
+        pickle.dump(method_args, o_stream, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(method_params, o_stream, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(obj, o_stream, pickle.HIGHEST_PROTOCOL)
 
     return
 
@@ -150,12 +149,10 @@ def needs_update(target, dependencies):
     target_time = path.getmtime(target)
 
     for dependency in dependencies:
-        if type(dependency) in (str, unicode):
+        if isinstance(dependency, string_types):
             filenames = [dependency]
-
         elif isinstance(dependency, types.ModuleType):
             filenames = _get_module_dependencies(dependency)
-
         else:
             raise TypeError("Unknown dependency type %s" % (type(dependency)))
 

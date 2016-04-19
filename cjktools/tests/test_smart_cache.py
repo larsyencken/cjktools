@@ -8,9 +8,12 @@
 Tests for the smart_cache module.
 """
 
+from __future__ import print_function
+
 import os
+import time
 import unittest
-import smart_cache
+from cjktools import smart_cache
 
 
 def suite():
@@ -28,9 +31,8 @@ class CacheTestCase(unittest.TestCase):
         self.cache_file = 'tmp_cache_file'
 
         # make sure our dep_file exists and is non-empty
-        o_stream = open(self.dep_file, 'w')
-        print >> o_stream, 'Started file here!!!'
-        o_stream.close()
+        with open(self.dep_file, 'w') as o_stream:
+            print('Started file here!!!', file=o_stream)
 
     def factory_method1(self, x):
         """
@@ -58,10 +60,9 @@ class CacheTestCase(unittest.TestCase):
         self.assertEqual(new_obj, obj)
 
         # now touch the dependency, after a significant delay
-        os.system('sleep 1')
-        o_stream = open(self.dep_file, 'w')
-        print >> o_stream, "A new change has been made to this file"
-        o_stream.close()
+        time.sleep(1)
+        with open(self.dep_file, 'w') as o_stream:
+            print("A new change has been made to this file", file=o_stream)
 
         # refetch; it shouldn't be cached
         new_obj = smart_cache.try_cache(self.cache_file, [self.dep_file])
@@ -87,10 +88,9 @@ class CacheTestCase(unittest.TestCase):
         self.assertEqual(self.num_calls, 1)
 
         # changing a dependency, should trigger an additional call
-        os.system('sleep 1')
-        o_stream = open(self.dep_file, 'a')
-        print >> o_stream, "Added a line"
-        o_stream.close()
+        time.sleep(1)
+        with open(self.dep_file, 'a') as o_stream:
+            print(o_stream, "Added a line", file=o_stream)
 
         self.assertEqual(proxy_method(2), 6)
         self.assertEqual(self.num_calls, 2)

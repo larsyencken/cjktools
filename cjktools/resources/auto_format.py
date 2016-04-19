@@ -8,8 +8,9 @@
 A module of methods to automatically detect the format given a dictionary
 file.
 """
+from __future__ import unicode_literals
 
-from dict_format import RegexFormat, UnknownFormatError
+from .dict_format import RegexFormat, UnknownFormatError
 
 
 def detect_format(header):
@@ -31,7 +32,7 @@ def load_dictionary(istream):
     dictionary object on success.
     """
     lines = iter(istream)
-    header = lines.next()
+    header = next(lines)
     return detect_format(header).parse_dictionary(lines)
 
 
@@ -41,7 +42,7 @@ def iter_entries(istream):
     at once.
     """
     lines = iter(istream)
-    header = lines.next()
+    header = next(lines)
     return detect_format(header).iter_entries(lines)
 
 #----------------------------------------------------------------------------#
@@ -51,26 +52,26 @@ def iter_entries(istream):
 known_formats = [
     RegexFormat(
         'edict',
-        u'^.？？？.*$',
-        u'^(?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\] )?(?P<senses>.*)$',
-        u'/(?P<sense>[^/]+)',
+        '^.？？？.*$',
+        '^(?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\] )?(?P<senses>.*)$',
+        '/(?P<sense>[^/]+)',
     ),
     RegexFormat(
         'jc_kdic',
-        u'^FORMAT jc_kdic$',
-        u'^(?P<word>[^ ]+) \[(?P<reading>[^\]]+)\]\t(?P<senses>.*)$',
-        u'(?P<sense>[^，]+)[，]?',
+        '^FORMAT jc_kdic$',
+        '^(?P<word>[^ ]+) \[(?P<reading>[^\]]+)\]\t(?P<senses>.*)$',
+        '(?P<sense>[^，]+)[，]?',
     ),
     RegexFormat(
         'cj_kdic',
-        u'^FORMAT cj_kdic$',
-        u'^(?P<word>[^\t]+)\t(?P<reading>[^\\\\]+)\\\\n(?P<senses>.*)$',
-        u'([１２３４５７８９０]+．)?(?P<sense>[^\\\\]+)(\\\\n)?',
+        '^FORMAT cj_kdic$',
+        '^(?P<word>[^\t]+)\t(?P<reading>[^\\\\]+)\\\\n(?P<senses>.*)$',
+        '([１２３４５７８９０]+．)?(?P<sense>[^\\\\]+)(\\\\n)?',
     ),
     RegexFormat(
         'cedict',
-        u'^# CEDICT.*$',
-        u'^[^ ]+ (?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\])?(?P<senses>.*)',
-        u'/(?P<sense>[^/]+)',
+        '^# CEDICT.*$',
+        '^[^ ]+ (?P<word>[^ ]+) (\[(?P<reading>[^\]]+)\])?(?P<senses>.*)',
+        '/(?P<sense>[^/]+)',
     ),
 ]

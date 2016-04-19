@@ -7,10 +7,14 @@
 """
 A data form for storing and manipulating place data.
 """
+from __future__ import unicode_literals, print_function
 
 import random
 
 from cjktools.common import sopen
+
+from six import string_types, text_type, iteritems
+import six
 
 
 class Place(dict):
@@ -21,15 +25,20 @@ class Place(dict):
 
     def __init__(self, label, reading=None, aliases=None):
         # Add restrictions imposed by our storage format.
+
+        if not isinstance(label, (string_types, text_type)):
+            raise TypeError("expected string, not %s" % repr(label))
+
+        if not isinstance(label, text_type):
+            label = text_type(label)        # Convert to unicode
+
         if (' ' in label
                 or (reading and ' ' in reading)
                 or (aliases and ' ' in ''.join(aliases))):
             raise ValueError("no spaces allowed in place details")
 
-        if type(label) not in (str, unicode):
-            raise TypeError("expected string, not %s" % repr(label))
 
-        dict.__init__(self)
+        super(Place, self).__init__()
         self.label = label
         self.reading = reading
         self.aliases = aliases
@@ -40,60 +49,61 @@ class Place(dict):
     children = property(get_children)
 
     def __repr__(self):
-        return unicode(self)
+        return text_type(self)
+    
 
-    def __unicode__(self):
+    def __str__(self):    
         return '<Place: %s%s %d children>' % (
             self.label,
             (self.reading and ' /%s/' % self.reading or ''),
             len(self),
         )
 
+    if six.PY2:
+        __unicode__ = __str__
+
     def dump(self, filename):
-        o_stream = sopen(filename, 'w')
-        for depth, place in self.walk():
-            print >> o_stream, place._to_line(depth)
-        o_stream.close()
+        with sopen(filename, 'w') as o_stream:
+            for depth, place in self.walk():
+                print(place._to_line(depth), file=o_stream)
 
     @classmethod
     def from_file(cls, filename):
-        i_stream = sopen(filename)
-        lines = iter(enumerate(i_stream))
+        with sopen(filename, mode='r') as i_stream:
+            lines = iter(enumerate(i_stream))
 
-        depth, root_node = cls._from_line(lines.next()[1])
-        if depth != 0:
-            raise Exception("file %s should start with a root node"
-                            % filename)
+            depth, root_node = cls._from_line(next(lines)[1])
+            if depth != 0:
+                raise Exception("file %s should start with a root node"
+                                % filename)
 
-        path = [root_node]
-        last_depth = depth
-        last_node = root_node
-        for line_no, line in lines:
-            depth, node = cls._from_line(line)
-            if depth == last_depth + 1:
-                # One level deeper, the last node was the parent.
-                path.append(last_node)
-
-            elif depth == last_depth:
-                # Same level, same parent.
-                pass
-
-            elif depth < last_depth:
-                # Up one or more levels.
-                depth_diff = last_depth - depth
-                path = path[:-depth_diff]
-
-            else:
-                raise Exception, "Strange depth found %s (line %d)" % (
-                    filename,
-                    line_no + 1
-                )
-
-            path[-1].append(node)
-            last_node = node
+            path = [root_node]
             last_depth = depth
+            last_node = root_node
+            for line_no, line in lines:
+                depth, node = cls._from_line(line)
+                if depth == last_depth + 1:
+                    # One level deeper, the last node was the parent.
+                    path.append(last_node)
 
-        i_stream.close()
+                elif depth == last_depth:
+                    # Same level, same parent.
+                    pass
+
+                elif depth < last_depth:
+                    # Up one or more levels.
+                    depth_diff = last_depth - depth
+                    path = path[:-depth_diff]
+
+                else:
+                    raise Exception("Strange depth found %s (line %d)" % (
+                        filename,
+                        line_no + 1
+                    ))
+
+                path[-1].append(node)
+                last_node = node
+                last_depth = depth
 
         return root_node
 
@@ -121,7 +131,7 @@ class Place(dict):
                     target_path = current_path + [label]
                     return target_node, target_path
                 else:
-                    for new_label, new_node in next_node.iteritems():
+                    for new_label, new_node in iteritems(next_node):
                         next_frontier.append(
                             (current_path + [new_label], new_node)
                         )
@@ -189,8 +199,6 @@ class Place(dict):
 
             last_node = node
             last_depth = depth
-
-        return
 
     def _to_line(self, depth):
         """

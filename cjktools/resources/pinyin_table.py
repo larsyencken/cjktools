@@ -8,20 +8,22 @@
 A table for conversion of hanzi to pinyin.
 """
 
+from __future__ import unicode_literals
+
 import re
 import codecs
 
-import zhuyin_table
-import cjkdata
+from . import zhuyin_table
+from . import cjkdata
 
-vowels = u'aeiouü'
-consonants = u'bcdfghjklmnpqrstvwxyz'
+vowels = 'aeiouü'
+consonants = 'bcdfghjklmnpqrstvwxyz'
 tone_to_vowels = {
-    0: u'aeiouü',
-    1: u'āēīōūǖ',
-    2: u'áéíóúǘ',
-    3: u'ǎěǐǒǔǚ',
-    4: u'àèìòùǜ',
+    0: 'aeiouü',
+    1: 'āēīōūǖ',
+    2: 'áéíóúǘ',
+    3: 'ǎěǐǒǔǚ',
+    4: 'àèìòùǜ',
 }
 
 _cached_pinyin_table = None
@@ -78,15 +80,16 @@ class PinyinTable(dict):
         return ''.join(chunks)
 
     def strip_tones(self, ascii_pinyin):
-        "Return the same ascii pinyin string, but without any tones."
+        """ Return the same ascii pinyin string, but without any tones. """
         standard_form = normalize(ascii_pinyin)
         chunks = self._segmenter.segment_pinyin(standard_form)
         return ''.join(p for (p, t) in chunks)
 
     def _apply_tone(self, syllable, tone):
-        "Apply a tone to a syllable."
+        """ Apply a tone to a syllable. """
         if tone == 5:
             tone = 0
+
         results = []
         results.append(syllable[0])
 
@@ -111,10 +114,9 @@ class PinyinSegmenter(object):
         )
         self.single_pattern = re.compile(base_pattern, re.UNICODE)
         self.string_pattern = re.compile('(%s)+' % base_pattern, re.UNICODE)
-        return
 
     def segment_pinyin(self, pinyin_string):
-        "Segment the given pinyin string."
+        """ Segment the given pinyin string. """
         pinyin_string = normalize(pinyin_string)
         result = self.single_pattern.findall(pinyin_string)
         corrected = []
@@ -139,15 +141,15 @@ class PinyinSegmenter(object):
 
 
 def normalize(ascii_pinyin):
-    "Normalises common pinyin variants to canonical form."
+    """ Normalises common pinyin variants to canonical form."""
     normal_version = ascii_pinyin.lower().replace(' ', '')
-    normal_version = normal_version.replace(u'v', u'ü')
+    normal_version = normal_version.replace('v', 'ü')
 
     return normal_version
 
 
 def get_pinyin_table():
-    "Get or construct a cached pinyin table."
+    """ Get or construct a cached pinyin table."""
     global _cached_pinyin_table
 
     if _cached_pinyin_table is None:
@@ -157,7 +159,7 @@ def get_pinyin_table():
 
 
 def get_pinyin_segmenter():
-    "Get or construct a cached pinyin segmenter."
+    """ Get or construct a cached pinyin segmenter."""
     global _cached_pinyin_segmenter
 
     if _cached_pinyin_segmenter is None:

@@ -5,9 +5,9 @@
 #
 
 import unittest
-from cStringIO import StringIO
+from six.moves import StringIO
 
-from radkdict import RadkDict
+from cjktools.resources.radkdict import RadkDict
 
 
 def suite():
@@ -43,6 +43,14 @@ class RadkdictTestCase(unittest.TestCase):
         expected_radicals = set([u'一', u'｜', u'化', u'冂', u'尸', u'戸',
                                  u'冊'])
         self.assertEqual(radicals, expected_radicals)
+
+    def test_get_cached(self):
+        rd = RadkDict.get_cached()
+
+        self.assertIsInstance(rd, RadkDict)
+
+        rd2 = RadkDict.get_cached()
+        self.assertIs(rd, rd2)
 
 
 if __name__ == "__main__":

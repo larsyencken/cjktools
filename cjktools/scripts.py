@@ -9,19 +9,29 @@ This module is responsible for Japanese script/encoding specific methods,
 especially determining the script type of an entry. It is thus the only
 module which requires a utf8 encoding for the additional Japanese characters.
 """
+from __future__ import unicode_literals
 
-import enum
+from enum import Enum
 
-Script = enum.Enum(u'Hiragana', u'Katakana', u'Kanji', u'Ascii',
-                   u'FullAscii', u'HalfKatakana', u'Unknown')
+from six import unichr, text_type, iteritems
+from six.moves import range
+
+class Script:
+    Hiragana = 1
+    Katakana = 2
+    Kanji = 3
+    Ascii = 4
+    FullAscii = 5
+    HalfKatakana = 6
+    Unknown = 7
 
 _known_bands = {
-    Script.Ascii:           (u'\u0021', u'\u00ff'),
-    Script.Hiragana:	    (u'\u3041', u'\u3096'),
-    Script.Katakana:	    (u'\u30a1', u'\u30f6'),
-    Script.Kanji:	        (u'\u4e00', u'\u9fa5'),
-    Script.FullAscii:	    (u'\uff01', u'\uff5f'),
-    Script.HalfKatakana:    (u'\uff61', u'\uff9f'),
+    Script.Ascii:           ('\u0021', '\u00ff'),
+    Script.Hiragana:	    ('\u3041', '\u3096'),
+    Script.Katakana:	    ('\u30a1', '\u30f6'),
+    Script.Kanji:	        ('\u4e00', '\u9fa5'),
+    Script.FullAscii:	    ('\uff01', '\uff5f'),
+    Script.HalfKatakana:    ('\uff61', '\uff9f'),
 }
 
 _inter_kana_distance = 96
@@ -62,16 +72,16 @@ class ScriptMapping:
             else:
                 result.append(char)
 
-        return u''.join(result)
+        return ''.join(result)
 
 to_hiragana = ScriptMapping(Script.Katakana, Script.Hiragana)
 to_katakana = ScriptMapping(Script.Hiragana, Script.Katakana)
 
 
 _mapped_chars = {
-    u'\u3000':  u'\u0020',
-    u'\u3001':  u'\u002c',
-    u'\u3002':  u'\u002e',
+    '\u3000':  '\u0020',
+    '\u3001':  '\u002c',
+    '\u3002':  '\u002e',
 }
 
 _to_ascii = ScriptMapping(Script.FullAscii, Script.Ascii)
@@ -90,10 +100,10 @@ def normalize_ascii(j_string):
     for char in j_string:
         result.append(_mapped_chars.get(char, char))
 
-    return _to_ascii(u''.join(result))
+    return _to_ascii(''.join(result))
 
 
-_full_width_kana = u"。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜"  # nopep8
+_full_width_kana = "。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜"  # nopep8
 
 
 def normalize_kana(j_string):
@@ -101,8 +111,8 @@ def normalize_kana(j_string):
     Normalizes all half-width katakana to normal width katakana. Leaves
     all other characters unchanged.
 
-        >>> x = normalize_kana(unicode('ｶｷｸｹｺ', 'utf8'))
-        >>> x == unicode('カキクケコ', 'utf8')
+        >>> x = normalize_kana(u'ｶｷｸｹｺ')
+        >>> x == u'カキクケコ'
         True
 
     @param j_string: The string to convert.
@@ -117,7 +127,7 @@ def normalize_kana(j_string):
         else:
             result.append(char)
 
-    return u''.join(result)
+    return ''.join(result)
 
 
 def normalize(j_string):
@@ -125,8 +135,8 @@ def normalize(j_string):
     Jointly normalized full width ascii to single width ascii and half-width
     katakana to full with katakana.
 
-        >>> x = normalize(unicode('Aあア阿ｱＡ', 'utf8'))
-        >>> x == unicode('Aあア阿アA', 'utf8')
+        >>> x = normalize(u'Aあア阿ｱＡ')
+        >>> x == u'Aあア阿アA'
         True
 
     @param j_string: The string to convert.
@@ -144,7 +154,7 @@ def get_script(script):
     script_starts, script_ends = _known_bands[script]
 
     output = []
-    for i in xrange(ord(script_starts), ord(script_ends) + 1):
+    for i in range(ord(script_starts), ord(script_ends) + 1):
         output.append(unichr(i))
 
     return ''.join(output)
@@ -154,16 +164,19 @@ def compare_kana(j_string_a, j_string_b):
     """
     Compares two kana strings in a script-independent manner.
 
-        >>> ru_h = unicode('る', 'utf8')
-        >>> ka_h = unicode('か', 'utf8')
-        >>> ka_k = unicode('カ', 'utf8')
+        >>> ru_h = u'る'
+        >>> ka_h = u'か'
+        >>> ka_k = u'カ'
         >>> compare_kana(ru_h, ka_k) == cmp(ru_h, ka_h)
         True
 
     @type j_string_a: unicode
     @type j_string_b: unicode
     """
-    return cmp(to_katakana(j_string_a), to_katakana(j_string_b))
+    a = to_katakana(j_string_a)
+    b = to_katakana(j_string_b)
+
+    return (a > b) - (a < b)
 
 
 def contains_script(script, j_string):
@@ -171,7 +184,7 @@ def contains_script(script, j_string):
     Returns True if the given script is within the string, False
     otherwise.
 
-        >>> woof = u'woof'
+        >>> woof = 'woof'
         >>> contains_script(Script.Ascii, woof)
         True
         >>> contains_script(Script.Kanji, woof)
@@ -190,15 +203,15 @@ def script_type(char):
     Determine the type of script contained in the given character. Script
     types are expressed using the Script enum.
 
-        >>> woof = u'woof'
+        >>> woof = 'woof'
         >>> script_types(woof)
         set([Ascii])
 
-        >>> beijing = unicode('北京', 'utf8')
+        >>> beijing = u'北京'
         >>> script_types(beijing)
         set([Kanji])
 
-        >>> ru = unicode('る', 'utf8')
+        >>> ru = u'る'
         >>> script_types(ru)
         set([Hiragana])
 
@@ -207,9 +220,12 @@ def script_type(char):
     @return: The script type.
     """
     # Normalize/typecheck our input.
-    char = unicode(char)[0]
+    if not len(char):
+        return Script.Unknown
 
-    for script, (start_band, end_band) in _known_bands.iteritems():
+    char = text_type(char)[0]
+
+    for script, (start_band, end_band) in iteritems(_known_bands):
         if start_band <= char <= end_band:
             return script
     else:
@@ -220,7 +236,7 @@ def script_boundaries(j_string):
     """
     Determines where the script boundaries are in the given string.
 
-        >>> taberu = unicode('食べる', 'utf8')
+        >>> taberu = u'食べる'
         >>> script_boundaries(taberu) == (taberu[0], taberu[1:])
         True
 
@@ -228,12 +244,15 @@ def script_boundaries(j_string):
     @type j_string: string
     @return: A tuple of script-contiguous blocks
     """
-    assert type(j_string) == unicode
+    if not len(j_string):
+        return (j_string, )
+
+    assert isinstance(j_string, text_type)
     segments = ()
-    current_seg_type = script_type(j_string[0])
+    current_seg_type = script_type(j_string)
     current_seg = j_string[0]
     for char in j_string[1:]:
-        if script_type(char) == current_seg_type or char == u'ー':
+        if script_type(char) == current_seg_type or char == 'ー':
             current_seg += char
         else:
             segments += current_seg,
@@ -251,15 +270,15 @@ def script_types(j_string):
     """
     Returns a set of the script types in the given string.
 
-        >>> woof = u'woof'
+        >>> woof = 'woof'
         >>> script_types(woof)
         set([Ascii])
 
-        >>> beijing = unicode('北京', 'utf8')
+        >>> beijing = u'北京'
         >>> script_types(beijing)
         set([Kanji])
 
-        >>> taberu = unicode('食べる', 'utf8')
+        >>> taberu = u'食べる'
         >>> script_types(taberu)
         set([Hiragana, Kanji])
     """
@@ -270,7 +289,7 @@ def unique_kanji(j_string):
     """
     Returns the set of all unique kanji found in the given string.
 
-        >>> taberu = unicode('食べる', 'utf8')
+        >>> taberu = u'食べる'
         >>> unique_kanji(taberu) == set([taberu[0]])
         True
     """

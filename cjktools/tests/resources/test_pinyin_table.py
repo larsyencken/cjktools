@@ -4,8 +4,10 @@
 #  cjktools
 #
 
+from __future__ import unicode_literals
+
 import unittest
-import pinyin_table
+from cjktools.resources import pinyin_table
 
 
 def suite():
@@ -20,23 +22,22 @@ class PinyinTableTestCase(unittest.TestCase):
         pass
 
     def test_pinyin_table(self):
-        "Tests simple conversion from hanzi to unicode pinyin."
+        # Tests simple conversion from hanzi to unicode pinyin.
         table = pinyin_table.get_pinyin_table()
-        self.assertEqual(table.from_hanzi(u'一代风流'), u'yīdàifēnglíu')
-        return
+        self.assertEqual(table.from_hanzi('一代风流'), 'yīdàifēnglíu')
 
     def test_ascii_pinyin(self):
-        "Test simple conversion from ascii to unicode pinyin."
+        # Test simple conversion from ascii to unicode pinyin.
         s = pinyin_table.get_pinyin_table()
-        self.assertEqual(u'bāolíqǔan', s.from_ascii('bao1li2 quan3'))
-        self.assertEqual(u'chéngzhewéiwáng',
+        self.assertEqual('bāolíqǔan', s.from_ascii('bao1li2 quan3'))
+        self.assertEqual('chéngzhewéiwáng',
                          s.from_ascii('cheng2zhewei2wang2'))
-        self.assertEqual(u'lǖ', s.from_ascii(u'lü1'))
-        return
+        self.assertEqual('lǖ', s.from_ascii('lü1'))
 
     def test_pinyin_segmenter(self):
-        "Tests for correct segmentation and tones detection."
+        # Tests for correct segmentation and tones detection.
         segmenter = pinyin_table.get_pinyin_segmenter()
+
         self.assertEqual(
             segmenter.segment_pinyin('woshangdaxue'),
             (('wo', 0), ('shang', 0), ('da', 0), ('xue', 0)),
@@ -53,27 +54,27 @@ class PinyinTableTestCase(unittest.TestCase):
             segmenter.segment_pinyin('yi1ge4jin4r'),
             (('yi', 1), ('ge', 4), ('jin', 4), ('er', 0))
         )
+
         self.assertEqual(
-            segmenter.segment_pinyin(u'yi1lü4xu'),
-            (('yi', 1), (u'lü', 4), (u'xu', 0))
-        )
-        self.assertEqual(
-            segmenter.segment_pinyin(u'yi1lü4xu'),
-            (('yi', 1), (u'lü', 4), (u'xu', 0))
+            segmenter.segment_pinyin('yi1lü4xu'),
+            (('yi', 1), ('lü', 4), ('xu', 0))
         )
 
         self.assertEqual(
-            segmenter.segment_pinyin(u'shangqi3bu4'),
-            (('shang', 0), (u'qi', 3), (u'bu', 4))
+            segmenter.segment_pinyin('shangqi3bu4'),
+            (('shang', 0), ('qi', 3), ('bu', 4))
         )
 
-    def test_should_fail(self):
+    @unittest.skip('Known failure: fails with regex segementer')
+    def test_garden_path_pinyin(self):
         """
-        This test should fail with the regex segmenter.
-        Build a better segmenter!!!
+        deniu2 is unambiguously 'de0niu2', but because 'de' and 'ni' are
+        valid syllables, they get consumed first and 'u' is not detected.
+
+        The regex segmenter does not handle this situation properly.
         """
         segmenter = pinyin_table.get_pinyin_segmenter()
-        self.assertNotEqual(
+        self.assertEqual(
             segmenter.segment_pinyin('deniu2'),
             (('de', 0), ('niu', 2))
         )
@@ -89,7 +90,7 @@ class PinyinTableTestCase(unittest.TestCase):
         self.assertEqual(table.strip_tones('Xia4bu4Lai2tai2'), 'xiabulaitai')
 
         # Presence of v
-        self.assertEqual(table.strip_tones(u'yi1lü4'), u'yilü')
+        self.assertEqual(table.strip_tones('yi1lü4'), 'yilü')
 
     def tearDown(self):
         pass

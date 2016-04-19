@@ -10,11 +10,12 @@ dictionary which is line-based, and whose entries are flat text, and thus
 amenable to being parsed with regular expressions. The list of known
 formats is provided in the known_formats object.
 """
+from __future__ import unicode_literals
 
 import re
 
 from cjktools.errors import NotYetImplementedError
-from bilingual_dict import BilingualDictionary, DictionaryEntry
+from .bilingual_dict import BilingualDictionary, DictionaryEntry
 
 
 class UnknownFormatError(Exception):
@@ -93,7 +94,7 @@ class RegexFormat(DictionaryFormat):
     def parse_line(self, entry_line):
         match = self.line_pattern.match(entry_line)
         if not match:
-            raise FormatError(u"Bad line: %s" % entry_line)
+            raise FormatError("Bad line: %s" % entry_line)
 
         match_dict = match.groupdict()
 
@@ -107,6 +108,6 @@ class RegexFormat(DictionaryFormat):
             senses.append(match.groupdict()['sense'])
 
         if not senses:
-            raise FormatError(u"No senses for word: %s" % word)
+            raise FormatError("No senses for word: %s" % word)
 
         return DictionaryEntry(word, readings, senses)

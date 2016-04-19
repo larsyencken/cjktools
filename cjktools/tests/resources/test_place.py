@@ -3,15 +3,16 @@
 #  test_place.py
 #  cjktools
 #
-
+from __future__ import unicode_literals
 
 import unittest
 import os
+import tempfile
 
 import warnings
-warnings.simplefilter("ignore", RuntimeWarning)
+warnings.simplefilter("ignore", RuntimeWarning)     # Why?
 
-import place
+from cjktools.resources import place
 
 
 def suite():
@@ -23,27 +24,29 @@ def suite():
 
 class PlaceTestCase(unittest.TestCase):
     def setUp(self):
-        self.melb = place.Place(u'Melbourne', u'メルボルン')
-        self.aust = place.Place(u'Australia', u'オーストラリア')
-        self.filename = os.tmpnam()
+        self.melb = place.Place('Melbourne', 'メルボルン')
+        self.aust = place.Place('Australia', 'オーストラリア')
+        tmpfile, self.filename = tempfile.mkstemp()
+        os.close(tmpfile)
 
     def test_basics(self):
-        self.assertEqual(self.melb.label, u'Melbourne')
-        self.assertEqual(self.melb.reading, u'メルボルン')
+        self.assertEqual(self.melb.label, 'Melbourne')
+        self.assertEqual(self.melb.reading, 'メルボルン')
 
         self.aust.append(self.melb)
 
-        assert self.melb.label in self.aust
-        return
+        self.assertIn(self.melb.label, self.aust)
 
     def test_formatting(self):
         original_place = self.aust
         melbourne = self.melb
-        melbourne.append(place.Place('St_Kilda', u'セーントキルダ'))
-        melbourne.append(place.Place('Collingwood', u'コーリングウード'))
+        melbourne.append(place.Place('St_Kilda', 'セーントキルダ'))
+        melbourne.append(place.Place('Collingwood', 'コーリングウード'))
         original_place.append(melbourne)
-        sydney = place.Place('Sydney', u'シドニー')
+
+        sydney = place.Place('Sydney', 'シドニー')
         self.assertRaises(ValueError, place.Place, "Anja's place")
+        
         sydney.append(place.Place("Anja's_place"))
         original_place.append(sydney)
 
@@ -55,7 +58,6 @@ class PlaceTestCase(unittest.TestCase):
         # Clean up the temp file we may have used.
         if os.path.exists(self.filename):
             os.remove(self.filename)
-        return
 
 
 if __name__ == "__main__":

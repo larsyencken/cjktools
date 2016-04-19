@@ -8,13 +8,23 @@
 This module deals with sound and reading alternations, both predicting and
 recovering from them.
 """
+from __future__ import unicode_literals
 
-from simplestats.comb import combinations
+from cjktools import kana_table
+from cjktools import scripts
+from cjktools import maps
 
-import kana_table
-import scripts
-import maps
+from six import unichr as chr
+from six import iteritems
 
+import re
+from itertools import product
+
+_sokuon_map = {scripts.Script.Hiragana: 'っ',
+               scripts.Script.Katakana: 'ッ'}
+
+_onbin_map = {scripts.Script.Hiragana: 'いちりきつく',
+              scripts.Script.Katakana: 'イチリキツク'}
 
 def canonical_forms(kana_segments):
     """
@@ -30,20 +40,15 @@ def canonical_forms(kana_segments):
 
     candidate_sets = []
     for i, segment in enumerate(kana_segments):
-        variants = [segment]
-
-        if (i < num_segments - 1 and len(segment) > 1 and
-                segment.endswith(u'っ')):
-            # Can restore onbin cases.
-            variants.extend([segment[:-1] + c for c in u'いちりきつく'])
-
-        if i > 0 and table.is_voiced(segment[0]):
-            # Can devoice.
-            variants.extend([from_voiced[v[0]] + v[1:] for v in variants])
+        left_context = i > 0
+        right_context = i < num_segments -1
+        variants = canonical_segment_forms(segment,
+                                           left_context=left_context,
+                                           right_context=right_context)
 
         candidate_sets.append(variants)
 
-    return combinations(*candidate_sets)
+    return list(product(*candidate_sets))
 
 
 def canonical_segment_forms(segment, left_context=True, right_context=True):
@@ -55,11 +60,20 @@ def canonical_segment_forms(segment, left_context=True, right_context=True):
     """
     table = kana_table.KanaTable.get_cached()
     variants = set([segment])
+    stype = scripts.script_type(segment)
+    sokuon = _sokuon_map.get(stype, None)
+    onbin = _onbin_map.get(stype, None)
 
-    if right_context and len(segment) > 1 and segment.endswith(u'っ'):
-        variants.update([segment[:-1] + c for c in u'いちりきつく'])
+    if sokuon is None:
+        raise ValueError('Unsupported script type. '
+                         'Segments must be hiragana or katakana')
+
+    if right_context and len(segment) > 1 and segment.endswith(sokuon):
+        # Can restore onbin cases
+        variants.update([segment[:-1] + c for c in onbin])
 
     if left_context and table.is_voiced(segment[0]):
+        # Can devoice
         variants.update([from_voiced[v[0]] + v[1:] for v in variants])
 
     return variants
@@ -77,7 +91,7 @@ def surface_forms(reading_segments):
         map(rendaku_variants, reading_segments[1:])
     )
 
-    return combinations(*candidate_sets)
+    return list(product(*candidate_sets))
 
 
 def rendaku_variants(kana_segment):
@@ -96,7 +110,8 @@ def onbin_variants(kana_segment):
     """
     variants = set([kana_segment])
     if len(kana_segment) > 1:
-        variants.add(kana_segment[:-1] + u'っ')
+        sokuon = _sokuon_map[scripts.script_type(kana_segment)]
+        variants.add(kana_segment[:-1] + sokuon)
 
     return variants
 
@@ -106,69 +121,86 @@ def _create_voicing_map():
     Constructs map from kana to their voiced alternatives.
     """
     table = kana_table.KanaTable.get_cached().get_table()
-    voiced_line = table[u'か'] + table[u'さ'] + table[u'た']
-    double_voiced_line = table[u'は']
+    voiced_line = table['か'] + table['さ'] + table['た']
+    double_voiced_line = table['は']
 
     voicing_map = {}
     for kana in scripts.get_script(scripts.Script.Hiragana):
         ord_kana = ord(kana)
 
         if kana in voiced_line:
-            voicing_map[kana] = [unichr(ord_kana+1)]
+            voicing_map[kana] = [chr(ord_kana+1)]
         elif kana in double_voiced_line:
-            voicing_map[kana] = [unichr(ord_kana+1), unichr(ord_kana+2)]
+            voicing_map[kana] = [chr(ord_kana+1), chr(ord_kana+2)]
         else:
             voicing_map[kana] = []
+
+    # Add katakana into the mix
+    katakana_vm = {scripts.to_katakana(k): list(map(scripts.to_katakana, v))
+                   for k, v in iteritems(voicing_map)}
+
+    voicing_map.update(katakana_vm)
 
     return voicing_map
 
 to_voiced = _create_voicing_map()
 from_voiced = maps.invert_mapping(to_voiced)
-from_voiced = dict((k, v[0]) for (k, v) in from_voiced.iteritems())
+from_voiced = dict((k, v[0]) for (k, v) in iteritems(from_voiced))
 
 
 def insert_duplicate_kanji(kanji_string):
     """
     Inserts full kanji for characters where a shorthand is used.
 
-        >>> k = insert_duplicate_kanji(unicode('私々', 'utf8'))
-        >>> expected = unicode('私私', 'utf8')
+        >>> k = insert_duplicate_kanji(u'私々')
+        >>> expected = u'私私'
         >>> k == expected
         True
     """
-    loc = kanji_string.find(u'々')
+    loc = kanji_string.find('々')
     while loc > 0:
         dup = kanji_string[loc-1]
         kanji_string = kanji_string[:loc] + dup + kanji_string[loc+1:]
-        loc = kanji_string.find(u'々')
+        loc = kanji_string.find('々')
 
     return kanji_string
 
-
+_long_finder = re.compile(r'(?<=[\u3041-\u3096])ー')  # Finds only in hiragana
 def expand_long_vowels(kana_string):
     """
     Expands whatever long vowels are possible to expand.
 
-        >>> a = expand_long_vowels(unicode('すー', 'utf8'))
-        >>> b = unicode('すう', 'utf8')
+        >>> a = expand_long_vowels(u'すー')
+        >>> b = u'すう'
         >>> a == b
         True
     """
-    not_found = -1
-    kana_string = scripts.to_hiragana(kana_string)
+    script_converters = {scripts.Script.Hiragana: lambda x: x,
+                         scripts.Script.Katakana: scripts.to_katakana}
+
     table = kana_table.KanaTable.get_cached()
 
-    i = kana_string.find(u'ー', 1)
-    while i != not_found:
-        previous_char = kana_string[i-1]
-        previous_script = scripts.script_type(previous_char)
-        if previous_script == scripts.Script.Hiragana:
-            # Ok, we can correct this one.
-            vowel = table.to_vowel_line(previous_char)
-            kana_string = kana_string[:i] + vowel + kana_string[i+1:]
+    out_string = ''
+    for segment in scripts.script_boundaries(kana_string):
+        if len(segment):
+            char_type = scripts.script_type(segment)
 
-        i = kana_string.find(u'ー', i+1)
+            if char_type not in script_converters:
+                out_string += segment
+                continue
 
-    return kana_string
+            reverse_operation = script_converters[char_type]
+            segment = scripts.to_hiragana(segment)
+        else:
+            continue
+
+        for m in _long_finder.finditer(segment):
+            i = m.start() 
+            vowel = table.to_vowel_line(segment[i-1])
+            segment = segment[:i] + vowel + segment[i+1:]
+
+        out_string += reverse_operation(segment)
+
+    return out_string
 
 #----------------------------------------------------------------------------#

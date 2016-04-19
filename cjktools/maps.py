@@ -10,6 +10,7 @@ contains high-level interfaces for dealing with these mappings.
 """
 
 from itertools import chain
+from six import iteritems
 
 
 def chain_mapping(*dictionaries):
@@ -35,7 +36,7 @@ def invert_mapping(dictionary):
     new dictionary with a one-to-many mapping from value to key.
     """
     inverted_dict = {}
-    for key, values in dictionary.iteritems():
+    for key, values in iteritems(dictionary):
         for value in values:
             inverted_dict.setdefault(value, []).append(key)
 
@@ -50,7 +51,7 @@ def is_injective(dictionary):
     values are also unique. This requires that the values are all hashable.
     """
     covered = set()
-    for key, value in dictionary.iteritems():
+    for key, value in iteritems(dictionary):
         if value in covered:
             return False
         covered.add(value)
@@ -64,7 +65,7 @@ def invert_injective_mapping(dictionary):
     new dictionary with a one-to-one mapping from value to key.
     """
     inverted_dict = {}
-    for key, value in dictionary.iteritems():
+    for key, value in iteritems(dictionary):
         assert value not in inverted_dict, "Mapping is not 1-1"
         inverted_dict[value] = key
 
@@ -82,12 +83,12 @@ def map_dict(method, dictionary, in_place=False):
     """
     if in_place:
         # Modify the dictionary in-place.
-        for key, value in dictionary.iteritems():
+        for key, value in iteritems(dictionary):
             dictionary[key] = method(value)
         return dictionary
     else:
         # Return the modified dictionary.
-        return dict((k, method(v)) for (k, v) in dictionary.iteritems())
+        return dict((k, method(v)) for (k, v) in iteritems(dictionary))
 
 
 def multi_dict(input_pairs):
@@ -128,8 +129,6 @@ def procmap(method, item_list):
     for item in item_list:
         method(item)
 
-    return
-
 
 def merge_dicts(*args):
     """
@@ -138,7 +137,7 @@ def merge_dicts(*args):
     all the values in the provided dictionaries.
     """
     unified_dict = {}
-    for key, items in apply(chain, [d.iteritems() for d in args]):
+    for key, items in chain(*[iteritems(d) for d in args]):
         if key in unified_dict:
             unified_dict[key].update(items)
         else:
@@ -163,7 +162,7 @@ def partial_map(method, object_seq):
     rejected = []
 
     for item in object_seq:
-        result = apply(method, (item,))
+        result = method(*(item,))
         if result:
             mapped.append(result)
         else:
@@ -177,4 +176,4 @@ def filtered_map(method, object_list):
     Performs a map then a filter on the object list. The final filter strips
     out objects which evaluate to False.
     """
-    return filter(None, map(method, object_list))
+    return [x for x in map(method, object_list) if x]

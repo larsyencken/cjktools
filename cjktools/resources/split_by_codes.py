@@ -7,36 +7,42 @@
 import re
 from collections import defaultdict
 
-from auto_format import iter_entries
+import six
+
+from cjktools.common import _NullContextWrapper as NullContextWrapper
+from .auto_format import iter_entries
 
 
 def load_coded_dictionary(file_or_stream):
     "Load a dictionary which is split by the codes within it."
-    if isinstance(file_or_stream, (str, unicode)):
+    if isinstance(file_or_stream, (six.text_type, six.string_types)):
         file_or_stream = open(file_or_stream)
+    else:
+        file_or_stream = NullContextWrapper(file_or_stream)
 
-    word_to_entry = {}
-    coded_dict = defaultdict(dict)
-    for entry in iter_entries(file_or_stream):
-        word = entry.word
+    with file_or_stream as file_or_stream:
+        word_to_entry = {}
+        coded_dict = defaultdict(dict)
+        for entry in iter_entries(file_or_stream):
+            word = entry.word
 
-        # Merge any word entries with the same graphical form.
-        if word in word_to_entry:
-            e = word_to_entry[word]
-            e.update(entry)
-            entry = e
-        else:
-            word_to_entry[word] = entry
+            # Merge any word entries with the same graphical form.
+            if word in word_to_entry:
+                e = word_to_entry[word]
+                e.update(entry)
+                entry = e
+            else:
+                word_to_entry[word] = entry
 
-        codes = set()
-        for sense in entry.senses:
-            codes.update(get_codes(sense))
+            codes = set()
+            for sense in entry.senses:
+                codes.update(get_codes(sense))
 
-        # Create a subset of the dictionary for each code.
-        for code in codes:
-            # Note that overwriting is ok, since we already merged any
-            # coincidental forms.
-            coded_dict[code][word] = entry
+            # Create a subset of the dictionary for each code.
+            for code in codes:
+                # Note that overwriting is ok, since we already merged any
+                # coincidental forms.
+                coded_dict[code][word] = entry
 
     return coded_dict
 

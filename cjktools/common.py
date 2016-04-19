@@ -13,9 +13,12 @@ import codecs
 import bz2
 import gzip
 
+import six
 
 def filter_comments(file_stream):
-    "Filter a filestream, removing comment lines marked with an initial hash."
+    """
+    Filter a filestream, removing comment lines marked with an initial hash.
+    """
     for line in file_stream:
         if line.startswith('#'):
             continue
@@ -50,10 +53,45 @@ def sopen(filename, mode='rb', encoding='utf8'):
     else:
         stream = open(filename, mode)
 
-    if encoding not in (None, 'byte'):
+    if encoding not in (None, 'byte') and six.PY2:
         if read_mode:
             return codecs.getreader(encoding)(stream)
         else:
             return codecs.getwriter(encoding)(stream)
 
     return stream
+
+
+def stream_codec(istream):
+    """
+    Handles the common case where, in Python 2.x the stream needs decoding, but
+    in Python 3.x it's doesn't.
+    """
+    # TODO: Find a more elegant way to do this
+    if six.PY2:
+        return codecs.getreader('utf8')(istream)
+
+    return istream
+
+
+def get_stream_context(default_stream_func, istream=None):
+    if istream is None:
+        return default_stream_func()
+    else:
+        return _NullContextWrapper(istream)
+
+
+class _NullContextWrapper(object):
+    """
+    Class for wrapping contexts so that they are passed through in a 
+    with statement.
+    """
+    def __init__(self, context):
+        self.context = context
+
+    def __enter__(self):
+        return self.context
+
+    def __exit__(*args, **kwargs):
+        pass
+

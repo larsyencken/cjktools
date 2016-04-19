@@ -13,7 +13,7 @@ import codecs
 
 from cjktools import scripts
 
-import cjkdata
+from . import cjkdata
 
 
 def get_lists():

@@ -3,13 +3,15 @@
 #  test_split_by_codes.py
 #  cjktools
 #
+from __future__ import unicode_literals
 
 import unittest
 import codecs
-from cStringIO import StringIO
+from six.moves import StringIO
 
-from split_by_codes import load_coded_dictionary
+from cjktools.resources.split_by_codes import load_coded_dictionary
 
+from .._common import to_unicode_stream
 
 def suite():
     test_suite = unittest.TestSuite((
@@ -34,22 +36,25 @@ class SplitByCodesTestCase(unittest.TestCase):
     def test_enamdict(self):
         "Checks code splitting for enamdict."
         enamdic_coded = load_coded_dictionary(
-            codecs.getreader('utf8')(StringIO(ENAMDICT_SAMPLE))
+            to_unicode_stream(ENAMDICT_SAMPLE)
         )
-        assert 'p' in enamdic_coded
-        assert u'秋葉橋' in enamdic_coded['p']
-        assert u'秋葉橋' not in enamdic_coded['s']
+        self.assertIn('p', enamdic_coded)
+        self.assertIn('秋葉橋', enamdic_coded['p'])
+        self.assertNotIn('秋葉橋', enamdic_coded['s'])
 
     def test_edict(self):
         edict_coded = load_coded_dictionary(
-            codecs.getreader('utf8')(StringIO(EDICT_SAMPLE))
+            to_unicode_stream(EDICT_SAMPLE)
         )
-        assert 'adj-i' in edict_coded
+
+        self.assertIn('adj-i', edict_coded)
+
         adjectives = edict_coded['adj-i']
-        assert u'素晴らしい' in adjectives
+        self.assertIn('素晴らしい', adjectives)
+
         subarashii = adjectives[u'素晴らしい']
-        assert subarashii.readings[0] == u'すばらしい'
-        assert subarashii.readings[-1] == u'すんばらしい'
+        self.assertEqual(subarashii.readings[0], 'すばらしい')
+        self.assertEqual(subarashii.readings[-1], 'すんばらしい')
 
 
 if __name__ == "__main__":

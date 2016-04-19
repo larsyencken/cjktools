@@ -7,6 +7,7 @@
 """
 A nice interface to the Kanjidic dictionary.
 """
+from __future__ import unicode_literals
 
 import re
 from itertools import chain
@@ -14,7 +15,9 @@ from itertools import chain
 from cjktools import scripts
 from cjktools.common import sopen
 
-import cjkdata
+from functools import reduce
+
+from . import cjkdata
 
 
 basic_features = set([
@@ -54,7 +57,7 @@ remappings = {
 
 
 class KanjidicEntry(object):
-    "A single entry in the kanjidic file."
+    """A single entry in the kanjidic file."""
 
     def __init__(self, **entry_details):
         assert ('on_readings' in entry_details
@@ -64,8 +67,8 @@ class KanjidicEntry(object):
     def get_all_readings(self):
         "Construct a reading pool for this entry."
         reading_set = set()
-        for reading in (self.kun_readings +
-                        map(scripts.to_hiragana, self.on_readings)):
+        for reading in chain(self.kun_readings,
+                             map(scripts.to_hiragana, self.on_readings)):
             # Ignore suffix/prefix information about readings.
             if '-' in reading:
                 reading = reading.replace('-', '')
@@ -90,7 +93,7 @@ class Kanjidic(dict):
     """
 
     def __init__(self, kanjidic_files=None):
-        dict.__init__(self)
+        super(Kanjidic, self).__init__
 
         if kanjidic_files is None:
             kanjidic_files = [
@@ -98,15 +101,15 @@ class Kanjidic(dict):
                 cjkdata.get_resource('kanjd212'),
             ]
 
-        line_stream = reduce(chain, [sopen(f) for f in kanjidic_files])
+        line_stream = reduce(chain, [sopen(f, mode='r') for f in kanjidic_files])
         self._parse_kanjidic(line_stream)
 
     @classmethod
     def get_cached(cls):
-        if not hasattr(cls, '_cached'):
-            cls._cached = cls()
+        cached = getattr(cls, '_cached', cls())
+        cls._cached = cached
 
-        return cls._cached
+        return cached
 
     def _parse_kanjidic(self, line_stream):
         """
