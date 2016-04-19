@@ -19,3 +19,5 @@ __version__.py
 env
 cjkdata
 *.tgz
+.tox
+.eggs
