@@ -57,11 +57,10 @@ An interface to the `radkfile`. The `RadkDict` class is basically a dictionary w
 An extensible wrapper for EDICT and EDICT-like dictionary formats. Here's an example where we load the dictionary and look at an entry.
 
 ```pycon
->>> from pkg_resources import resource_filename
->>> edict_file = resource_filename('cjktools_data', 'dict/je_edict')
->>> from cjktools.resources import auto_format
->>> edict = auto_format.load_dictionary(edict_file)
->>> edict[u'パチンコ']
+>>> from cjktools.resources import cjkdata, auto_format
+>>> edict_file = cjkdata.get_resource('dict/je_edict')
+>>> edict = auto_format.load_dictionary(open(edict_file))
+>>> edict['パチンコ']
 <DictionaryEntry: パチンコ (1 readings, 4 senses)>
 >>> _.senses
 [u'(n) (1) pachinko (Japanese pinball)', u'(2) slingshot', u'catapult', u'(P)']
