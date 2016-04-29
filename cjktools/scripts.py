@@ -11,11 +11,13 @@ module which requires a utf8 encoding for the additional Japanese characters.
 """
 from __future__ import unicode_literals
 
+from enum import Enum
+
 from six import unichr, text_type, iteritems
 from six.moves import range
 
 
-class Script:
+class Script(Enum):
     Hiragana = 1
     Katakana = 2
     Kanji = 3
@@ -41,15 +43,16 @@ class ScriptMapping:
     A mapping function between two scripts. We assume that the given scripts
     are different versions of the same characters, and further that they are
     aligned at the start and end points stored.
+
+    :param Script from_script:
+        The script to convert from.
+    
+    :param Script to_script:
+        The script to convert to.
     """
     def __init__(self, from_script, to_script):
         """
         Constructor, initializes script conversion.
-
-        @param from_script: The script to convert from.
-        @type from_script: Script
-        @param to_script: The script to convert to.
-        @type to_script: Script
         """
         self.from_start, self.from_end = _known_bands[from_script]
         self.to_start, self.to_end = _known_bands[to_script]
@@ -90,9 +93,11 @@ def normalize_ascii(j_string):
     Normalize a double-width ascii string, converting all characters to
     their single-width counterparts.
 
-    @param j_string: The string to convert.
-    @type j_string: unicode
-    @return: The converted string.
+    :param six.text_type j_string:
+        The string to convert.
+    
+    :return:
+        The converted string.
     """
     result = []
     for char in j_string:
@@ -101,7 +106,8 @@ def normalize_ascii(j_string):
     return _to_ascii(''.join(result))
 
 
-_full_width_kana = "。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜"  # nopep8
+_full_width_kana = ("。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシスセソタチツテトナニ"
+                   "ヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜")
 
 
 def normalize_kana(j_string):
@@ -113,9 +119,11 @@ def normalize_kana(j_string):
         >>> x == u'カキクケコ'
         True
 
-    @param j_string: The string to convert.
-    @type j_string: unicode
-    @return: The converted string.
+    :param six.text_type j_string:
+        The string to convert.
+    
+    :return:
+        The converted string.
     """
     start_h_w_kana, end_h_w_kana = _known_bands[Script.HalfKatakana]
     result = []
@@ -137,9 +145,11 @@ def normalize(j_string):
         >>> x == u'Aあア阿アA'
         True
 
-    @param j_string: The string to convert.
-    @type j_string: unicode
-    @return: The converted string.
+    :param six.text_type j_string:
+        The string to convert.
+    
+    :return:
+        The converted string.
     """
     return normalize_ascii(normalize_kana(j_string))
 
@@ -168,8 +178,8 @@ def compare_kana(j_string_a, j_string_b):
         >>> compare_kana(ru_h, ka_k) == cmp(ru_h, ka_h)
         True
 
-    @type j_string_a: unicode
-    @type j_string_b: unicode
+    :param six.text_type j_string_a:
+    :param six.text_type j_string_b:
     """
     a = to_katakana(j_string_a)
     b = to_katakana(j_string_b)
@@ -188,10 +198,11 @@ def contains_script(script, j_string):
         >>> contains_script(Script.Kanji, woof)
         False
 
-    @param script: The script to search for.
-    @type script: Script
-    @param j_string: The string to search within.
-    @type j_string: unicode
+    :param Script script:
+        The script to search for.
+    
+    :param six.text_type j_string:
+        The string to search within.
     """
     return script in script_types(j_string)
 
@@ -213,9 +224,11 @@ def script_type(char):
         >>> script_types(ru)
         set([Hiragana])
 
-    @param char: The character to examine.
-    @type char: unicode
-    @return: The script type.
+    :param six.text_type char:
+        The character to examine.
+    
+    :return:
+        The script type.
     """
     # Normalize/typecheck our input.
     if not len(char):
@@ -238,9 +251,13 @@ def script_boundaries(j_string):
         >>> script_boundaries(taberu) == (taberu[0], taberu[1:])
         True
 
-    @param j_string: The string of Japanese to segment.
-    @type j_string: string
-    @return: A tuple of script-contiguous blocks
+    :param six.text_type j_string:
+        The string of Japanese to segment.
+    
+    :return:
+        A tuple of script-contiguous blocks
+
+    :rtype: :py:class:`tuple`
     """
     if not len(j_string):
         return (j_string, )
@@ -279,6 +296,8 @@ def script_types(j_string):
         >>> taberu = u'食べる'
         >>> script_types(taberu)
         set([Hiragana, Kanji])
+
+    :rtype: :py:class:`set`
     """
     return set(map(script_type, j_string))
 
@@ -290,6 +309,8 @@ def unique_kanji(j_string):
         >>> taberu = u'食べる'
         >>> unique_kanji(taberu) == set([taberu[0]])
         True
+
+    :rtype: :py:class:`set`
     """
     kanji_set = set(j_string)
     for char in list(kanji_set):
