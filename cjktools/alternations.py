@@ -35,7 +35,8 @@ def canonical_forms(kana_segments):
     underlying form, before sequential voicing and sound euphony are
     applied.
 
-    @param kana_segments: Reading segments in their surface form.
+    :param kana_segments:
+        Reading segments in their surface form.
     """
     num_segments = len(kana_segments)
 
