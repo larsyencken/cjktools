@@ -1,3 +1,4 @@
+# Python detritus
 *.orig
 *.rej
 *~
@@ -6,18 +7,27 @@
 *.os
 *.pyo
 *.pyc
+
+# Build detritus
 *.log
 build/*
-*.swp
 dist/*
+*.egg-info/
+.eggs
+*.swp
 *.deb
+
+# Various
 .DS_Store
 data
-*.egg-info/
-__version__.py
-*.bak
 env
-cjkdata
+*.bak
 *.tgz
+__version__.py
 .tox
-.eggs
+
+# Documentation detritus
+docs/build
+
+# cjktools-specific
+cjkdata
