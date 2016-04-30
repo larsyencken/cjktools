@@ -29,8 +29,8 @@ class BilingualDictionary(dict):
 
     def __init__(self, fmt):
         """
-        @param format: The format object for this dictionary.
-        @type format: DictionaryFormat
+        :param DictionaryFormat format:
+            The format object for this dictionary.
         """
         self.format = fmt
 
@@ -61,8 +61,8 @@ class DictionaryEntry(object):
         Update this entry with readings and senses from another homograph.
         The additional readings and senses are added to this entry.
 
-        @param rhs_entry: Another entry to update details from.
-        @type rhs_entry: DictionaryEntry
+        :param DictinoaryEntry rhs_entry:
+            Another entry to update details from.
         """
         if not self.word == rhs_entry.word:
             raise Exception("Can only merge homographs")
