@@ -30,7 +30,7 @@ except ImportError as e:
         return _fallback_load(fname, strict=strict, parent_exception=e)
 
 
-def convert(fname_in, fname_out=None, preamble=None):
+def convert(fname_in, fname_out=None, preamble=None, strict=False):
     """
     Converts an file at ``fname_in`` from a format understood by pypandoc
     to ReStructuredText.
@@ -52,7 +52,7 @@ def convert(fname_in, fname_out=None, preamble=None):
         raise IOError('File not found: {}'.format(fname_in))
 
     text = preamble or ''
-    text = '\n'.join((text, load_text(fname_in)))
+    text = '\n'.join((text, load_text(fname_in, strict=strict)))
 
     if fname_out is not None:
         with open(fname_out, 'w') as f:

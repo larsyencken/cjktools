@@ -1,6 +1,8 @@
 cjktools package
 ================
 
+.. include:: README.rst
+
 Documentation
 =============
 Contents:

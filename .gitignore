@@ -28,6 +28,7 @@ __version__.py
 
 # Documentation detritus
 docs/build
+docs/source/README.rst
 
 # cjktools-specific
 cjkdata

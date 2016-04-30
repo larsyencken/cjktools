@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#needs_sphinx = '1.0'
+needs_sphinx = '1.3'        # sphinx_rtd_theme added in 1.3
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -363,3 +363,24 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+# ------------------  Auto generation -------------------
+# Automatically generate README.rst in the source directory (done in a generic
+# way so it's easy to include other .md files)
+#
+# Change strict_conversion to False if you want to allow documentation to build
+# without converting RST to MD
+strict_conversion = True
+preamble_fmt = \
+"""
+.. This file automatically generated during build from {file_in}. Any changes
+   made to this file will be overwritten.
+"""
+
+from scripts.load_as_rst import convert
+convert_files = {'../../README.md': 'README.rst'}
+for file_in, file_out in convert_files.items():
+    convert(file_in, file_out,
+            preamble=preamble_fmt.format(file_in=file_in),
+            strict=strict_conversion)
+
