@@ -14,6 +14,7 @@ from itertools import chain
 
 from cjktools import scripts
 from cjktools.common import sopen
+from cjktools.common import _ExitStack as ExitStack
 
 from functools import reduce
 
@@ -101,8 +102,12 @@ class Kanjidic(dict):
                 cjkdata.get_resource('kanjd212'),
             ]
 
-        line_stream = reduce(chain, [sopen(f, mode='r') for f in kanjidic_files])
-        self._parse_kanjidic(line_stream)
+        with ExitStack() as stack:
+            file_chain = (stack.enter_context(sopen(f, mode='r'))
+                          for f in kanjidic_files)
+            line_stream = reduce(chain, file_chain)
+
+            self._parse_kanjidic(line_stream)
 
     @classmethod
     def get_cached(cls):

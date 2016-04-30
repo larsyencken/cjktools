@@ -100,3 +100,25 @@ class _NullContextWrapper(object):
 
     def __exit__(*args, **kwargs):
         pass
+
+# If contextlib's ExitStack doesn't work, we need to pull it in from a backport
+try:
+    from contextlib import ExitStack as _ExitStack
+except ImportError:
+    # There is a bug in contextlib2 that prevents its use with StreamReaders
+    # So we need to subclass for now until we can pin to a version where it's
+    # fixed. See https://github.com/ncoghlan/contextlib2/issues/5
+    from contextlib2 import ExitStack as bExitStack
+
+    class _ExitStack(bExitStack):
+        def enter_context(self, cm):
+            try:
+                return super(_ExitStack, self).enter_context(cm)
+            except AttributeError as e:
+                _cm_type = cm.__class__
+                _exit = _cm_type.__exit__
+                result = _cm_type.__enter__(cm)
+
+
+            self._push_cm_exit(cm, _exit)
+            return result
