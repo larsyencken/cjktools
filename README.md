@@ -48,7 +48,7 @@ An interface to the `radkfile`. The `RadkDict` class is basically a dictionary w
 
 ```pycon
 >>> from cjktools.resources.radkdict import RadkDict
->>> print ', '.join(RadkDict())[u'明']
+>>> print(', '.join(RadkDict())[u'明'])
 日, 月
 ```
 
@@ -87,11 +87,11 @@ A simple dictionary of kanji reading and indexes in various lookup schemes.
 >>> from cjktools.resources import kanjidic
 >>> kjd = kanjidic.Kanjidic()
 >>> entry = kjd[u'上']
->>> print ', '.join(entry.gloss)
+>>> print(', '.join(entry.gloss))
 above, up
->>> print ', '.join(entry.on_readings)
+>>> print(', '.join(entry.on_readings))
 ジョウ, ショウ, シャン
->>> print ', '.join(entry.kun_readings)[:10]
+>>> print(', '.join(entry.kun_readings)[:10])
 うえ, -うえ, うわ-, かみ, あ.げる, -あ.げる, あ.がる, -あ.がる, あ.がり, -あ.がり
 ```
 
