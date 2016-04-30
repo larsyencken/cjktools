@@ -47,6 +47,16 @@ def sopen(filename, mode='rb', encoding='utf8'):
     if read_mode and 'w' in mode:
         raise Exception("Must be either read mode or write, but not both")
 
+    # Do this before any streams are opened to hopefully minimize the potential
+    # for failing while resources are open.
+    if encoding not in (None, 'byte') and six.PY2:
+        if read_mode:
+            streamhandler = codecs.getreader(encoding)
+        else:
+            streamhandler = codecs.getwriter(encoding)
+    else:
+        streamhandler = lambda x: x
+
     if filename.endswith('.bz2'):
         stream = bz2.BZ2File(filename, mode)
     elif filename.endswith('.gz'):
@@ -59,13 +69,7 @@ def sopen(filename, mode='rb', encoding='utf8'):
     else:
         stream = open(filename, mode)
 
-    if encoding not in (None, 'byte') and six.PY2:
-        if read_mode:
-            return codecs.getreader(encoding)(stream)
-        else:
-            return codecs.getwriter(encoding)(stream)
-
-    return stream
+    return streamhandler(stream)
 
 
 def stream_codec(istream):
