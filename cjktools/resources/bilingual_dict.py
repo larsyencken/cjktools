@@ -61,7 +61,7 @@ class DictionaryEntry(object):
         Update this entry with readings and senses from another homograph.
         The additional readings and senses are added to this entry.
 
-        :param DictinoaryEntry rhs_entry:
+        :param DictionaryEntry rhs_entry:
             Another entry to update details from.
         """
         if not self.word == rhs_entry.word:
