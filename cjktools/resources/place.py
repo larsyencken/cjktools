@@ -106,7 +106,7 @@ class Place(dict):
         return root_node
 
     def append(self, node):
-        "Simulate a list appending."
+        """ Simulate a list appending. """
         self[node.label] = node
 
     def find_node(self, label):

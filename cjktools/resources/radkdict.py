@@ -24,7 +24,7 @@ def _default_stream():
 
 
 class RadkDict(dict):
-    """Determines which radicals a character contains."""
+    """ Determines which radicals a character contains. """
 
     def __init__(self, istream=None):
         """
@@ -83,7 +83,7 @@ class RadkDict(dict):
 
 
 def print_radicals(kanji_list):
-    "Print out each kanji and the radicals it contains."
+    """ Print out each kanji and the radicals it contains. """
     radical_dict = RadkDict()
     for kanji in kanji_list:
         kanji = text_type(kanji)

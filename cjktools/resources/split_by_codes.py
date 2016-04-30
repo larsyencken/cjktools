@@ -14,7 +14,7 @@ from .auto_format import iter_entries
 
 
 def load_coded_dictionary(file_or_stream):
-    "Load a dictionary which is split by the codes within it."
+    """ Load a dictionary which is split by the codes within it. """
     if isinstance(file_or_stream, (six.text_type, six.string_types)):
         file_or_stream = open(file_or_stream)
     else:
