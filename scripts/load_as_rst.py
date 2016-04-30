@@ -5,14 +5,27 @@ Used to convert Markdown files to RST for use in sphinx and PyPi.
 from __future__ import print_function
 
 import os
-from six import raise_from
+import sys
+import warnings
+
+# This is called during setup, so we can't be sure six is installed.
+# The only thing to pull in is raise_from, though, so we'll just warn
+# about the missing exception chain if it's not installed.
+try:
+    from six import raise_from
+except ImportError:
+    warnings.warn('six not found: Exception chaining will not be used in '
+                  'python 3', ImportWarning)    
+    def raise_from(value, from_value):
+        raise value
 
 # See https://stackoverflow.com/a/23265673/467366 for general approach
 def _fallback_load(fname, strict=False, parent_exception=None):
+        failure_msg = ('pypandoc module not available, returning text in its '
+                       'original format')
         if strict and parent_exception is not None:
             raise raise_from(ImportError(failure_msg), parent_exception)
         else:
-            import warnings
             warnings.warn(failure_msg, ImportWarning)
 
         with open(fname, 'r') as f:
