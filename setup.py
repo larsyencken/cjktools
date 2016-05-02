@@ -34,7 +34,7 @@ if sys.version_info < (3, 4, 0):
 
 # For Python <= 3.3 we need to pull in the backport of ExitStack
 if sys.version_info < (3, 3, 0):
-    REQUIRES.append('contextlib2')
+    REQUIRES.append('contextlib2>=0.5.3')
 
 # Set up the classifiers
 CLASSIFIERS = [
