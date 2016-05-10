@@ -29,7 +29,7 @@ def _fallback_load(fname, strict=False, parent_exception=None):
             warnings.warn(failure_msg, ImportWarning)
 
         with open(fname, 'r') as f:
-            return f.read()    
+            return f.read()
 
 try:
     from pypandoc import convert as pypandoc_convert
@@ -39,8 +39,9 @@ try:
         except (ImportError, OSError) as e:
             return _fallback_load(fname, strict=strict, parent_exception=e)
 except ImportError as e:
+    __err = e
     def load_text(fname, strict=False):
-        return _fallback_load(fname, strict=strict, parent_exception=e)
+        return _fallback_load(fname, strict=strict, parent_exception=__err)
 
 
 def convert(fname_in, fname_out=None, preamble=None, strict=False):
