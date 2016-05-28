@@ -35,7 +35,7 @@ class PinyinFormatError(Exception):
 
 
 class PinyinTable(dict):
-    "A reader which converts Chinese hanzi to pinyin."
+    """ A reader which converts Chinese hanzi to pinyin. """
     def __init__(self):
         self._segmenter = get_pinyin_segmenter()
 
@@ -51,7 +51,7 @@ class PinyinTable(dict):
                 self[hanzi] = tuple(numeric_readings)
 
     def from_hanzi(self, hanzi_string, inline=True, use_tones=True):
-        "Convert all the hanzi in the given string to pinyin readings."
+        """ Convert all the hanzi in the given string to pinyin readings. """
         if not use_tones:
             inline = False
 
@@ -136,7 +136,7 @@ class PinyinSegmenter(object):
         return tuple(corrected)
 
     def is_pinyin(self, symbol_string):
-        "Returns True if the symbol string matches."
+        """ Returns True if the symbol string matches. """
         return bool(self.string_pattern.match(normalize(symbol_string)))
 
 

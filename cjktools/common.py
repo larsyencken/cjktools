@@ -32,10 +32,15 @@ def sopen(filename, mode='rb', encoding='utf8'):
     Transparently uses compression on the given file based on file
     extension.
 
-    @param filename: The filename to use for the file handle.
-    @param mode: The mode to open the file in, e.g. 'r' for read, 'w' for
-        write, 'a' for append.
-    @param encoding: The encoding to use. Can be set to None to avoid
+    :param filename:
+        The filename to use for the file handle.
+    
+    :param mode:
+        The mode to open the file in, e.g. ``'r'`` for read, ``'w'`` for
+        write, ``'a'`` for append.
+    
+    :param encoding:
+        The encoding to use. Can be set to None to avoid
         using unicode at all.
     """
     read_mode = 'r' in mode

@@ -28,17 +28,21 @@ class UnknownFormatError(Exception):
 
 
 class FormatError(Exception):
-    "Used when a dictionary's data is malformed."
+    """Used when a dictionary's data is malformed."""
     pass
 
 
 class DuplicateEntryError(Exception):
-    "Used when a dictionary entry has been duplicated. We can safely skip it."
+    """
+    Used when a dictionary entry has been duplicated. We can safely skip it.
+    """
     pass
 
 
 class DictionaryFormat(object):
-    "An abstract dictionary format, providing the elements."
+    """
+    An abstract dictionary format, providing the elements.
+    """
     def match_header(self, header_line):
         """
         Returns True if the header pattern matches the line given,

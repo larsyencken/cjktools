@@ -24,22 +24,27 @@ def _default_stream():
 
 
 class RadkDict(dict):
-    """Determines which radicals a character contains."""
+    """
+    Determines which radicals a character contains.
+
+    :param istream:
+        The radkfile to parse.
+    """
 
     def __init__(self, istream=None):
         """
-        @param dict_file: The radkfile to parse.
+
         """
 
         with get_stream_context(_default_stream, istream) as istream:
-
             self._parse_radkfile(stream_codec(istream))
 
     def _parse_radkfile(self, line_stream):
         """
         Parses the radkfile and populates the current dictionary.
 
-        @param filename: The radkfile to parse.
+        :param line_stream:
+            A stream yielding the  lines in the radkfile to parse.
         """
         radical_to_kanji = {}
         radical_to_stroke_count = {}
@@ -83,7 +88,7 @@ class RadkDict(dict):
 
 
 def print_radicals(kanji_list):
-    "Print out each kanji and the radicals it contains."
+    """ Print out each kanji and the radicals it contains. """
     radical_dict = RadkDict()
     for kanji in kanji_list:
         kanji = text_type(kanji)

@@ -77,9 +77,14 @@ def map_dict(method, dictionary, in_place=False):
     Applies the method to every value in the dictionary, ignoring keys. If the
     in_place keyword is True, the existing dictionary is modified and returned.
 
-    @param method: The method to apply.
-    @param dictionary: The dictionary whose values to apply the method to.
-    @return: A dictionary with the updated values.
+    :param method:
+        The method to apply.
+
+    :param dictionary:
+        The dictionary whose values to apply the method to.
+    
+    :return:
+        A dictionary with the updated values.
     """
     if in_place:
         # Modify the dictionary in-place.
@@ -102,8 +107,11 @@ def multi_dict(input_pairs):
         >>> multi_dict( [('a', 1), ('b', 2), ('a', 3)] )
         {'a': [1, 3], 'b': [2]}
 
-    @param input_pairs: A list of (key, value) pairs.
-    @return: A dictionary mapping keys to lists of values.
+    :param input_pairs:
+        A list of (key, value) pairs.
+    
+    :return:
+        A dictionary mapping keys to lists of values.
     """
     output_dict = {}
 
@@ -117,14 +125,19 @@ def multi_dict(input_pairs):
 
 def procmap(method, item_list):
     """
-    Like map(), but where the method being applied has no return value. In
+    Like :py:func:`map`, but where the method being applied has no return value. In
     other words, the procedure is called on every item in the list
     sequentially, but since each call has no return value, the call to
-    procmap() also has no return value.
+    :func:`procmap` also has no return value.
 
-    @param method: The procedure to call each time.
-    @param item_list: The list of items to apply the procedure to.
-    @return: None
+    :param method:
+        The procedure to call each time.
+    
+    :param item_list:
+        The list of items to apply the procedure to.
+    
+    :return:
+        :py:const:`None`
     """
     for item in item_list:
         method(item)
@@ -152,11 +165,16 @@ def partial_map(method, object_seq):
     returns them in a separate items list. I.e. any item for which the map
     resulted in a non-true value is provided in a "reject" list.
 
-    @param method: The method to perform on each item.
-    @type method: function
-    @param object_seq: The sequence of items to apply the method to.
-    @type object_seq: sequence
-    @return: The tuple of lists (mapped_items, rejected_items).
+    :param func method:
+        The method to perform on each item.
+    
+    :param sequence object_seq:
+        The sequence of items to apply the method to.
+    
+    :return:
+        The tuple of lists (mapped_items, rejected_items).
+
+    :rtype: :py:class:`tuple`
     """
     mapped = []
     rejected = []

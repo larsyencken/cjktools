@@ -22,10 +22,17 @@ def disk_proxy_direct(method, cache_file, dependencies=[]):
     Creates a proxy for an expensive method which is cached in a single
     file.
 
-    @param method: The method whose return values to cache.
-    @param cache_file: Where to cache the return values.
-    @param dependencies: Any files which are dependencies for the cache.
-    @return: A callable object that looks just like method.
+    :param method:
+        The method whose return values to cache.
+
+    :param cache_file:
+        Where to cache the return values.
+
+    :param dependencies:
+        Any files which are dependencies for the cache.
+
+    :return:
+        A callable object that looks just like method.
     """
     def proxy_method(*args, **params):
         cached_val = try_cache(cache_file, args, params, dependencies)
@@ -90,11 +97,17 @@ def try_cache(filename, method_args=[], method_params={}, dependencies=[]):
     Determines whether the cached object is still fresh (if one exists),
     and if so returns that object. Otherwise returns None.
 
-    @param filename: The filename to look for a cached entry in.
-    @param method_args: The arguments passed to the method we're trying to
-        cache.
-    @param method_params: As for method_args, but dictionary arguments.
-    @return: None or a stored value
+    :param filename:
+        The filename to look for a cached entry in.
+
+    :param method_args:
+        The arguments passed to the method we're trying to cache.
+
+    :param method_params:
+        As for method_args, but dictionary arguments.
+
+    :return:
+        :py:const:`None` or a stored value
     """
     if needs_update(filename, dependencies):
         return None
@@ -121,27 +134,32 @@ def store_cache_object(obj, filename, method_args=[], method_params={}):
     """
     Creates a smart cache object in the file.
 
-    @param obj: The object to cache.
-    @param filename: The location of the cache file.
-    @param method_args: Any arguments which were passed to the cached
-        method.
-    @param method_params: Any keyword parameters passed to the cached
-        method.
+    :param obj:
+        The object to cache.
+
+    :param filename:
+        The location of the cache file.
+
+    :param method_args:
+        Any arguments which were passed to the cached method.
+
+    :param method_params:
+        Any keyword parameters passed to the cached method.
     """
     with common.sopen(filename, 'wb', encoding=None) as o_stream:
         pickle.dump(method_args, o_stream, pickle.HIGHEST_PROTOCOL)
         pickle.dump(method_params, o_stream, pickle.HIGHEST_PROTOCOL)
         pickle.dump(obj, o_stream, pickle.HIGHEST_PROTOCOL)
 
-    return
-
 
 def needs_update(target, dependencies):
     """
     Determine if the target is older than any of its dependencies.
 
-    @param target: A filename for the target.
-    @param dependencies: A sequence of dependency filenames.
+    :param target:
+        A filename for the target.
+    :param dependencies:
+        A sequence of dependency filenames.
     """
     if not path.exists(target):
         return True
