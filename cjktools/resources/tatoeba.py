@@ -222,6 +222,148 @@ class TatoebaSentenceReader(TatoebaDictMixin, TatoebaReader):
                                            self.sentences)
 
 
+class TatoebaLinksReader(TatoebaDictMixin, TatoebaReader):
+    def __init__(self, links, sentence_ids=None, sentence_ids_filter='both'):
+        """
+        A class which reads a Tatoeba links.csv file.
+
+        :param links:
+            A file path or file-like object pointing to the links.csv file.
+
+        :param sentence_ids:
+            If passed, this restricts which links will be read in to those where
+            both the sentence and its translation are on the list of sentence
+            IDs. By default, no restriction is imposed.
+
+        :param sentence_ids_filter:
+            A string representing how sentence ids are filtered. The options
+            are:
+                * ``'sent_id'``: Filter only on the sentence id.
+                * ``'trans_id'``: Filter only on the translation id.
+                * ``'both'``: Filter on both sentence id and translation id.
+        """
+        self._sentence_ids_filter_str = None
+        self._sentence_id_subset(sentence_ids)
+        self._sentence_ids_filter(sentence_ids_filter)
+        self.links = links
+
+    def group(self, sent_id):
+        """
+        Retrieve the group of linked sentences that a given sentence belongs to.
+
+        :param sent_id:
+            A valid sentence ID.
+
+        :raises InvalidIDError:
+            Raised if the sentence is not in any of the linked groups
+
+        :return:
+            Returns a :py:class:`frozenset` of sentence IDs which form a
+            translation group.
+        """
+
+        try:
+            return self[sent_id]
+        except KeyError as e:
+            raise_from(InvalidIDError('Could not find sentence ID '
+                                      '{} in any groups'.format(sent_id)), e)
+
+    def groups(self):
+        """
+        Retrieves a list of all translation groups.
+
+        :return:
+            Returns a :py:class:`list` of :py:class:`frozenset` instances
+            containing sentence IDs which form a translation group.
+        """
+        return list(self._group_dict.values())
+
+    @property
+    def links(self):
+        return self._links_src
+
+    @links.setter
+    def links(self, src):
+        self._links_src = self._get_src_repr(src)
+
+        link_dict = {}
+        group_dict = {}
+
+        nodes = 0
+        for row in self.load_file(src):
+            try:
+                sent_id, trans_id = map(int, row)
+            except ValueError as e:
+                raise_from(InvalidFileError('Invalid links file - '
+                                            'files must have 2 columns'), e)
+            
+            # Check if both endpoints are in the sentence_id_subset
+            if ((self._filter_sent and
+                 sent_id not in self.sentence_id_subset) or
+                (self._filter_trans and
+                 trans_id not in self.sentence_id_subset)): 
+                continue
+
+            # If the sentence ID is a translation of something we've already
+            # seen before, get the existing node location. Otherwise, add a new
+            # node
+            if sent_id in link_dict:
+                node_id = link_dict[sent_id]
+                new_ids = {trans_id}
+            elif trans_id in link_dict:
+                node_id = link_dict[trans_id]
+                new_ids = {sent_id}
+            else:
+                node_id = nodes
+                nodes += 1
+                new_ids = {trans_id, sent_id}
+
+            group_dict.setdefault(node_id, set())
+            group_dict[node_id] |= new_ids
+            link_dict.update({k: node_id for k in new_ids})
+
+        self._link_dict = link_dict
+        self._group_dict = {k: frozenset(v) for k, v in iteritems(group_dict)}
+
+    @property
+    def sentence_ids_filter(self):
+        return self._sentence_ids_filter_str
+
+    def _sentence_ids_filter(self, valstr):
+        filter_values = {'sent_id': (True, False),
+                         'trans_id': (False, True),
+                         'both': (True, True)}
+
+        valstr = valstr.lower()
+        if valstr not in filter_values:
+            raise ValueError('Invalid sentence_ids_filter: {}'.format(valstr))
+
+        if self.sentence_id_subset is None:
+            vals = (False, False)
+        else:
+            vals = filter_values[valstr]
+
+        self._filter_sent, self._filter_trans = vals
+        self._sentence_ids_filter_str = valstr
+
+    @property
+    def sentence_id_subset(self):
+        return self._sentence_id_subset
+
+    def _sentence_id_subset(self, value):
+        self._sentence_id_subset = set(value) if value is not None else None
+
+    @property
+    def _base_dict(self):
+        return self._link_dict
+    
+    def __getitem__(self, key):
+        return self._group_dict[self._link_dict[key]]
+
+    def __repr__(self):
+        return "{}(links='{}')".format(self.__class__.__name__, self.links)
+
+
 class MissingDataError(ValueError):
     pass
 

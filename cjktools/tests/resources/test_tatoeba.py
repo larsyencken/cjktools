@@ -29,32 +29,55 @@ def get_data_locs(suffix='_00', extension='.csv'):
 base_data_locs = get_data_locs()
 
 
+class ReaderBaseCase(unittest.TestCase):
+    def data_locs(self):
+        return base_data_locs
+
+    def resource_fpath(self):
+        return self.data_locs()[self._resource_name]
+
+    def load_file(self, resource=None, **kwargs):
+        """
+        Loads the file into a TatoebaSentenceReader object.
+        """
+        if resource is None:
+            resource = self.resource_fpath()
+
+        reader = self.ReaderClass(resource, **kwargs)
+        
+        return reader
+
+
+class FileObjReaderMixin(object):
+    """
+    Mixin to run the existing tests using an already opened file object.
+    """
+    def load_file(self, resource=None, **kwargs):
+        if resource is None:
+            resource = self.resource_fpath()
+
+        with open(self.resource_fpath(), mode='r') as resource_file:
+            resource_file.filename = self.resource_fpath()
+
+            r = super(FileObjReaderMixin, self).load_file(resource_file,
+                                                          **kwargs)
+
+            return r
+
+
+###
+# Tatoeba Reader base class test
 class TatoebaReaderTest(unittest.TestCase):
     def test_not_implemented(self):
         with self.assertRaises(NotImplementedError):
             tatoeba.TatoebaReader()
 
 
-class TatoebaSentenceReaderTest(unittest.TestCase):
+###
+# Tatoeba Sentence Reader tests
+class TatoebaSentenceReaderTest(ReaderBaseCase):
     _resource_name = 'sentences'
-
-    def data_locs(self):
-        return base_data_locs
-
-    def sentences_fpath(self):
-        return self.data_locs()[self._resource_name]
-
-    def load_file(self, **kwargs):
-        """
-        Loads the file into a TatoebaSentenceReader object.
-        """
-        resource_fpath = self.sentences_fpath()
-
-        sreader = tatoeba.TatoebaSentenceReader(
-            sentences=resource_fpath,
-            **kwargs)
-
-        return sreader
+    ReaderClass = tatoeba.TatoebaSentenceReader
 
     def test_basic(self):
         # Test that all the sentence IDs load properly
@@ -88,7 +111,7 @@ class TatoebaSentenceReaderTest(unittest.TestCase):
                 return int(row[0]) not in self._subset
 
         sr = TatoebaSentenceSubsetReader(
-            sentences=self.sentences_fpath(),
+            sentences=self.resource_fpath(),
             subset={224758, 6381, 29390},
             languages={'eng', 'jpn'})
 
@@ -145,7 +168,7 @@ class TatoebaSentenceReaderTest(unittest.TestCase):
         sr = self.load_file()
 
         expected_fmt = "TatoebaSentenceReader(sentences='{}')"
-        expected = expected_fmt.format(self.sentences_fpath())
+        expected = expected_fmt.format(self.resource_fpath())
 
         self.assertEqual(repr(sr), expected)
 
@@ -194,20 +217,6 @@ class TatoebaSentenceReaderMiscTests(unittest.TestCase):
         with self.assertRaises(tatoeba.InvalidFileError):
             sr = tatoeba.TatoebaSentenceReader(invalid_3)
 
-
-class FileObjReaderMixin(object):
-    """
-    Mixin to run the existing tests using an already opened file object.
-    """
-    def load_file(self, **kwargs):
-        with open(self.sentences_fpath(), mode='r') as sentences_file:
-            sentences_file.filename = self.sentences_fpath()
-            sreader = tatoeba.TatoebaSentenceReader(
-                sentences=sentences_file,
-                **kwargs)
-
-        return sreader
-
 class TatoebaSentenceReaderFObjTest(FileObjReaderMixin,
                                     TatoebaSentenceReaderTest):
     pass
@@ -217,5 +226,131 @@ class TatoebaSentenceReaderDetailedFObjTest(FileObjReaderMixin,
     pass
 
 
+###
+# Tatoeba Links Reader tests
 
+class TatoebaLinksReaderTests(ReaderBaseCase):
+    _resource_name = 'links'
+    ReaderClass = tatoeba.TatoebaLinksReader
+
+    def test_basic(self):
+        lr = self.load_file()
+
+        self.assertEqual(len(lr), 29)
+
+        groups = [
+            (6381, {6381, 156245, 258289, 817971}),
+            (29390, {29390, 192227}),
+            (36809, {36809, 54432, 199398, 410787}),
+            (46235, {46235, 208975}),
+            (62093, {62093, 224758, 723598, 2031040, 2031042}),
+            (68807, {68807, 231440}),
+            (82526, {82526, 321190, 508870}),
+            (93620, {93620, 310087, 2172488}),
+            (109744, {109744, 293946}),
+            (112733, {112733, 290943})
+        ]
+
+        for sent_id, group in groups:
+            self.assertEqual(lr[sent_id], group)
+            self.assertEqual(lr.group(sent_id), group)
+
+    def test_filter_both(self):
+        subset = {6381, 82526, 258289, 192227, 508870}
+
+        lr = self.load_file(sentence_ids=subset, sentence_ids_filter='both')
+
+        groups = [
+            (6381, {6381, 258289}),
+            (82526, {82526, 508870})
+        ]
+
+        for sent_id, group in groups:
+            self.assertEqual(lr[sent_id], group)
+
+        self.assertEqual(lr.sentence_ids_filter, 'both')
+
+    def test_filter_sent_id(self):
+        # Normally there isn't much difference between sent_id and
+        # trans_id because the links file stores things redundantly, but
+        # I've removed all but the 6381->817971 edge in the graph, so it
+        # will show up in sent_id, but not in trans_id
+        subset = {6381, 82526, 258289, 192227, 508870}
+        lr = self.load_file(sentence_ids=subset, sentence_ids_filter='sent_id')
+
+        groups = [
+            (6381, {6381, 156245, 258289, 817971}),
+            (82526, {82526, 321190, 508870}),
+            (29390, {29390, 192227})
+        ]
+
+        for sent_id, group in groups:
+            self.assertEqual(lr[sent_id], group)
+
+        self.assertEqual(lr.sentence_ids_filter, 'sent_id')
+
+    def test_filter_trans_id(self):
+        subset = {6381, 82526, 258289, 192227, 508870}
+        lr = self.load_file(sentence_ids=subset, sentence_ids_filter='trans_id')
+
+        groups = [
+            (6381, {6381, 156245, 258289}),
+            (82526, {82526, 321190, 508870}),
+            (29390, {29390, 192227})
+        ]
+
+        for sent_id, group in groups:
+            self.assertEqual(lr[sent_id], group)
+
+        self.assertEqual(lr.sentence_ids_filter, 'trans_id')
+
+    def test_filter_error(self):
+        subset = {6381, 82526, 258289, 192227, 508870}
+
+        with self.assertRaises(ValueError):
+            lr = self.load_file(sentence_ids=subset,
+                                sentence_ids_filter='banana')
+
+    def test_group_error(self):
+        lr = self.load_file()
+        with self.assertRaises(tatoeba.InvalidIDError):
+            lr.group(100)
+
+    def test_groups(self):
+        lr = self.load_file(sentence_ids={6381, 156245, 29390, 192227})
+
+        groups = [
+            {6381, 156245},
+            {29390, 192227}
+        ]
+
+        actual = sorted(lr.groups(), key=lambda x: min(x))
+
+        self.assertEqual(groups, actual)
     
+    def test_links(self):
+        lr = self.load_file()
+
+        self.assertEqual(lr.links, self.resource_fpath())
+
+    def test_repr(self):
+        lr = self.load_file()
+
+        expected_fmt = "TatoebaLinksReader(links='{}')"
+        expected = expected_fmt.format(self.resource_fpath())
+
+        self.assertEqual(repr(lr), expected)
+
+
+class TatoebaLinksReaderMiscTests(unittest.TestCase):
+    def test_invalid_file(self):
+        # Too few columns
+        invalid_1 = StringIO('3444\n3949\n')
+        with self.assertRaises(tatoeba.InvalidFileError):
+            sr = tatoeba.TatoebaLinksReader(invalid_1)
+
+        # Too many columns
+        invalid_2 = StringIO('3444\teng\tThe boy ate a tiger\tMB')
+        with self.assertRaises(tatoeba.InvalidFileError):
+            sr = tatoeba.TatoebaLinksReader(invalid_2)
+
