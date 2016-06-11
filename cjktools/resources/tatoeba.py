@@ -4,6 +4,7 @@
 #  cjktools
 #
 
+import re
 import csv
 import itertools
 
@@ -14,7 +15,19 @@ from six import raise_from, iteritems
 
 from cjktools.common import sopen, _NullContextWrapper
 
-class TatoebaReader(object):
+
+class TatoebaDict(Mapping):
+    def __getitem__(self, key):
+        return self._base_dict.__getitem__(key)
+
+    def __iter__(self):
+        return self._base_dict.__iter__()
+
+    def __len__(self):
+        return self._base_dict.__len__()
+
+
+class TatoebaReader(TatoebaDict):
     def __init__(self, *args, **kwargs):
         raise NotImplementedError('This is an abstract base class '
                                   'and should not be instantiated')
@@ -53,18 +66,7 @@ class TatoebaReader(object):
             return getattr(src, 'filename', repr(src))
 
 
-class TatoebaDictMixin(Mapping):
-    def __getitem__(self, key):
-        return self._base_dict.__getitem__(key)
-
-    def __iter__(self):
-        return self._base_dict.__iter__()
-
-    def __len__(self):
-        return self._base_dict.__len__()
-
-
-class TatoebaSentenceReader(TatoebaDictMixin, TatoebaReader):
+class TatoebaSentenceReader(TatoebaReader):
     def __init__(self, sentences, languages={'jpn', 'eng'}):
         self.languages = languages
         self.sentences = sentences
@@ -78,6 +80,9 @@ class TatoebaSentenceReader(TatoebaDictMixin, TatoebaReader):
 
         :raises InvalidIDError:
             Raised if an invalid ID is passed.
+
+        :return:
+            Returns a string indicating the language of the sentence.
         """
         for lang, sent_id_set in iteritems(self._language_dict):
             if sent_id in sent_id_set:
@@ -222,7 +227,7 @@ class TatoebaSentenceReader(TatoebaDictMixin, TatoebaReader):
                                            self.sentences)
 
 
-class TatoebaLinksReader(TatoebaDictMixin, TatoebaReader):
+class TatoebaLinksReader(TatoebaReader):
     def __init__(self, links, sentence_ids=None, sentence_ids_filter='both'):
         """
         A class which reads a Tatoeba links.csv file.
@@ -364,6 +369,222 @@ class TatoebaLinksReader(TatoebaDictMixin, TatoebaReader):
         return "{}(links='{}')".format(self.__class__.__name__, self.links)
 
 
+class TanakaWord(object):
+    __slots__ = ['headword', 'reading', 'sense', 'display', 'example']
+
+    def __init__(self, headword, reading, sense, display, example):
+        self.display = display
+        self.reading = reading
+        self.headword = headword
+        self.sense = sense
+        self.example = example
+
+    def __repr__(self):
+        base = self.headword
+        if self.reading:
+            base += u'({})'.format(self.reading)
+        if self.sense:
+            base += u'[{}]'.format(self.sense)
+        if self.display:
+            base += u'{{{}}}'.format(self.display)
+        if self.example:
+            base += u'~'
+
+        return base
+
+    def resolve_display(self):
+        return self.display if self.display is not None else self.headword
+
+    def __eq__(self, other):
+        """
+        Two TanakaWords are equal if all their components are equal, with the
+        exception made that setting ``display`` to ``None`` resolves ``display``
+        to the headword, and so the output of ``resolve_display()`` is compared
+        in that case.
+
+        It is worth noting that even though ``example`` is context-specific,
+        this is still part of the comparator.
+        """
+        try:
+            return (
+                self.headword == other.headword and
+                self.sense == other.sense and
+                self.example == other.example and
+                self.reading == other.reading and
+                self.resolve_display() == other.resolve_display()
+            )
+        except AttributeError:
+            return NotImplemented
+
+    def __neq__(self, other):
+        return not self == other
+
+
+class TatoebaIndexReader(TatoebaReader):
+    """
+    A class for reading and parsing the Sentence-Dictionary linking Tatoeba
+    files (``jpn_indices``). More information on this format can be found
+    `here <http://www.edrdg.org/wiki/index.php/Sentence-Dictionary_Linking>`_.
+    """
+    WordClass = TanakaWord
+    sentence_splitter = lambda self, x: x.split(' ')
+
+    def __init__(self, jpn_indices, edict=None, sentence_ids=None):
+        """
+        :param jpn_indices:
+            A file path or file object in the Tanaka corpus sentence linking
+            format.
+
+        :param edict:
+            An EDICT file in which to look up head words which may be missing
+            readings.
+
+        :param sentence_inds:
+            A subset of all sentence indices to load.
+        """
+        self.sentence_id_subset = sentence_ids
+        self.edict = edict
+        self.jpn_indices = jpn_indices
+
+    def link(self, sent_id):
+        """
+        Retrieve the sentence ID of the linked English translation as provided
+        by the ``jpn_indices`` corpus.
+
+        :param sent_id:
+            A valid sentence ID.
+
+        :raises InvalidIDError:
+            Raised if an invalid ID is passed.
+
+        :return:
+            Returns a numeric sentence ID.
+        """
+        try:
+            return self._link_dict[sent_id]
+        except KeyError as e:
+            raise_from(
+                InvalidIDError('Sentence ID {} not found'.format(sent_id)),
+                e)
+
+    @property
+    def jpn_indices(self):
+        return self._jpn_indices_src
+
+    @jpn_indices.setter
+    def jpn_indices(self, src):
+        self._jpn_indices_src = self._get_src_repr(src)
+
+        sentence_gen = self.load_file(src)
+
+        sentence_dict = {}
+        link_dict = {}
+
+        for row in sentence_gen:
+            sent_id, meaning_id, text = row
+            sent_id, meaning_id = map(int, (sent_id, meaning_id))
+
+            link_dict[sent_id] = meaning_id
+
+            sentence = self.parse_sentence(text)
+            sentence = self.adjust_details(sentence)
+
+            sentence_dict[sent_id] = sentence
+
+        self._sentence_dict = sentence_dict
+        self._link_dict = link_dict
+
+    word_re = re.compile(r'(?P<headword>[^\(\[\{\|\~]+)'
+                         r'(?:\((?P<reading>[^\)]+)\))?'
+                         r'(?:\[(?P<sense>[\d]+)\])?'
+                         r'(?:\{(?P<display>[^\}]+)\})?'
+                         r'(?:(?P<example>\~))?'
+                         r'(?:|\d+)')
+
+    def parse_sentence(self, text):
+        """
+        Takes a Tanaka corpus formatted sentence and parses it into tagged
+        :class:`TatoebaIndexReader.WordClass` (by default :class:`TanakaWord`)
+        word objects.
+
+        :param text:
+            A Tanaka-corpus formatted sentence.
+
+        :return:
+            Returns a :py:class:`list` of :class:`TatoebaIndexReader.WordClass`
+            objects representing a given sentence.
+        """
+        words = self.sentence_splitter(text)
+        sentence = []
+        for word in words:
+            if not len(word):
+                continue
+
+            m = self.word_re.match(word)
+            if m is None:
+                raise InvalidEntryError(('Could not interpret word {} in '
+                                        'sentence:\n{}').format(word, text))
+
+            kwargs = {k: m.group(k) for k in self.word_re.groupindex.keys()}
+            if kwargs['sense'] is not None:
+                kwargs['sense'] = int(kwargs['sense'])
+            kwargs['example'] = kwargs['example'] is not None
+            sentence.append(self.WordClass(**kwargs))
+
+        return sentence
+
+    def adjust_details(self, sentence):
+        """
+        Given a sentence as parsed by `parse_sentence`, this tries to fill in
+        implied data using the ``edict`` dictionary supplied to the constructor.
+
+        :param sentence:
+            A :py:class:`list` of :class:`TatoebaIndexReader.WordClass` objects,
+            as output by :func:`parse_sentence`. The items of this list will
+            be mutated.
+
+        :return:
+            Returns the input ``sentence``, adjusted with additional details
+            from the ``edict`` supplied. If ``edict`` is not supplied, no
+            changes will be made.
+        """
+        if self.edict is None:
+            return sentence
+
+        for word in sentence:
+            # The only one that is guaranteed to be present is the headword.
+            if word.headword not in self.edict:
+                continue
+
+            if word.reading is None:
+                ee = self.edict[word.headword]
+                reading = None
+                if word.sense is not None and word.sense <= len(ee.readings):
+                    # As far as I can tell, jpn_indices uses a 0-based index.
+                    reading = ee.readings[word.sense - 1]
+                else:
+                    if len(set(ee.readings)) == 1:
+                        reading = ee.readings[0]
+
+                if reading != word.headword:
+                    word.reading = reading
+
+        return sentence
+
+
+    @property
+    def sentence_id_subset(self):
+        return self._sentence_id_subset
+
+    @sentence_id_subset.setter
+    def sentence_id_subset(self, value):
+        self._sentence_id_subset = set(value) if value is not None else None
+
+    @property
+    def _base_dict(self):
+        return self._sentence_dict
+
+
 class MissingDataError(ValueError):
     pass
 
@@ -371,5 +592,8 @@ class InvalidFileError(ValueError):
     pass
 
 class InvalidIDError(KeyError):
+    pass
+
+class InvalidEntryError(ValueError):
     pass
 

@@ -10,31 +10,41 @@ import os
 from io import StringIO
 import unittest
 
+from functools import partial
 from datetime import datetime
 
-from cjktools.resources import tatoeba
+from cjktools.resources import tatoeba, auto_format, cjkdata
 from cjktools.common import sopen
 
-def get_data_locs(suffix='_00', extension='.csv'):
+
+def get_data_loc(key, suffix='_00', extension='.csv'):
     script_dir = os.path.dirname(os.path.realpath(__file__))
     data_loc = os.path.join(script_dir, 'sample_data/')
     base_names = dict(sentences='sentences',
                       jpn_indices='jpn_indices',
                       links='links',
-                      sentences_detailed='sentences_detailed')
+                      sentences_detailed='sentences_detailed',
+                      edict='je_edict')
 
-    return {k: os.path.join(data_loc, v + suffix + extension)
-               for k, v in base_names.items()}
+    fname = base_names[key] + suffix + extension
+    return os.path.join(data_loc, fname)
 
-base_data_locs = get_data_locs()
+
+def get_edict():
+    if getattr(get_edict, '_cached', None) is not None:
+        return get_edict._cached
+
+    with open(get_data_loc('edict', extension='')) as edf:
+        edict = auto_format.load_dictionary(edf)
+
+    get_edict._cached = edict
+
+    return edict
 
 
 class ReaderBaseCase(unittest.TestCase):
-    def data_locs(self):
-        return base_data_locs
-
     def resource_fpath(self):
-        return self.data_locs()[self._resource_name]
+        return get_data_loc(self._resource_name)
 
     def load_file(self, resource=None, **kwargs):
         """
@@ -354,3 +364,142 @@ class TatoebaLinksReaderMiscTests(unittest.TestCase):
         with self.assertRaises(tatoeba.InvalidFileError):
             sr = tatoeba.TatoebaLinksReader(invalid_2)
 
+###
+# Tanaka word tests
+class TanakaWordTests(unittest.TestCase):
+    def test_repr_base(self):
+        pass
+
+###
+# Tatoeba Index Reader tests
+
+class TatoebaIndexReaderTests(ReaderBaseCase):
+    _resource_name = 'jpn_indices'
+    ReaderClass = tatoeba.TatoebaIndexReader
+    WordClass = tatoeba.TanakaWord
+
+    def test_basic(self):
+        ir = self.load_file()
+
+        # A selection of the sentences
+        sentences = {
+            109744: [
+                self.WordClass('彼', 'かれ', 1, None, False),
+                self.WordClass('は', None, None, None, False),
+                self.WordClass('英語', None, None, None, False),
+                self.WordClass('が', None, None, None, False),
+                self.WordClass('苦手', None, None, None, False),
+                self.WordClass('だ', None, None, None, False),
+                self.WordClass('が', None, 3, None, False),
+                self.WordClass('数学', None, None, None, False),
+                self.WordClass('で', None, None, None, False),
+                self.WordClass('は', None, None, None, False), 
+                self.WordClass('誰にも', None, None, None, False),
+                self.WordClass('劣る', None, None, '劣らない', False)
+            ],
+            112733: [
+                self.WordClass('彼', 'かれ', 1, None, False),
+                self.WordClass('は', None, None, None, False),
+                self.WordClass('其の', None, 1, 'その', False),
+                self.WordClass('時', 'とき', None, None, False),
+                self.WordClass('大学', None, None, None, False),
+                self.WordClass('を', None, None, None, False),
+                self.WordClass('卒業', None, 1, None, False),
+                self.WordClass('為る', 'する', None, 'し', False),
+                self.WordClass('立て', 'たて', 2, 'たて', True),
+                self.WordClass('である', None, None, 'であった', False)
+            ],
+            192227: [
+                self.WordClass('ロールプレイング', None, None, None, True),
+                self.WordClass('の', None, None, None, False),
+                self.WordClass('テレビゲーム', None, None, None, False),
+                self.WordClass('は', None, None, None, False),
+                self.WordClass('時間', None, None, None, False),
+                self.WordClass('を', None, None, None, False),
+                self.WordClass('食う', None, 7, None, False)
+            ]
+        }
+
+        for sent_id, sent in sentences.items():
+            exp_sent = sent
+            act_sent = ir[sent_id]
+            self.assertEqual(sent, act_sent)
+
+            # In this case, we're going to make sure that the actual
+            # .display property was actually set correctly as well
+            for exp_word, act_word in zip(exp_sent, act_sent):
+                self.assertEqual(exp_word.display, act_word.display)
+
+    def test_link(self):
+        ir = self.load_file()
+
+        links = {
+            82526: 321190, 93620: 310087, 109744: 293946, 112733: 290943,
+            156245: 258289, 192227: 29390, 199398: 54432, 208975: 46235,
+            224758: 62093, 231440: 68807
+        }
+
+        for sent_id, link_id in links.items():
+            self.assertEqual(link_id, ir.link(sent_id))
+
+    def test_link_error(self):
+        ir = self.load_file()
+
+        with self.assertRaises(tatoeba.InvalidIDError):
+            ir.link(1224)
+
+
+class TatoebaIndexReaderEdictTests(TatoebaIndexReaderTests):
+    ReaderClass = partial(tatoeba.TatoebaIndexReader, edict=get_edict())
+
+    def test_basic(self):
+        ir = self.load_file()
+
+        # A selection of the sentences
+        sentences = {
+            109744: [
+                self.WordClass('彼', 'かれ', 1, None, False),
+                self.WordClass('は', None, None, None, False),
+                self.WordClass('英語', 'えいご', None, None, False),
+                self.WordClass('が', None, None, None, False),
+                self.WordClass('苦手', 'にがて', None, None, False),
+                self.WordClass('だ', None, None, None, False),
+                self.WordClass('が', None, 3, None, False),
+                self.WordClass('数学', 'すうがく', None, None, False),
+                self.WordClass('で', None, None, None, False),
+                self.WordClass('は', None, None, None, False), 
+                self.WordClass('誰にも', 'だれにも', None, None, False),
+                self.WordClass('劣る', 'おとる', None, '劣らない', False)
+            ],
+            112733: [
+                self.WordClass('彼', 'かれ', 1, None, False),
+                self.WordClass('は', None, None, None, False),
+                self.WordClass('其の', 'その', 1, 'その', False),
+                self.WordClass('時', 'とき', None, None, False),
+                self.WordClass('大学', 'だいがく', None, None, False),
+                self.WordClass('を', None, None, None, False),
+                self.WordClass('卒業', 'そつぎょう', 1, None, False),
+                self.WordClass('為る', 'する', None, 'し', False),
+                self.WordClass('立て', 'たて', 2, 'たて', True),
+                self.WordClass('である', None, None, 'であった', False)
+            ],
+            192227: [
+                self.WordClass('ロールプレイング', None, None, None, True),
+                self.WordClass('の', None, None, None, False),
+                self.WordClass('テレビゲーム', None, None, None, False),
+                self.WordClass('は', None, None, None, False),
+                self.WordClass('時間', 'じかん', None, None, False),
+                self.WordClass('を', None, None, None, False),
+                self.WordClass('食う', 'くう', 7, None, False)
+            ]
+        }
+
+        for sent_id, sent in sentences.items():
+            exp_sent = sent
+            act_sent = ir[sent_id]
+            self.assertEqual(sent, act_sent)
+
+            # In this case, we're going to make sure that the actual
+            # .display property was actually set correctly as well
+            for exp_word, act_word in zip(exp_sent, act_sent):
+                self.assertEqual(exp_word.display, act_word.display)
