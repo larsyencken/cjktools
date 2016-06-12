@@ -397,6 +397,21 @@ class TanakaWordTests(unittest.TestCase):
         return args + default_args[len(args):]
 
     @parameterized.expand([
+        ('alone', 'は|1', ('は',)),
+        ('after_reading', '度(ど)|1', ('度', 'ど')),
+        ('before_sense', 'は|1[01]', ('は', None, 1)),
+        ('before_disp', 'ばれる|1{ばれた}', ('ばれる', None, None, 'ばれた')),
+        ('before_example', 'わっと|2~', ('わっと', None, None, None, True))
+    ])
+    def test_legacy_tag(self, name, tagstr, expected):
+        exp_word = self.WordClass(*self._default_args(expected))
+
+        act = self.WordClass.from_text(tagstr)
+
+        self.assertEqual(exp_word, act)
+        self.assertEqual(exp_word.display, act.display)
+
+    @parameterized.expand([
         ('headword', ('を',), 'を'),
         ('reading', ('時', 'とき'), '時(とき)'),
         ('sense', ('が', None, 3), 'が[03]'),
@@ -472,7 +487,6 @@ class TanakaWordTests(unittest.TestCase):
 
 ###
 # Tatoeba Index Reader tests
-
 class TatoebaIndexReaderTests(ReaderBaseCase):
     _resource_name = 'jpn_indices'
     ReaderClass = tatoeba.TatoebaIndexReader
@@ -564,7 +578,6 @@ class TatoebaIndexReaderTests(ReaderBaseCase):
 
         self.assertEqual(ir.sentence_id_subset, {112733, 109744})
         self.assertEqual(set(ir.keys()), {112733, 109744})
-
 
 class TatoebaIndexReaderEdictTests(TatoebaIndexReaderTests):
     ReaderClass = partial(tatoeba.TatoebaIndexReader, edict=get_edict())

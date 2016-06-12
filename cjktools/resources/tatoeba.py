@@ -256,7 +256,7 @@ class TatoebaSentenceReader(TatoebaReader):
         """
         Parser for dates in detailed information.
         """
-        if dtstr == r'\N':
+        if dtstr == u'\\N' or dtstr == u'0000-00-00 00:00:00':
             return None
 
         return datetime.strptime(dtstr, self.datetime_format)
@@ -418,12 +418,57 @@ class TanakaWord(object):
     """
     __slots__ = ['headword', 'reading', 'sense', 'display', 'example']
 
+    word_re = re.compile(r'(?P<headword>[^\(\[\{\|\~]+)'
+                         r'(?:\((?P<reading>[^\)]+)\))?'
+                         r'(?:\|\d+)?'          # Legacy tag
+                         r'(?:\[(?P<sense>[\d]+)\])?'
+                         r'(?:\{(?P<display>[^\}]+)\})?'
+                         r'(?:(?P<example>\~))?$', re.UNICODE)
+
     def __init__(self, headword, reading, sense, display, example):
         self.headword = headword
         self.reading = reading
         self.sense = sense
         self.display = display        
         self.example = example
+
+    @classmethod
+    def from_text(cls, text):
+        """
+        Alternate constructor for :class:`TanakaWord`, constructing it from
+        the string for a single word.
+
+        :param text:
+            A string matching the :py:attr:`~TanakaWord.word_re` regular
+            expression.
+
+        :raises InvalidEntryError:
+            Raised if :py:attr:`~TanakaWord.word_re` fails to match
+            ``text``.
+
+        :return:
+            Returns an object of class `cls`.
+        """
+        m = cls.word_re.match(text)
+
+        if m is None:
+            raise InvalidEntryError(u'Could not interpret word {}'.format(text))
+
+        kwargs = {k: m.group(k) for k in cls.word_re.groupindex.keys()}
+        if kwargs['sense'] is not None:
+            kwargs['sense'] = int(kwargs['sense'])
+        kwargs['example'] = kwargs['example'] is not None
+
+        return cls(**kwargs)
+
+    def resolve_display(self):
+        """
+        When the :py:attr:`display` member is omitted (set to :py:class:`None`),
+        it is assumed that this is because it is the same as
+        :py:attr:`headword`. As such, this method resolves implicit
+        :py:attr:`display` attributes as appropriate.
+        """
+        return self.display if self.display is not None else self.headword
 
     def __str__(self):
         base = self.headword
@@ -440,9 +485,6 @@ class TanakaWord(object):
 
     __unicode__ = __str__
     __repr__ = __str__
-
-    def resolve_display(self):
-        return self.display if self.display is not None else self.headword
 
     def __eq__(self, other):
         """
@@ -547,13 +589,6 @@ class TatoebaIndexReader(TatoebaReader):
         self._sentence_dict = sentence_dict
         self._link_dict = link_dict
 
-    word_re = re.compile(r'(?P<headword>[^\(\[\{\|\~]+)'
-                         r'(?:\((?P<reading>[^\)]+)\))?'
-                         r'(?:\[(?P<sense>[\d]+)\])?'
-                         r'(?:\{(?P<display>[^\}]+)\})?'
-                         r'(?:(?P<example>\~))?'
-                         r'(?:\|\d+)?$', re.UNICODE)
-
     def parse_sentence(self, text):
         """
         Takes a Tanaka corpus formatted sentence and parses it into tagged
@@ -573,16 +608,14 @@ class TatoebaIndexReader(TatoebaReader):
             if not len(word):
                 continue
 
-            m = self.word_re.match(word)
-            if m is None:
-                raise InvalidEntryError((u'Could not interpret word {} in '
-                                         u'sentence:\n{}').format(word, text))
 
-            kwargs = {k: m.group(k) for k in self.word_re.groupindex.keys()}
-            if kwargs['sense'] is not None:
-                kwargs['sense'] = int(kwargs['sense'])
-            kwargs['example'] = kwargs['example'] is not None
-            sentence.append(self.WordClass(**kwargs))
+            try:
+                wobj = self.WordClass.from_text(word)
+            except InvalidEntryError as e:
+                msg = u'Failed to interpret word {w} in sentence {s}'
+                raise_from(InvalidEntryError(msg.format(w=word, s=text)), e)
+
+            sentence.append(wobj)
 
         return sentence
 
