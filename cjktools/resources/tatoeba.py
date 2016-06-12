@@ -373,24 +373,26 @@ class TanakaWord(object):
     __slots__ = ['headword', 'reading', 'sense', 'display', 'example']
 
     def __init__(self, headword, reading, sense, display, example):
-        self.display = display
-        self.reading = reading
         self.headword = headword
+        self.reading = reading
         self.sense = sense
+        self.display = display        
         self.example = example
 
-    def __repr__(self):
+    def __str__(self):
         base = self.headword
         if self.reading:
             base += u'({})'.format(self.reading)
         if self.sense:
-            base += u'[{}]'.format(self.sense)
+            base += u'[{:02}]'.format(self.sense)
         if self.display:
             base += u'{{{}}}'.format(self.display)
         if self.example:
             base += u'~'
 
         return base
+
+    __unicode__ = __str__
 
     def resolve_display(self):
         return self.display if self.display is not None else self.headword
@@ -416,7 +418,7 @@ class TanakaWord(object):
         except AttributeError:
             return NotImplemented
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self == other
 
 
@@ -484,6 +486,10 @@ class TatoebaIndexReader(TatoebaReader):
             sent_id, meaning_id, text = row
             sent_id, meaning_id = map(int, (sent_id, meaning_id))
 
+            if (self.sentence_id_subset is not None and
+                sent_id not in self.sentence_id_subset):
+                continue
+
             link_dict[sent_id] = meaning_id
 
             sentence = self.parse_sentence(text)
@@ -499,7 +505,7 @@ class TatoebaIndexReader(TatoebaReader):
                          r'(?:\[(?P<sense>[\d]+)\])?'
                          r'(?:\{(?P<display>[^\}]+)\})?'
                          r'(?:(?P<example>\~))?'
-                         r'(?:|\d+)')
+                         r'(?:\|\d+)?$')
 
     def parse_sentence(self, text):
         """

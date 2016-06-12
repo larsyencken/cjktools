@@ -10,11 +10,15 @@ import os
 from io import StringIO
 import unittest
 
+from six import text_type
+
 from functools import partial
 from datetime import datetime
 
 from cjktools.resources import tatoeba, auto_format, cjkdata
 from cjktools.common import sopen
+
+from nose_parameterized import parameterized
 
 
 def get_data_loc(key, suffix='_00', extension='.csv'):
@@ -227,6 +231,7 @@ class TatoebaSentenceReaderMiscTests(unittest.TestCase):
         with self.assertRaises(tatoeba.InvalidFileError):
             sr = tatoeba.TatoebaSentenceReader(invalid_3)
 
+
 class TatoebaSentenceReaderFObjTest(FileObjReaderMixin,
                                     TatoebaSentenceReaderTest):
     pass
@@ -367,8 +372,85 @@ class TatoebaLinksReaderMiscTests(unittest.TestCase):
 ###
 # Tanaka word tests
 class TanakaWordTests(unittest.TestCase):
-    def test_repr_base(self):
-        pass
+    WordClass = tatoeba.TanakaWord
+    def _default_args(self, args):
+        default_args = (None, None, None, None, False)
+
+        return args + default_args[len(args):]
+
+    @parameterized.expand([
+        ('headword', ('を',), 'を'),
+        ('reading', ('時', 'とき'), '時(とき)'),
+        ('sense', ('が', None, 3), 'が[03]'),
+        ('read_sense', ('大学', 'だいがく', 1), '大学(だいがく)[01]'),
+        ('display', ('である', None, None, 'であった'), 'である{であった}'),
+        ('read_disp', ('為る', 'する', None, 'し'), '為る(する){し}'),
+        ('sense_disp', ('其の', None, 1, 'その'), '其の[01]{その}'),
+        ('read_sense_disp', ('其の', 'その', 1, 'その'), '其の(その)[01]{その}'),
+        ('example', ('ロールプレイング', None, None, None, True),
+            'ロールプレイング~'),
+        ('read_ex', ('時', 'とき', None, None, True), '時(とき)~'),
+        ('sense_ex', ('食う', None, 7, None, True), '食う[07]~'),
+        ('read_sense_ex', ('彼', 'かれ', 1, None, True), '彼(かれ)[01]~'),
+        ('disp_ex',
+            ('ネイティブアメリカン', None, None, 'ネイティブ・アメリカン', True),
+            'ネイティブアメリカン{ネイティブ・アメリカン}~'),
+        ('read_disp_ex',
+            ('喝采を送る', 'かっさいをおくる', None, '喝采を送った', True), 
+            '喝采を送る(かっさいをおくる){喝采を送った}~'),
+        ('sense_disp_ex', ('ソフト', None, 1, 'ソフトな', True),
+            'ソフト[01]{ソフトな}~'),
+        ('read_sense_disp_ex', ('立て', 'たて', 2, 'たて', True),
+            '立て(たて)[02]{たて}~'),
+    ])
+    def test_str(self, name, args, expected):
+        word = self.WordClass(*self._default_args(args))
+
+        self.assertEqual(text_type(word), expected)
+
+    @parameterized.expand([
+        ('headword', ('を',), ('が',)),
+        ('reading',  ('時', 'とき'), ('時', 'じ')),
+        ('sense', ('が', None, 3), ('が', None, 2)),
+        ('display',
+            ('飲ませる', None, None, '飲ませて'),
+            ('飲ませる', None, None, '飲ませない')),
+        ('example',
+            ('ロールプレイング', None, None, None, True),
+            ('ロールプレイング', None, None, None, False)),
+    ])
+    def test_neq(self, name, arg1, arg2):
+        w1, w2 = (self.WordClass(*self._default_args(arg))
+                  for arg in (arg1, arg2))
+
+        self.assertNotEqual(w1, w2)
+
+    def test_req(self):
+        class StrEq(object):
+            def __init__(self, base_str):
+                self.base_str = base_str
+
+            def __eq__(self, other):
+                return text_type(other) == self.base_str
+
+        w = self.WordClass('時', 'とき', None, None, False)
+
+        self.assertTrue(w == StrEq('時(とき)'))
+        self.assertTrue(StrEq('時(とき)') == w)
+
+    def test_rneq(self):
+        class StrEq(object):
+            def __init__(self, base_str):
+                self.base_str = base_str
+
+            def __eq__(self, other):
+                return text_type(other) == self.base_str
+
+        w = self.WordClass('時', 'とき', None, None, False)
+
+        self.assertFalse(w != StrEq('時(とき)'))
+        self.assertFalse(StrEq('時(とき)') != w)
+
 
 ###
 # Tatoeba Index Reader tests
@@ -378,11 +460,9 @@ class TatoebaIndexReaderTests(ReaderBaseCase):
     ReaderClass = tatoeba.TatoebaIndexReader
     WordClass = tatoeba.TanakaWord
 
-    def test_basic(self):
-        ir = self.load_file()
-
-        # A selection of the sentences
-        sentences = {
+    @property
+    def sentences(self):
+        _sentences = {
             109744: [
                 self.WordClass('彼', 'かれ', 1, None, False),
                 self.WordClass('は', None, None, None, False),
@@ -420,7 +500,13 @@ class TatoebaIndexReaderTests(ReaderBaseCase):
             ]
         }
 
-        for sent_id, sent in sentences.items():
+        return _sentences
+
+    def test_basic(self):
+        ir = self.load_file()
+
+        # A selection of the sentences
+        for sent_id, sent in self.sentences.items():
             exp_sent = sent
             act_sent = ir[sent_id]
             self.assertEqual(sent, act_sent)
@@ -448,15 +534,26 @@ class TatoebaIndexReaderTests(ReaderBaseCase):
         with self.assertRaises(tatoeba.InvalidIDError):
             ir.link(1224)
 
+    def test_jpn_indices(self):
+        ir = self.load_file()
+
+        self.assertEqual(ir.jpn_indices, self.resource_fpath())
+
+    def test_subset(self):
+        ir = self.load_file(sentence_ids=(112733, 109744))
+
+        self.assertEqual(len(ir), 2)
+
+        self.assertEqual(ir.sentence_id_subset, {112733, 109744})
+        self.assertEqual(set(ir.keys()), {112733, 109744})
+
 
 class TatoebaIndexReaderEdictTests(TatoebaIndexReaderTests):
     ReaderClass = partial(tatoeba.TatoebaIndexReader, edict=get_edict())
-
-    def test_basic(self):
-        ir = self.load_file()
-
-        # A selection of the sentences
-        sentences = {
+    
+    @property
+    def sentences(self):
+        _sentences = {
             109744: [
                 self.WordClass('彼', 'かれ', 1, None, False),
                 self.WordClass('は', None, None, None, False),
@@ -494,12 +591,15 @@ class TatoebaIndexReaderEdictTests(TatoebaIndexReaderTests):
             ]
         }
 
-        for sent_id, sent in sentences.items():
-            exp_sent = sent
-            act_sent = ir[sent_id]
-            self.assertEqual(sent, act_sent)
+        return _sentences
 
-            # In this case, we're going to make sure that the actual
-            # .display property was actually set correctly as well
-            for exp_word, act_word in zip(exp_sent, act_sent):
-                self.assertEqual(exp_word.display, act_word.display)
+
+class TatoebaIndexReaderMiscTests(unittest.TestCase):
+    def test_invalid_file(self):
+        # First word has display before sense.
+        invalid_str = ('93620\t310087\t'
+                       '彼女{テレビ}[01] は|1 一時間{１時間} 以内 に 戻る{戻ります}\n')
+
+        with self.assertRaises(tatoeba.InvalidEntryError):
+            ir = tatoeba.TatoebaIndexReader(StringIO(invalid_str))
+
