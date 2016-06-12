@@ -13,6 +13,7 @@ fi
 
 # Install dependencies
 pip install .
+pip install nose-parameterized
 
 # Run tests
 nosetests
