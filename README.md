@@ -59,7 +59,8 @@ An extensible wrapper for EDICT and EDICT-like dictionary formats. Here's an exa
 ```pycon
 >>> from cjktools.resources import cjkdata, auto_format
 >>> edict_file = cjkdata.get_resource('dict/je_edict')
->>> edict = auto_format.load_dictionary(open(edict_file))
+>>> with open(edict_file) as edf:
+...     edict = auto_format.load_dictionary(edf)
 >>> edict['パチンコ']
 <DictionaryEntry: パチンコ (1 readings, 4 senses)>
 >>> _.senses

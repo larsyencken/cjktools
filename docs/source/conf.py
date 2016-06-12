@@ -367,6 +367,7 @@ epub_exclude_files = ['search.html']
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
 
+autodoc_member_order = 'bysource'
 # ------------------  Auto generation -------------------
 # Automatically generate README.rst in the source directory (done in a generic
 # way so it's easy to include other .md files)
@@ -386,4 +387,5 @@ for file_in, file_out in convert_files.items():
     convert(file_in, file_out,
             preamble=preamble_fmt.format(file_in=file_in),
             strict=strict_conversion)
+
 

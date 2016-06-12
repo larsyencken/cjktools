@@ -22,10 +22,16 @@ def find_path():
         if path.isdir(p):
             return p
 
-    raise Exception('Please install the cjk data pack and set the '
-                    'CJKDATA environment variable')
+    raise MissingCJKDataError(
+        'Please install the cjk data pack in one of the default locations '
+        'and/or set the CJKDATA environment variable to the location of the '
+        ' data pack.'
+    )
 
 
 def get_resource(name):
     base = find_path()
     return path.join(base, name)
+
+class MissingCJKDataError(Exception):
+    pass

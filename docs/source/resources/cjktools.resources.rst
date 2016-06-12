@@ -17,6 +17,7 @@ Submodules
    cjktools.resources.place
    cjktools.resources.radkdict
    cjktools.resources.split_by_codes
+   cjktools.resources.tatoeba
    cjktools.resources.tree
    cjktools.resources.zhuyin_table
 
