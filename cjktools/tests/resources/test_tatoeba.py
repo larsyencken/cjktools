@@ -7,7 +7,7 @@
 from __future__ import unicode_literals
 
 import os
-from io import StringIO
+from .._common import to_unicode_stream, to_string_stream
 import unittest
 
 from six import text_type
@@ -38,7 +38,7 @@ def get_edict():
     if getattr(get_edict, '_cached', None) is not None:
         return get_edict._cached
 
-    with open(get_data_loc('edict', extension='')) as edf:
+    with sopen(get_data_loc('edict', extension=''), mode='r') as edf:
         edict = auto_format.load_dictionary(edf)
 
     get_edict._cached = edict
@@ -71,7 +71,22 @@ class FileObjReaderMixin(object):
             resource = self.resource_fpath()
 
         with open(self.resource_fpath(), mode='r') as resource_file:
-            resource_file.filename = self.resource_fpath()
+            try:
+                resource_file.filename = self.resource_fpath()
+            except AttributeError:
+                class FileWrapper(object):
+                    def __init__(self, fin, fpath):
+                        self.f = fin
+                        self.filename = fpath
+
+                    def __getattr__(self, attr):
+                        return getattr(self.f, attr)
+
+                    def __iter__(self):
+                        return iter(self.f)
+
+                resource_file = FileWrapper(resource_file,
+                                            self.resource_fpath())
 
             r = super(FileObjReaderMixin, self).load_file(resource_file,
                                                           **kwargs)
@@ -98,9 +113,10 @@ class TatoebaSentenceReaderTest(ReaderBaseCase):
         sr = self.load_file()
 
         sent_ids = [
-            29390, 36809, 46235, 54432, 62093, 68807, 82526, 93620, 109744,
-            112733, 156245, 192227, 199398, 208975, 224758, 231440, 258289,
-            290943, 293946, 310087, 321190, 410787, 2031040, 2031042
+            6381, 29390, 36809, 46235, 54432, 62093, 68807, 82526, 93620,
+            109744, 112733, 156245, 192227, 199398, 208975, 224758, 231440, 258289,
+            290943, 293946, 310087, 321190, 410787, 508870, 723598, 817971,
+            2031040, 2031042, 2172488
         ]
 
         self.assertEqual(sorted(sr.keys()), sent_ids)
@@ -215,21 +231,20 @@ class TatoebaSentenceReaderDetailedTest(TatoebaSentenceReaderTest):
 
 
 class TatoebaSentenceReaderMiscTests(unittest.TestCase):
-    def test_invalid_file(self):
+    @parameterized.expand([
         # Too few columns
-        invalid_1 = StringIO('3444\teng\n3949\tjp\n')
-        with self.assertRaises(tatoeba.InvalidFileError):
-            sr = tatoeba.TatoebaSentenceReader(invalid_1)
-
+        ('too_few', '3444\teng\n3949\tjp\n'),
         # Too many for undetailed, too few for detailed
-        invalid_2 = StringIO('3444\teng\tThe boy ate a tiger\tMB')
-        with self.assertRaises(tatoeba.InvalidFileError):
-            sr = tatoeba.TatoebaSentenceReader(invalid_2)
-
+        ('in_between', '3444\teng\tThe boy ate a tiger\tMB'),
         # Too many even for detailed
-        invalid_3 = StringIO('3444\teng\tThe boy ate a tiger\tMB\t\\N\t\\N\t\\N')
+        ('too_many', '3444\teng\tThe boy ate a tiger\tMB\t\\N\t\\N\t\\N'),
+        # In between, but with unicode
+        ('in_between_unicode', '3444\teng\tThe boy ate a 虎\tMB')
+    ])
+    def test_invalid_file(self, name, rowstr):
+        invalid = to_string_stream(rowstr)
         with self.assertRaises(tatoeba.InvalidFileError):
-            sr = tatoeba.TatoebaSentenceReader(invalid_3)
+            sr = tatoeba.TatoebaSentenceReader(invalid)
 
 
 class TatoebaSentenceReaderFObjTest(FileObjReaderMixin,
@@ -358,16 +373,19 @@ class TatoebaLinksReaderTests(ReaderBaseCase):
 
 
 class TatoebaLinksReaderMiscTests(unittest.TestCase):
-    def test_invalid_file(self):
+    @parameterized.expand([
         # Too few columns
-        invalid_1 = StringIO('3444\n3949\n')
-        with self.assertRaises(tatoeba.InvalidFileError):
-            sr = tatoeba.TatoebaLinksReader(invalid_1)
-
+        ('too_few', '3444\n3949\n'),
         # Too many columns
-        invalid_2 = StringIO('3444\teng\tThe boy ate a tiger\tMB')
+        ('too_many', '3444\teng\tThe boy ate a tiger\tMB'),
+        # Too many columns, with unicode
+        ('too_many', '3444\teng\tThe boy ate a tiger (虎)\tMB'),
+    ])
+    def test_invalid_file(self, name, rowstr):
+        # Too few columns
+        invalid = to_string_stream(rowstr)
         with self.assertRaises(tatoeba.InvalidFileError):
-            sr = tatoeba.TatoebaLinksReader(invalid_2)
+            sr = tatoeba.TatoebaLinksReader(invalid)
 
 ###
 # Tanaka word tests
@@ -593,7 +611,6 @@ class TatoebaIndexReaderEdictTests(TatoebaIndexReaderTests):
 
         return _sentences
 
-
 class TatoebaIndexReaderMiscTests(unittest.TestCase):
     def test_invalid_file(self):
         # First word has display before sense.
@@ -601,5 +618,5 @@ class TatoebaIndexReaderMiscTests(unittest.TestCase):
                        '彼女{テレビ}[01] は|1 一時間{１時間} 以内 に 戻る{戻ります}\n')
 
         with self.assertRaises(tatoeba.InvalidEntryError):
-            ir = tatoeba.TatoebaIndexReader(StringIO(invalid_str))
+            ir = tatoeba.TatoebaIndexReader(to_string_stream(invalid_str))
 

@@ -57,6 +57,6 @@ setup(
     packages=['cjktools', 'cjktools.resources'],
     test_suite='cjktools.tests',
     setup_requires=['setuptools_scm'],
-    tests_require=['nose-paramaterized'],
+    tests_require=['nose-parameterized'],
     use_scm_version=True,
 )

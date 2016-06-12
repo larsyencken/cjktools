@@ -3,20 +3,34 @@
 #  tatoeba.py
 #  cjktools
 #
+"""
+`Tatoeba <https://tatoeba.org>`_ is a collaborative database of example
+sentences in multiple languages, and is the current home of the `Tanaka Corpus
+<http://www.edrdg.org/wiki/index.php/Tanaka_Corpus>`_ of parallel
+Japanese-English sentences. This module is designed to parse the raw Tatoeba
+data tarballs, made available `here <https://tatoeba.org/eng/downloads>`_ into
+convenient Python objects.
+"""
 
 import re
-import csv
 import itertools
 
 from datetime import datetime
 from collections import defaultdict, Mapping
 
 from six import raise_from, iteritems
+from six import PY2
+
+import csv
 
 from cjktools.common import sopen, _NullContextWrapper
 
 
 class TatoebaDict(Mapping):
+    """
+    This is an abstract base class providing dictionary methods for the various
+    dictionary-like types consuming Tatoeba data.
+    """
     def __getitem__(self, key):
         return self._base_dict.__getitem__(key)
 
@@ -28,6 +42,10 @@ class TatoebaDict(Mapping):
 
 
 class TatoebaReader(TatoebaDict):
+    """
+    This is an abstract base class for reader classes which read Tatoeba data
+    and expose it in a dictionary-like interface.
+    """
     def __init__(self, *args, **kwargs):
         raise NotImplementedError('This is an abstract base class '
                                   'and should not be instantiated')
@@ -47,8 +65,15 @@ class TatoebaReader(TatoebaDict):
         reader_kwargs = dict(delimiter='\t')
         reader_kwargs.update(csv_kwargs)
 
+        if PY2:
+            encoding = None
+            encode_row = lambda row: [col.decode('utf-8') for col in row]
+        else:
+            encoding = 'utf-8'
+            encode_row = lambda row: row
+
         if getattr(fpath_or_buf, 'read', None) is None:
-            cfile = sopen(fpath_or_buf, mode='r')
+            cfile = sopen(fpath_or_buf, mode='r', encoding=encoding)
         else:
             cfile = _NullContextWrapper(fpath_or_buf)
 
@@ -56,7 +81,7 @@ class TatoebaReader(TatoebaDict):
             reader = csv.reader(f, **reader_kwargs)
 
             for row in reader:
-                yield row
+                yield encode_row(row)
 
     def _get_src_repr(self, src):
         """ Get the string representation of the source (filename or repr) """
@@ -67,7 +92,24 @@ class TatoebaReader(TatoebaDict):
 
 
 class TatoebaSentenceReader(TatoebaReader):
-    def __init__(self, sentences, languages={'jpn', 'eng'}):
+    """
+    A reader class intended to parse the full *Sentences* tarball - either the
+    three-column basic sentence file or the 6-column detailed sentence file.
+
+    These can be in one of two formats:
+
+        1. ``Sentence id`` [tab] ``Lang`` [tab] ``Text``
+        2. ``Sentence id`` [tab] ``Lang`` [tab] ``Text`` [tab] ``Username`` 
+           [tab] ``Date added`` [tab] ``Date modified``
+
+    The additional information in the second file is exposed via the
+    :func:`details` method.
+
+    Optionally, you may pass a :py:class:`set` of language codes to the
+    constructor's ``languages`` parameter to load only the subset of the
+    sentences with those language codes.
+    """
+    def __init__(self, sentences, languages=None):
         self.languages = languages
         self.sentences = sentences
 
@@ -370,6 +412,10 @@ class TatoebaLinksReader(TatoebaReader):
 
 
 class TanakaWord(object):
+    """
+    This represents a Japanese word using the same general format as the
+    Tanaka corpus.
+    """
     __slots__ = ['headword', 'reading', 'sense', 'display', 'example']
 
     def __init__(self, headword, reading, sense, display, example):
@@ -393,6 +439,7 @@ class TanakaWord(object):
         return base
 
     __unicode__ = __str__
+    __repr__ = __str__
 
     def resolve_display(self):
         return self.display if self.display is not None else self.headword
@@ -505,7 +552,7 @@ class TatoebaIndexReader(TatoebaReader):
                          r'(?:\[(?P<sense>[\d]+)\])?'
                          r'(?:\{(?P<display>[^\}]+)\})?'
                          r'(?:(?P<example>\~))?'
-                         r'(?:\|\d+)?$')
+                         r'(?:\|\d+)?$', re.UNICODE)
 
     def parse_sentence(self, text):
         """
@@ -528,8 +575,8 @@ class TatoebaIndexReader(TatoebaReader):
 
             m = self.word_re.match(word)
             if m is None:
-                raise InvalidEntryError(('Could not interpret word {} in '
-                                        'sentence:\n{}').format(word, text))
+                raise InvalidEntryError((u'Could not interpret word {} in '
+                                         u'sentence:\n{}').format(word, text))
 
             kwargs = {k: m.group(k) for k in self.word_re.groupindex.keys()}
             if kwargs['sense'] is not None:
